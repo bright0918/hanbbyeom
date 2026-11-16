@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f7f6f2">
 <title>한 뼘 시선 · 우리 아이의 눈 보고서</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -26,6 +26,8 @@
   else if(kakao){location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(h)}
   else if(step&&history.replaceState){history.replaceState(null,"",h)}
 }catch(e){}
+/* 아이패드에 설치한 앱인지 표시: 맨 위 흐림 띠를 피해 막대를 내리는 데 쓴다(아이폰·맥북은 그대로) */
+try{if((/iPad/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1))&&(navigator.standalone===true||matchMedia("(display-mode: standalone)").matches))document.documentElement.classList.add("ios-pwa")}catch(e){}
 /* 화면이 그려지기 전에 밝게·어둡게를 먼저 정해, 처음 몇 순간 다른 색이 번쩍이지 않게 한다 */
 try{var pf="auto";try{pf=localStorage.getItem("hb-theme")||"auto"}catch(e){}var th=pf==="auto"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):pf;document.documentElement.dataset.theme=th;document.documentElement.dataset.pref=pf}catch(e){}
 /* 설치 창 신호는 일찍 올 수 있어 미리 받아 둔다 */
@@ -545,6 +547,9 @@ h3{font-size:19px;letter-spacing:-.5px;margin:36px 0 12px}
 .bar{background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 1px 0 var(--line)}
 .bar:before{content:"";position:absolute;left:0;right:0;bottom:100%;height:120px;background:var(--bg);pointer-events:none}
 .bar:after{display:none}
+/* 아이패드 설치 앱: iPadOS 26은 화면 맨 위(시계 줄 + 약 40px)를 흐리게 칠한다.
+   막대의 글씨와 단추를 그 띠 아래로 내리고, 띠에는 막대 바탕색만 오게 한다 */
+.ios-pwa .bar{height:calc(56px + max(env(safe-area-inset-top),24px) + 40px);padding-top:calc(max(env(safe-area-inset-top),24px) + 40px)}
 /* 화면을 끝까지 당겨 튕길 때 보이는 빈 공간도 앱 바탕색으로 */
 html{background:var(--bg)}
 .nav{background:rgba(20,27,58,.95);backdrop-filter:saturate(160%) blur(16px);-webkit-backdrop-filter:saturate(160%) blur(16px)}

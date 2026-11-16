@@ -1174,6 +1174,11 @@ function findLost(src){
   /* 외톨이 칸 제거 */
   const keep=new Uint8Array(cols*rows);let cnt=0,red=0,green=0;
   for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){const i=r*cols+q;if(!flag[i])continue;let nb=0;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){if(!a&&!b)continue;const rr=r+a,qq=q+b;if(rr>=0&&rr<rows&&qq>=0&&qq<cols&&flag[rr*cols+qq])nb++}if(nb>=1){keep[i]=1;cnt++;const a=hu[i][1];if(a>15)red++;else if(a<-10)green++}}
+  /* 둘레만 잡히고 속이 빈 곳(잔디 위 빨간 공처럼)을 채운다: 사진 가장자리에서 표시 없는 칸을 따라 닿지 않는 빈칸은 둘러싸인 속이다 */
+  if(cnt){const out=new Uint8Array(cols*rows),st=[];const push=i=>{if(!out[i]&&!keep[i]){out[i]=1;st.push(i)}};
+    for(let q=0;q<cols;q++){push(q);push((rows-1)*cols+q)}for(let r=0;r<rows;r++){push(r*cols);push(r*cols+cols-1)}
+    while(st.length){const i=st.pop(),r=(i/cols)|0,q=i%cols;if(q>0)push(i-1);if(q<cols-1)push(i+1);if(r>0)push(i-cols);if(r<rows-1)push(i+cols)}
+    for(let i=0;i<cols*rows;i++)if(!keep[i]&&!out[i]){keep[i]=1;cnt++;const a=hu[i][1];if(a>15)red++;else if(a<-10)green++}}
   return{cols,rows,keep,cnt,red,green,share:cols*rows?cnt/(cols*rows):0}}/* 아주 가늘고 긴 사진은 칸이 0개라 0으로 나누지 않게 */
 /* 사진 아래쪽 40%를 바닥으로 보고 평균 밝기와 색을 잰다 */
 function analyze(src){const W=48,H=Math.max(8,Math.round(src.height*W/src.width)),c=mk(W,H),x=c.getContext("2d");x.drawImage(src,0,0,W,H);const d=x.getImageData(0,0,W,H).data,y0=Math.floor(H*.6);let n=0,L=0,A=0,B=0,all=0,sr=0,sg=0,sb=0;

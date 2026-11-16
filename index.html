@@ -540,10 +540,11 @@ h2{font-size:30px;font-weight:800;letter-spacing:-1.1px;line-height:1.22;margin:
 h3{font-size:19px;letter-spacing:-.5px;margin:36px 0 12px}
 .lead{font-size:15px;line-height:1.6;color:var(--sub)}
 /* 유리처럼 비치는 위·아래 막대 */
-.bar{background:rgba(244,246,251,.72);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);box-shadow:0 .5px 0 rgba(20,27,58,.08)}
-[data-theme=dark] .bar{background:rgba(13,18,38,.72);box-shadow:0 .5px 0 rgba(255,255,255,.06)}
-.nav{background:rgba(20,27,58,.82);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px)}
-[data-theme=dark] .nav{background:rgba(8,12,28,.8)}
+/* 막대는 거의 불투명하게: 진한 색 카드가 뒤로 지나갈 때 흐릿하고 지저분해 보이지 않게 */
+.bar{background:rgba(244,246,251,.94);backdrop-filter:saturate(160%) blur(16px);-webkit-backdrop-filter:saturate(160%) blur(16px);box-shadow:0 .5px 0 rgba(20,27,58,.08)}
+[data-theme=dark] .bar{background:rgba(13,18,38,.94);box-shadow:0 .5px 0 rgba(255,255,255,.06)}
+.nav{background:rgba(20,27,58,.95);backdrop-filter:saturate(160%) blur(16px);-webkit-backdrop-filter:saturate(160%) blur(16px)}
+[data-theme=dark] .nav{background:rgba(8,12,28,.95)}
 .nav button{transition:color .35s var(--ease)}
 .nav button svg{transition:transform .45s var(--ease)}
 .nav button[aria-current=page] svg{transform:translateY(-1px) scale(1.06)}

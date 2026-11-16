@@ -1623,10 +1623,15 @@ function wrapLines(x,text,maxW){const out=[];let line="";for(const w of text.spl
 function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pad*2,in_=24,iw=cw-in_*2,ih=Math.round(iw*S.src.height/S.src.width),o=seeOpts(),Lc=renderHuman(S.src,o),Rc=renderPet(S.src,o);
   /* 공유 카드는 '우리 아이 이름 + 이 사진에서 찾은 의외의 사실'을 제목으로 한다(숫자보다 이야기가 퍼진다) */
   let x=c.getContext("2d");c.width=W;c.height=10;x.font="30px "+FF;const sub=S.touched?wrapLines(x,profileLine(),cw-(av?170:0)):[];
-  const cr=colorRank(),hk=hook(),tl=hk.card,dog=isDog(),RB=[["#d0342c","빨강"],["#f07a1a","주황"],["#ffd21f","노랑"],["#4f9a4a","초록"],["#2f6fd6","파랑"],["#7a4fb0","보라"]];
-  /* 시력: 개 20/75(Byosiere 외 2018 총설, 추정), 고양이 20/100(수의안과 전문의 설명, 추정). 보고서 근거와 같은 값 */
-  const va=dog?{v:"0.27",far:"23m"}:{v:"0.2",far:"30m"};
-  const hh=150+tl.length*76+sub.length*42+90,picY=hh-56,picH=in_*2+ih*2+16,cY=picY+picH+28,cH=330,gY=cY+cH+28,gH=250,tY=gY+gH+48,H=tY+150;
+  const cr=colorRank(),hk=hook(),tl=hk.card,dog=isDog(),bad=(cr.trap.length?cr.trap:cr.worst).slice(0,2);
+  /* 공유 카드에는 아이·집마다 달라지는 것만 넣는다(무지개·시력처럼 모든 개가 같은 정보는 뺌):
+     우리 집 바닥 색에 따른 색, 크기별 눈높이, 주둥이 길이별 또렷한 곳(예시), 나이별 노령기 */
+  const me=[];if(S.touched){const ag=ageYears();
+    if(dog){me.push(`눈높이는 바닥에서 약 ${SIZE[S.size].eye}(${SIZE[S.size].n}견, 추정)`);
+      if(S.snout==="long")me.push("주둥이가 긴 편: 옆으로 넓은 띠를 또렷하게 볼 가능성(예시)");else if(S.snout==="short")me.push("주둥이가 짧은 편: 정면 가운데를 또렷하게 볼 가능성(예시)")}
+    else me.push("코앞 25cm 안쪽은 초점이 흐려요: 간식은 한 뼘 떨어뜨려서");
+    if(isSenior())me.push(`노령기예요: 가구 배치는 그대로, 계단 끝엔 ${cr.best[0].name} 테이프`);else if(ag!==null)me.push(`노령기까지 약 ${Math.max(1,Math.round(senStart()-ag))}년: 검진 때 눈도 봐 달라고 하기`)}
+  const hh=150+tl.length*76+sub.length*42+90,picY=hh-56,picH=in_*2+ih*2+16,cY=picY+picH+28,cH=262,gY=cY+cH+28,gH=me.length?110+me.length*52:0,tY=gY+(me.length?gH+48:20),H=tY+150;
   c.height=H;x=c.getContext("2d");x.textBaseline="top";
   x.fillStyle="#f2f4f6";x.fillRect(0,0,W,H);
   {const g=x.createLinearGradient(0,0,W,hh);g.addColorStop(0,"#1b2a6b");g.addColorStop(1,"#1b2a6b");x.fillStyle=g;x.fillRect(0,0,W,hh)}
@@ -1638,13 +1643,14 @@ function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pa
   const pic=(img,Y,label,blue)=>{x.save();rr(x,pad+in_,Y,iw,ih,22);x.clip();x.drawImage(img,pad+in_,Y,iw,ih);x.restore();x.save();x.font="bold 30px "+FF;const tw=x.measureText(label).width+40;x.fillStyle=blue?"#1b2a6b":"rgba(0,0,0,.62)";rr(x,pad+in_+18,Y+18,tw,52,26);x.fill();x.fillStyle="#fff";x.fillText(label,pad+in_+38,Y+29);x.restore()};
   card(pad,picY,cw,picH,40);pic(Lc,picY+in_,"내 눈",false);pic(Rc,picY+in_+ih+16,N("의")+" 눈",true);if(Lc!==S.src)free(Lc);free(Rc);
   const sw=(X,Y,rgb,r)=>{x.beginPath();x.arc(X,Y,r,0,7);x.fillStyle="rgb("+rgb.join(",")+")";x.fill();x.lineWidth=5;x.strokeStyle="#fff";x.stroke();x.lineWidth=1.5;x.strokeStyle="#d1d6db";x.beginPath();x.arc(X,Y,r+3,0,7);x.stroke()};
-  /* 무지개 비교: 같은 여섯 색이 내 눈과 아이 눈에 어떻게 다른지 한눈에(Viénot 1999 계산) */
-  card(pad,cY,cw,cH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText(N("의")+" 눈에 보이는 무지개",pad+in_+8,cY+30);
-  {const bw=(cw-in_*2-120)/6,X0=pad+in_+130;x.font="bold 26px "+FF;x.fillStyle="#6b7684";x.fillText("내 눈",pad+in_+8,cY+118);x.fillStyle="#1b2a6b";x.fillText(N("의")+" 눈",pad+in_+8,cY+228);
-    RB.forEach(([h,nm],i)=>{const X=X0+i*bw+bw/2,c0=hexRgb(h);sw(X,cY+132,c0,34);sw(X,cY+242,dich(...c0),34);x.textAlign="center";x.fillStyle="#6b7684";x.font="22px "+FF;x.fillText(nm,X,cY+176);x.textAlign="left"})}
-  /* 알고 있었나요: 시력(추정)과, 대신 더 잘 보는 것 */
-  card(pad,gY,cw,gH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText("알고 있었나요?",pad+in_+8,gY+30);
-  x.font="30px "+FF;[`${N("의")} 시력은 약 ${va.v}(추정).`,`내가 ${va.far}에서 알아보는 걸 ${N("는")} 6m까지 와야 알아봐요.`,`대신 어두운 곳과 넓은 시야는 ${N("가")} 한 수 위예요.`].forEach((t,i)=>{x.fillStyle=i===2?"#1b2a6b":"#191f28";if(i===2)x.font="bold 30px "+FF;wrapLines(x,t,cw-in_*2-16).slice(0,1).forEach(l=>x.fillText(l,pad+in_+8,gY+96+i*48))});
+  /* 우리 집 바닥 기준: 바닥 색 동그라미 + 이 바닥에서 아이 눈에 띄는 색 / 묻히는 색 */
+  card(pad,cY,cw,cH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText("우리 집 바닥에서 "+N("의")+" 눈엔",pad+in_+8,cY+30);
+  {const X1=pad+in_+8;sw(X1+34,cY+150,cr.fl,34);x.textAlign="center";x.fillStyle="#6b7684";x.font="22px "+FF;x.fillText("우리 바닥",X1+34,cY+196);x.textAlign="left";
+    const X2=X1+110,row=(Y,lab,list,col)=>{x.fillStyle=col;x.font="bold 28px "+FF;x.fillText(lab,X2,Y);list.forEach((c,i)=>{const X=X2+150+i*180;sw(X,Y+16,hexRgb(c.hex),24);x.fillStyle="#191f28";x.font="bold 28px "+FF;x.fillText(c.name,X+34,Y)})};
+    row(cY+100,"잘 띄는 색",cr.best.slice(0,3),"#1b2a6b");row(cY+190,"묻히는 색",bad,"#c0392b")}
+  /* 이 아이만의 것: 프로필(크기·주둥이·나이)로 달라지는 내용 */
+  if(me.length){card(pad,gY,cw,gH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText(N("의")+" 맞춤",pad+in_+8,gY+30);
+    x.font="28px "+FF;me.forEach((t,i)=>{x.fillStyle="#1b2a6b";x.beginPath();x.arc(pad+in_+18,gY+108+i*52,6,0,7);x.fill();x.fillStyle="#191f28";x.fillText(wrapLines(x,t,cw-in_*2-40)[0],pad+in_+36,gY+92+i*52)})}
   x.textAlign="center";x.fillStyle="#191f28";x.font="bold 34px "+FF;x.fillText("너네 아이 눈엔 어떻게 보일까?",W/2,tY);
   x.fillStyle="#1b2a6b";x.font="bold 28px "+FF;x.fillText("한 뼘 시선 · "+APP_URL.replace(/^https?:\/\//,"").replace(/\/$/,""),W/2,tY+54);
   x.fillStyle="#6b7684";x.font="22px "+FF;x.fillText("논문 근거로 계산, 일부는 예시예요 · 진단이 아니에요",W/2,tY+100);x.textAlign="left"}

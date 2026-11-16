@@ -1409,6 +1409,19 @@ function hook(){if(!S.src)return null;const sure=an().sure||(S.floorPick&&S.floo
   if(oi.length){const c=oi[0].name,g=oi.outdoor?"땅":"바닥";return{k:"item",color:oi[0],card:[n+" 눈엔",`이 ${c} 물건이`,`${g}이랑 똑같아 보여요`],sent:`사진 속 ${dotC(oi[0])} 물건이 ${N("의")} 눈엔 ${g}과 거의 같은 색으로 보여요.`,share:`${n} 눈엔 이 ${c} 물건이 ${g}이랑 똑같아 보인대 😮`}}
   if(p>=3)return{k:"lost",card:[n+" 눈엔",`이 사진의 ${pctTxt(p)}%가`,"주변 색에 묻혀 보여요"],sent:`이 사진의 약 ${pctTxt(p)}%가 ${N("의")} 눈엔 주변 색에 묻혀 보여요.`,share:`${n} 눈엔 우리 집이 이렇게 보인대 😮`};
   return{k:"none",card:[N("의")+" 눈으로 본","우리 집"],sent:`이 사진엔 ${N("의")} 눈에 묻히는 물건이 거의 없어요.`,share:`${n} 눈으로 본 우리 집이래 😮`}}
+/* 이 아이·이 사진에만 해당하는 말(공유 카드 '맞춤'과 맞춤 리포트 카드 '이렇게 해 보세요'에 씀).
+   모든 개가 같은 정보는 넣지 않는다. 태어난 해가 없어도 견종 수명 자료로 노령기 시작 나이를 말한다 */
+function meLines(){const a=[],dog=isDog(),cr=colorRank(),h=hook(),b2=cr.best.slice(0,2).map(c=>c.name).join("·"),ag=ageYears(),p=lostPct();
+  if(h&&h.k==="item")a.push(`사진 속 ${h.color.name} 물건은 ${b2} 계열로 바꾸기`);else if(p>=1)a.push(`이 사진의 약 ${pctTxt(p)}%가 ${N("의")} 눈엔 주변 색에 묻혀요`);
+  a.push(`장난감·방석·매트는 우리 바닥에서 잘 띄는 ${b2} 계열로`);
+  if(S.touched){if(dog){a.push(`${N("의")} 눈높이는 바닥에서 약 ${SIZE[S.size].eye}(${SIZE[S.size].n}견, 추정): 그 높이로 집을 둘러보기`);
+      if(S.snout==="long")a.push("주둥이가 긴 편: 장난감은 옆으로 굴려 주기(또렷한 곳이 옆으로 넓을 가능성, 예시)");else if(S.snout==="short")a.push("주둥이가 짧은 편: 간식은 정면에서 보여 주기(정면 가운데가 또렷할 가능성, 예시)")}
+    else a.push("코앞 25cm 안쪽은 흐려요: 간식은 한 뼘 떨어뜨려 보여 주기");
+    if(isSenior())a.push(`노령기: 가구 배치는 그대로, 계단 끝엔 ${cr.best[0].name} 테이프`);
+    else if(ag!==null)a.push(`노령기까지 약 ${Math.max(1,Math.round(senStart()-ag))}년: 검진 때 눈도 봐 달라고 하기`);
+    else if(dog){const bn=S.breed==="mix"?"믹스견":breedName();a.push(`${bn}${josa(bn,"는")} 약 ${Math.round(senStart())}살부터 노령기(수명 자료 기준): 그때부터 검진 때 눈도`)}
+    else a.push("고양이는 10살이 넘으면 노령기(AAHA·AAFP 2021): 그때부터 검진 때 눈도")}
+  return a.slice(0,5)}
 /* 보고서 맨 위 '한눈에 보기': 스크롤하지 않아도 할 일이 보이게 */
 function sumCard(){const h=hook(),cr=colorRank(),sure=an().sure||(S.floorPick&&S.floorSrc===S.src),best=cr.best.slice(0,2),bad=(cr.trap.length?cr.trap:cr.worst).slice(0,2);
   return `<small style="color:var(--sub);font-weight:700">한눈에 보기</small><p class="hk">${sure?h.sent:"바닥이 잘 안 보이는 사진이에요. 바닥이 함께 나오게 찍으면 더 정확해요."}</p>`
@@ -1626,12 +1639,8 @@ function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pa
   const cr=colorRank(),hk=hook(),tl=hk.card,dog=isDog(),bad=(cr.trap.length?cr.trap:cr.worst).slice(0,2);
   /* 공유 카드에는 아이·집마다 달라지는 것만 넣는다(무지개·시력처럼 모든 개가 같은 정보는 뺌):
      우리 집 바닥 색에 따른 색, 크기별 눈높이, 주둥이 길이별 또렷한 곳(예시), 나이별 노령기 */
-  const me=[];if(S.touched){const ag=ageYears();
-    if(dog){me.push(`눈높이는 바닥에서 약 ${SIZE[S.size].eye}(${SIZE[S.size].n}견, 추정)`);
-      if(S.snout==="long")me.push("주둥이가 긴 편: 옆으로 넓은 띠를 또렷하게 볼 가능성(예시)");else if(S.snout==="short")me.push("주둥이가 짧은 편: 정면 가운데를 또렷하게 볼 가능성(예시)")}
-    else me.push("코앞 25cm 안쪽은 초점이 흐려요: 간식은 한 뼘 떨어뜨려서");
-    if(isSenior())me.push(`노령기예요: 가구 배치는 그대로, 계단 끝엔 ${cr.best[0].name} 테이프`);else if(ag!==null)me.push(`노령기까지 약 ${Math.max(1,Math.round(senStart()-ag))}년: 검진 때 눈도 봐 달라고 하기`)}
-  const hh=150+tl.length*76+sub.length*42+90,picY=hh-56,picH=in_*2+ih*2+16,cY=picY+picH+28,cH=262,gY=cY+cH+28,gH=me.length?110+me.length*52:0,tY=gY+(me.length?gH+48:20),H=tY+150;
+  x.font="28px "+FF;const me=meLines().filter(t=>!t.startsWith("장난감·방석·매트")).map(t=>wrapLines(x,t,cw-in_*2-40)),meN=me.reduce((s,a)=>s+a.length,0);
+  const hh=150+tl.length*76+sub.length*42+90,picY=hh-56,picH=in_*2+ih*2+16,cY=picY+picH+28,cH=262,gY=cY+cH+28,gH=me.length?100+meN*42+me.length*12:0,tY=gY+(me.length?gH+48:20),H=tY+150;
   c.height=H;x=c.getContext("2d");x.textBaseline="top";
   x.fillStyle="#f2f4f6";x.fillRect(0,0,W,H);
   {const g=x.createLinearGradient(0,0,W,hh);g.addColorStop(0,"#1b2a6b");g.addColorStop(1,"#1b2a6b");x.fillStyle=g;x.fillRect(0,0,W,hh)}
@@ -1650,7 +1659,7 @@ function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pa
     row(cY+100,"잘 띄는 색",cr.best.slice(0,3),"#1b2a6b");row(cY+190,"묻히는 색",bad,"#c0392b")}
   /* 이 아이만의 것: 프로필(크기·주둥이·나이)로 달라지는 내용 */
   if(me.length){card(pad,gY,cw,gH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText(N("의")+" 맞춤",pad+in_+8,gY+30);
-    x.font="28px "+FF;me.forEach((t,i)=>{x.fillStyle="#1b2a6b";x.beginPath();x.arc(pad+in_+18,gY+108+i*52,6,0,7);x.fill();x.fillStyle="#191f28";x.fillText(wrapLines(x,t,cw-in_*2-40)[0],pad+in_+36,gY+92+i*52)})}
+    x.font="28px "+FF;let yy=gY+92;me.forEach(ls=>{x.fillStyle="#1b2a6b";x.beginPath();x.arc(pad+in_+18,yy+16,6,0,7);x.fill();x.fillStyle="#191f28";ls.forEach((l,j)=>x.fillText(l,pad+in_+36,yy+j*42));yy+=ls.length*42+12})}
   x.textAlign="center";x.fillStyle="#191f28";x.font="bold 34px "+FF;x.fillText("너네 아이 눈엔 어떻게 보일까?",W/2,tY);
   x.fillStyle="#1b2a6b";x.font="bold 28px "+FF;x.fillText("한 뼘 시선 · "+APP_URL.replace(/^https?:\/\//,"").replace(/\/$/,""),W/2,tY+54);
   x.fillStyle="#6b7684";x.font="22px "+FF;x.fillText("논문 근거로 계산, 일부는 예시예요 · 진단이 아니에요",W/2,tY+100);x.textAlign="left"}
@@ -1662,7 +1671,7 @@ const SHARE_TXT=()=>{const h=hook();return (h?h.share:"우리 아이 눈으로 �
 document.addEventListener("click",e=>{const b=e.target.closest("[data-jump]");if(b){const t=document.getElementById(b.dataset.jump);if(t)t.scrollIntoView({behavior:"smooth",block:"start"})}});
 async function shareCard(){try{const b=await cardBlob(),f=new File([b],"report.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:N("의")+" 눈 보고서",text:SHARE_TXT()});else saveCard()}catch(e){if(!e||e.name!=="AbortError"){toast("보내기가 안 돼서 사진으로 저장할게요.");saveCard()}}}
 /* 2부 맞춤 리포트 한 장: 바닥 색, 잘 보이는 색·피할 색(내 눈 → 아이 눈), 팁 */
-function makeCard2(){if(!S.src)return;const W=1080,pad=56,c=$("#cCard2"),cw=W-pad*2,cr=colorRank(),tp=tips().map(t=>{const m=t.match(/<b>(.*?)<\/b>/);return(m?m[1]:t).replace(/<[^>]+>/g,"")});
+function makeCard2(){if(!S.src)return;const W=1080,pad=56,c=$("#cCard2"),cw=W-pad*2,cr=colorRank(),tp=meLines();/* 이 아이·이 사진에만 해당하는 할 일 */
   let x=c.getContext("2d");c.width=W;c.height=10;x.font="bold 34px "+FF;const wr=tp.map(l=>wrapLines(x,l,cw-140));let th=0;wr.forEach(a=>th+=a.length*48+28);
   const hh=300,rowH=96,cY=hh-40,cH=150+rowH*6+70,tY=cY+cH+28,tH=110+th,fY=tY+tH+44,H=fY+150;c.height=H;x=c.getContext("2d");x.textBaseline="top";
   x.fillStyle="#f4f6fb";x.fillRect(0,0,W,H);x.fillStyle="#1b2a6b";x.fillRect(0,0,W,hh);

@@ -13,12 +13,18 @@
 <meta name="apple-mobile-web-app-title" content="한 뼘 시선">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="only light">
 <script>
 /* 카카오톡·인스타그램 등 앱 안의 브라우저로 열리면 카메라·저장·설치가 막힐 수 있어, 폰의 기본 브라우저로 자동으로 다시 연다 */
 (function(){var u=navigator.userAgent,h=location.href;try{
-  if(/KAKAOTALK/i.test(u)){location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(h)}
-  else if(/Android/.test(u)&&/Instagram|FBAN|FBAV|Line\/|NAVER\(inapp|DaumApps|everytimeApp/i.test(u)){location.href="intent://"+h.replace(/^https?:\/\//,"")+"#Intent;scheme=https;package=com.android.chrome;end"}
+  /* 안드로이드: 크롬 → (없으면) 삼성 인터넷 → (없으면) 네이버 앱 → (없으면) 기본 브라우저 순서로 연다.
+     앱이 없으면 browser_fallback_url로 이 페이지가 hbx 표시를 달고 다시 열리고, 다음 순서를 시도한다 */
+  var kakao=/KAKAOTALK/i.test(u),inapp=kakao||/Instagram|FBAN|FBAV|Line\/|NAVER\(inapp|DaumApps|everytimeApp/i.test(u),m=location.search.match(/[?&]hbx=(\w)/),step=m?m[1]:"";
+  h=h.replace(/[?&]hbx=\w/,"").replace(/\?$/,"");
+  var go=function(pkg,next){var fb=h+(h.indexOf("?")<0?"?":"&")+"hbx="+next;location.href="intent://"+h.replace(/^https?:\/\//,"")+"#Intent;scheme=https;package="+pkg+";S.browser_fallback_url="+encodeURIComponent(fb)+";end"};
+  if(inapp&&/Android/.test(u)){if(!step)go("com.android.chrome","s");else if(step==="s")go("com.sec.android.app.sbrowser","n");else if(step==="n")go("com.nhn.android.search","x");else if(kakao)location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(h)}
+  else if(kakao){location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(h)}
+  else if(step&&history.replaceState){history.replaceState(null,"",h)}
 }catch(e){}
 /* 설치 창 신호는 일찍 올 수 있어 미리 받아 둔다 */
 addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__dp=e})})();
@@ -329,7 +335,10 @@ video{position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:
 .bar{padding-top:env(safe-area-inset-top);height:calc(56px + env(safe-area-inset-top))}
 input[type=number]{font-size:16px}
 /* 이 앱이 밝게·어둡게를 직접 처리한다고 브라우저에 알린다(삼성 인터넷 등이 강제로 어둡게 바꾸지 않도록) */
-:root{color-scheme:light}[data-theme=dark]{color-scheme:dark}
+/* "only"를 붙이면 크롬·삼성 인터넷의 자동 다크 모드가 이 앱 색을 바꾸지 않는다(앱의 어둡게 화면은 앱이 직접 그린다) */
+:root{color-scheme:only light}[data-theme=dark]{color-scheme:only dark}
+/* 삼성 인터넷은 어두운 화면을 스스로 지원하는 사이트만 강제 다크 처리를 건너뛴다. 그 신호로 시스템 다크 설정을 직접 받는다 */
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:only dark}}
 .sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav) + 10px + env(safe-area-inset-bottom));width:calc(100% - 24px);max-width:456px;z-index:8;background:var(--card);color:var(--ink);border-radius:20px;box-shadow:0 10px 32px rgba(25,31,40,.22);padding:12px 12px 12px 14px;display:flex;align-items:center;gap:10px}
 .sheet>i{width:40px;height:40px;border-radius:50%;background:var(--pri-soft);color:var(--pri);display:flex;align-items:center;justify-content:center;flex:none}.sheet>i svg{width:20px;height:20px}
 .sheet>div{flex:1;min-width:0;font-size:12.5px;color:var(--sub);line-height:1.4}.sheet b{display:block;font-size:15px;color:var(--ink)}
@@ -507,7 +516,82 @@ button.primary{background:var(--pri);color:var(--pri-ink);border-radius:18px}
 footer{color:var(--sub)}
 .strip i{color:var(--sub)}
 .who,.tbtn{min-height:36px}
+#cardPrev2{display:block;width:62%;margin:4px auto 4px;border-radius:14px;box-shadow:0 6px 24px rgba(20,27,58,.15)}
+.crow{flex-wrap:nowrap}.crow b{flex:0 0 64px;font-size:14.5px}
+.crow .pp{display:flex;align-items:center;gap:4px;flex:1;font-size:11.5px;color:var(--sub)}
+.crow .pp i{width:24px;height:24px;border-radius:50%;box-shadow:0 0 0 1px var(--line);flex:none}.crow .pp .ar{margin:0 2px;color:var(--mute)}
+.floorRef{display:flex;gap:12px;align-items:center;background:var(--soft);border-radius:16px;padding:12px;margin-bottom:8px}
+.floorRef>i{width:44px;height:44px;border-radius:12px;flex:none;box-shadow:0 0 0 1px var(--line)}
+.floorRef b{display:block;font-size:14px}.floorRef small{display:block;font-size:12.5px;color:var(--sub);line-height:1.4}
 .bento .navy{background:#1b2a6b;color:#fff}.bento .navy small{color:#c3cbec}.bento .navy i{background:rgba(255,255,255,.14);color:#ffd21f}
+
+/* ================= 디자인 4판: 부드럽고 우아하게 (애플식 움직임·여백·유리 막대) ================= */
+:root{--ease:cubic-bezier(.32,.72,0,1);--ease-out:cubic-bezier(.22,1,.36,1);--shadow:0 1px 2px rgba(20,27,58,.04),0 10px 30px rgba(20,27,58,.06);--shadow-up:0 2px 4px rgba(20,27,58,.05),0 16px 40px rgba(20,27,58,.10)}
+[data-theme=dark]{--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);--shadow-up:0 2px 4px rgba(0,0,0,.35),0 16px 40px rgba(0,0,0,.35)}
+html{scroll-behavior:smooth}
+body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+/* 큰 제목(라지 타이틀) */
+.scr{padding:22px 20px 0}
+h2{font-size:30px;font-weight:800;letter-spacing:-1.1px;line-height:1.22;margin:6px 0 10px}
+.hero h2{font-size:23px;letter-spacing:-.8px;line-height:1.32}
+h3{font-size:19px;letter-spacing:-.5px;margin:36px 0 12px}
+.lead{font-size:15px;line-height:1.6;color:var(--sub)}
+/* 유리처럼 비치는 위·아래 막대 */
+.bar{background:rgba(244,246,251,.72);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);box-shadow:0 .5px 0 rgba(20,27,58,.08)}
+[data-theme=dark] .bar{background:rgba(13,18,38,.72);box-shadow:0 .5px 0 rgba(255,255,255,.06)}
+.nav{background:rgba(20,27,58,.82);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px)}
+[data-theme=dark] .nav{background:rgba(8,12,28,.8)}
+.nav button{transition:color .35s var(--ease)}
+.nav button svg{transition:transform .45s var(--ease)}
+.nav button[aria-current=page] svg{transform:translateY(-1px) scale(1.06)}
+.nav button[aria-current=page]:before{animation:pillIn .45s var(--ease) both}
+@keyframes pillIn{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+/* 카드: 테두리 대신 아주 옅은 그림자, 넉넉한 둥근 모서리 */
+.card,.k,.feat.card,.fact,.shareBox,#fx,#fxOld,.tiles button,ol.todo li,.good3 div,.bento button,.duo>div,.liveBox,.stage,.hero,.repHead{box-shadow:var(--shadow)}
+.card,.k,.fact,.shareBox{padding:22px}
+/* 누르는 느낌: 살짝 작아졌다가 부드럽게 돌아옴 */
+button,label.drop,.feat{transition:transform .35s var(--ease),background-color .3s var(--ease),box-shadow .35s var(--ease),color .3s var(--ease)}
+button:active,label.drop:active{transform:scale(.97);transition-duration:.12s}
+@media (hover:hover){.bento button:hover,.feat.card:hover,.tiles button:hover{transform:translateY(-2px);box-shadow:var(--shadow-up)}}
+.seg button,.chips button{transition:background-color .35s var(--ease),color .3s var(--ease),box-shadow .35s var(--ease),transform .3s var(--ease)}
+.switch{transition:background-color .35s var(--ease)}.switch:after{transition:transform .45s var(--ease)}
+details summary{transition:color .3s var(--ease)}
+details[open]>*:not(summary){animation:fadeUp .45s var(--ease-out) both}
+/* 화면이 바뀔 때: 내용이 차례로 살짝 떠오르며 나타남 */
+@media (prefers-reduced-motion:no-preference){
+  .scr{animation:none}
+  .scr:not(.hide)>*,.scr:not(.hide)>.has>*{animation:fadeUp .6s var(--ease-out) both}
+  .scr>*:nth-child(2),.has>*:nth-child(2){animation-delay:.04s}
+  .scr>*:nth-child(3),.has>*:nth-child(3){animation-delay:.08s}
+  .scr>*:nth-child(4),.has>*:nth-child(4){animation-delay:.12s}
+  .scr>*:nth-child(5),.has>*:nth-child(5){animation-delay:.16s}
+  .scr>*:nth-child(6),.has>*:nth-child(6){animation-delay:.2s}
+  .scr>*:nth-child(n+7),.has>*:nth-child(n+7){animation-delay:.24s}
+  .bento button{animation:fadeUp .7s var(--ease-out) both}.bento button:nth-child(2){animation-delay:.08s}.bento button:nth-child(3){animation-delay:.14s}
+  ol.todo li,.good3 div,.crow{animation:fadeUp .55s var(--ease-out) both}
+  ol.todo li:nth-child(2),.good3 div:nth-child(2){animation-delay:.05s}ol.todo li:nth-child(3),.good3 div:nth-child(3){animation-delay:.1s}ol.todo li:nth-child(n+4){animation-delay:.15s}
+  .toast{transition:opacity .4s var(--ease),transform .5s var(--ease);transform:translate(-50%,12px)}
+  .toast.on{transform:translate(-50%,0)}
+  .modal:not(.hide){animation:fadeIn .35s var(--ease) both}.modal:not(.hide) .mbox{animation:sheetUp .55s var(--ease) both}
+  .sheet:not(.hide){animation:sheetUp .6s var(--ease) both}
+  .stage canvas,.duo canvas,#cLive,.demo{animation:fadeIn .6s var(--ease) both}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{opacity:0;transform:translateY(40px) scale(.98)}to{opacity:1;transform:none}}
+.sheet:not(.hide){transform-origin:bottom center}
+.sheet{left:12px;right:12px;width:auto;transform:none;margin:0 auto}
+/* 유리 느낌 알림·창 */
+.toast{background:rgba(20,27,58,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+body:has(#instSheet:not(.hide)) .toast{bottom:calc(var(--nav) + 104px + env(safe-area-inset-bottom))}
+.modal{background:rgba(10,14,30,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.mbox{box-shadow:0 30px 80px rgba(0,0,0,.25)}
+.sheet{backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);background:rgba(255,255,255,.88)}
+[data-theme=dark] .sheet{background:rgba(22,29,58,.88)}
+/* 입력칸: 고를 때 부드러운 테두리 빛 */
+input[type=text],select,.calc input{transition:box-shadow .3s var(--ease),background-color .3s var(--ease)}
+input[type=text]:focus,select:focus,.calc input:focus{outline:none;box-shadow:0 0 0 3px rgba(27,42,107,.18);background-color:var(--card)}
+[data-theme=dark] input[type=text]:focus,[data-theme=dark] select:focus{box-shadow:0 0 0 3px rgba(255,210,31,.25)}
 </style>
 </head>
 <body>
@@ -736,7 +820,7 @@ footer{color:var(--sub)}
     <div class="repHead" id="repHead"></div>
     <p class="lead hide" id="sumTxt"></p>
 
-    <div class="partT"><b>1부</b> 우리 집, 내 눈과 <span data-n="의">아이의</span> 눈</div>
+    <div class="partT"><b>1부</b><span>우리 집, 내 눈과 <span data-n="의">아이의</span> 눈</span></div>
     <div class="strip" id="repStrip"></div>
     <div class="duo"><div><span class="lb">내 눈</span><canvas id="cRepA"></canvas></div><div><span class="lb pet"><span data-n="의">아이의</span> 눈</span><canvas id="cRepB"></canvas></div></div>
     <canvas id="cRep" class="hide"></canvas>
@@ -750,32 +834,46 @@ footer{color:var(--sub)}
       <p class="note" id="shareNote"></p>
     </div>
 
-    <div class="partT"><b>2부</b> <span data-n="">아이</span> 맞춤 리포트</div>
+    <div class="partT"><b>2부</b><span><span data-n="">아이</span> 맞춤 리포트</span></div>
     <p class="lead" id="repFor"></p>
     <div class="q" style="margin-top:0"><b id="spotQ"></b><span class="s" id="spotQs"></span><div class="chips wrap" id="spotAsk"></div></div>
     <div class="tiles" id="tiles"></div>
     <div class="why hide" id="tileMore"></div>
 
-    <h3><span class="sn">1</span>이 바닥에서 잘 보이는 색·피할 색</h3>
+    <h3><span class="sn">1</span>사진 속 바닥에서 잘 보이는 색·피할 색</h3>
     <div class="card" style="margin-top:0" id="repColors"></div>
 
     <h3><span class="sn">2</span>이 사진에서 알게 된 것</h3>
     <ol class="todo" id="todo"></ol>
 
-    <h3><span class="sn">3</span><span data-n="">아이</span>에게 맞춘 팁</h3>
+    <h3><span class="sn">3</span><span><span data-n="">아이</span>에게 맞춘 팁</span></h3>
     <ol class="todo" id="todo2"></ol>
+    <details><summary>이 리포트는 이렇게 계산했어요</summary><div id="calcBasis"></div></details>
 
     <h3><span class="sn">4</span>우리 집 점검 결과</h3>
     <div class="card" style="margin-top:0" id="repSpots"></div>
 
-    <h3><span class="sn">5</span><span data-n="가">아이가</span> 나보다 잘 보는 것</h3>
+    <h3><span class="sn">5</span><span><span data-n="가">아이가</span> 나보다 잘 보는 것</span></h3>
     <div class="good3" id="good3"></div>
     <button type="button" class="ghost" data-go="know"><i data-ic="book"></i>그림으로 자세히 보기</button>
 
     <h3><span class="sn">6</span>이럴 땐 바로 병원에</h3>
     <div class="vet" id="repVet"></div>
+
+    <div class="shareBox">
+      <h3 style="margin-top:0">맞춤 리포트 보내기</h3>
+      <p class="lead">잘 보이는 색·피할 색과 팁을 사진 한 장으로 만들어요. 장난감을 사러 갈 때 가족에게 보내 두면 좋아요.</p>
+      <img id="cardPrev2" alt="맞춤 리포트 미리보기">
+      <div class="row"><button type="button" class="primary" id="btnShare2"><i data-ic="share"></i>보내기</button><button type="button" class="ghost" id="btnSave2" style="margin-top:12px"><i data-ic="download"></i>저장</button></div>
+    </div>
+    <div class="shareBox" style="margin-top:12px">
+      <h3 style="margin-top:0">앱 링크 보내기</h3>
+      <p class="lead" style="margin-bottom:6px">다른 보호자도 자기 아이 눈으로 집을 볼 수 있게 앱 주소를 보내요.</p>
+      <p class="note" id="appUrl" style="word-break:break-all"></p>
+      <div class="row"><button type="button" class="primary" id="btnLink"><i data-ic="share"></i>링크 보내기</button><button type="button" class="ghost" id="btnCopy" style="margin-top:12px">주소 복사</button></div>
+    </div>
     <p class="note" style="text-align:center;margin-top:16px">논문 7편과 수의 지침 2건을 근거로 계산했어요. 일부는 예시이고, 진단이 아니에요.</p>
-    <canvas id="cCard" class="hide"></canvas>
+    <canvas id="cCard" class="hide"></canvas><canvas id="cCard2" class="hide"></canvas>
   </div>
 </section>
 
@@ -1059,7 +1157,10 @@ const dotC=(c,big)=>`<i class="dot" style="background:${c.hex}${big?";width:16px
 function confusePair(){if(S.cpSrc===S.src)return S.cp;const W=24,H=Math.max(6,Math.round(S.src.height*W/S.src.width)),c=mk(W,H),x=c.getContext("2d",{willReadFrequently:true});x.drawImage(S.src,0,0,W,H);const d=x.getImageData(0,0,W,H).data;free(c);
   const px=[];for(let i=0;i<d.length;i+=4){const rgb=[d[i],d[i+1],d[i+2]];px.push({rgb,h:lab(...rgb),p:lab(...dich(...rgb)),pr:dich(...rgb),i:i/4})}
   let best=null,bs=0;for(let a=0;a<px.length;a++)for(let b=a+1;b<px.length;b++){const h=dE(px[a].h,px[b].h);if(h<30)continue;const p=dE(px[a].p,px[b].p);if(p>=25||p>h*.4)continue;const s=h-p*1.5;if(s>bs){bs=s;best=[px[a],px[b],Math.round(h),Math.round(p)]}}
+  if(best){best.pos=[best[0],best[1]].map(p=>({x:(p.i%W+.5)/W,y:(Math.floor(p.i/W)+.5)/H}))}
   S.cpSrc=S.src;S.cp=best;return best}
+/* 헷갈리는 두 색이 사진 어디에 있는지 ①② 동그라미로 표시 */
+function markPair(x,X,Y,w,h,cp){if(!cp||!cp.pos)return;const r=Math.max(14,w/20);cp.pos.forEach((p,i)=>{const cx=X+p.x*w,cy=Y+p.y*h;x.save();x.lineWidth=Math.max(3,w/150);x.strokeStyle="#ffd21f";x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();x.fillStyle="#ffd21f";x.beginPath();x.arc(cx+r*.75,cy-r*.75,r*.55,0,7);x.fill();x.fillStyle="#141b3a";x.font="bold "+Math.round(r*.7)+"px sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(String(i+1),cx+r*.75,cy-r*.72);x.restore()})}
 /* 자리별 조언: 사진 속 바닥에 맞춘 구체적인 색 이름을 넣어 말한다 */
 function spotTip(id){const cr=colorRank(),ex=cr.best.map(c=>dotC(c)).join(" · ");return{bowl:`그릇을 새로 사지 않아도 돼요. 그릇 밑에 ${ex} 같은 색의 매트를 깔면 밥 자리를 찾기 쉬워요.`,bed:`잠자리에는 ${ex} 같은 색의 담요나 방석을 써 보세요. 가장자리가 바닥에서 도드라져요.`,toy:`장난감은 ${ex} 같은 색으로 고르면 이 바닥에서 잘 보여요. ${cr.worst[0].name}·${cr.worst[1].name}${josa(cr.worst[1].name,"은")} 피해 주세요.`,path:`문턱이나 계단 끝에 ${ex} 같은 색의 테이프나 매트를 붙이면 턱이 잘 보여요.`}[id]}
 function spotTipOld(id){const r=rec(),ex=r.full;return{bowl:`그릇을 새로 사지 않아도 돼요. 그릇 밑에 ${ex} 같은 ${r.name}의 매트를 깔면 밥 자리를 찾기 쉬워요.`,bed:`잠자리에는 ${ex} 같은 ${r.name}의 담요나 방석을 써 보세요. 가장자리가 바닥에서 도드라져요.`,toy:`장난감은 ${ex} 같은 ${r.name}으로 고르면 이 바닥에서 잘 보여요.`,path:`문턱이나 계단 끝에 ${ex} 같은 ${r.name}의 테이프나 매트를 붙이면 턱이 잘 보여요.`}[id]}
@@ -1108,8 +1209,8 @@ function composite(x,px,py,w,h,rad){const o=seeOpts(),L=renderHuman(S.src,o),R=r
   x.save();rr(x,px,py,w,h,rad);x.clip();x.drawImage(L,px,py,w,h);x.save();x.beginPath();x.rect(px+w/2,py,w/2,h);x.clip();x.drawImage(R,px,py,w,h);x.restore();
   x.fillStyle="#fff";x.fillRect(px+w/2-w/360,py,w/180,h);const fs=Math.max(12,w/34);pill(x,"내가 보는 장면",px+fs,py+fs,false,fs);pill(x,N("가")+" 보는 장면",px+w-fs,py+fs,true,fs);x.restore()}
 let prevT=0;function drawRep(){if(!S.src)return;const w=S.src.width,h=S.src.height,o=seeOpts(),A=$("#cRepA"),B=$("#cRepB");A.width=B.width=w;A.height=B.height=h;
-  const L=renderHuman(S.src,o),R=renderPet(S.src,o);A.getContext("2d").drawImage(L,0,0);B.getContext("2d").drawImage(R,0,0);if(L!==S.src)free(L);free(R);
-  clearTimeout(prevT);prevT=setTimeout(async()=>{let av=null;if(S.photo)av=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=S.photo});makeCard(av);$("#cardPrev").src=$("#cCard").toDataURL("image/jpeg",.7)},250)}
+  const L=renderHuman(S.src,o),R=renderPet(S.src,o);A.getContext("2d").drawImage(L,0,0);B.getContext("2d").drawImage(R,0,0);if(L!==S.src)free(L);free(R);{const cp=confusePair();markPair(A.getContext("2d"),0,0,w,h,cp);markPair(B.getContext("2d"),0,0,w,h,cp)}
+  clearTimeout(prevT);prevT=setTimeout(async()=>{let av=null;if(S.photo)av=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=S.photo});makeCard(av);$("#cardPrev").src=$("#cCard").toDataURL("image/jpeg",.7);makeCard2();$("#cardPrev2").src=$("#cCard2").toDataURL("image/jpeg",.7)},250)}
 
 /* ---------- 설명 문구 ---------- */
 function texts(){
@@ -1169,11 +1270,11 @@ function texts(){
   /* 보고서 */
   $("#good3").innerHTML=dog?`<div><b>어두운 곳</b>눈 속 반사판 덕분에 약한 빛에서도 길을 찾아요.</div><div><b>넓은 시야</b>한 번에 약 240도를 봐요. 사람은 약 180도예요.</div><div><b>빠른 깜빡임</b>1초에 70~80번 깜빡이는 빛도 느껴요. 사람은 60번쯤부터 이어진 빛으로 봐요.</div>`:`<div><b>어두운 곳</b>어두운 곳에서 사람보다 5.5~7배쯤 잘 본다고 추정돼요.</div><div><b>넓은 시야</b>한 번에 약 200도를 봐요. 사람은 약 180도예요.</div><div><b>알아 두면 좋은 것</b>코앞 25cm 안쪽은 초점이 흐려요. 간식은 조금 떨어뜨려 보여 주세요.</div>`;
   $("#todo").innerHTML=S.src?todo().map(t=>"<li>"+t+"</li>").join(""):"";
-  $("#todo2").innerHTML=tips().map(t=>"<li>"+t+"</li>").join("");
+  $("#todo2").innerHTML=tips().map(t=>"<li>"+t+"</li>").join("");$("#calcBasis").innerHTML=calcBasis();$("#appUrl").textContent=APP_URL;
   $("#repFor").textContent=profileLine()+"에 맞춰 계산했어요. 프로필을 바꾸면 결과도 바뀌어요.";
-  if(S.src){const cr=colorRank(),row=(c,first)=>`<div class="crow${first?" first":""}"><i style="background:${c.hex}"></i><b>${c.name} <small>· 아이 눈엔 <i class="dot" style="background:${c.pet}"></i></small></b><span class="st ${c.p>=cr.need?"ok":c.p>=12?"fix":"no"}">차이 ${c.p}</span></div>`;
-    $("#repColors").innerHTML=`<p class="note" style="margin:0 0 6px">바닥 색 <i class="dot" style="background:rgb(${cr.fl.join(",")})"></i> 기준 · 숫자는 ${N("의")} 눈에서 바닥과의 색 차이예요(클수록 잘 보임, ${cr.need} 이상이면 잘 보임)</p><b>잘 보이는 색</b>${cr.best.map((c,i)=>row(c,i===0)).join("")}<b style="display:block;margin-top:12px">피할 색</b>${cr.worst.map((c,i)=>row(c,i===0)).join("")}<details style="margin-top:10px"><summary>17가지 색 전체 순위 보기</summary>${cr.all.map((c,i)=>row(c,i===0)).join("")}</details><button type="button" class="ghost" data-go="color" id="goShop">살 물건 사진으로 직접 확인하기</button>`;
-    const cp=confusePair();$("#repFact").innerHTML=cp?`<b class="t">이 사진에서 ${N("가")} 헷갈릴 두 색</b><div class="pair"><span class="sw"><i style="background:rgb(${cp[0].rgb.join(",")})"></i><i style="background:rgb(${cp[1].rgb.join(",")})"></i></span><span>내 눈에는 <b>확실히 다른 두 색</b>(차이 ${cp[2]})</span><span class="sw"><i style="background:rgb(${cp[0].pr.join(",")})"></i><i style="background:rgb(${cp[1].pr.join(",")})"></i></span><span>${N("의")} 눈에는 <b>거의 같은 색</b>(차이 ${cp[3]})</span></div><p class="note" style="margin:0">사진을 작은 칸으로 나눠 모든 칸 쌍을 비교해서 골랐어요. 같은 색 계산(Viénot 외 1999·CIE Lab)이에요.</p>`:`<b class="t">이 사진엔 ${N("가")} 헷갈릴 색 조합이 거의 없어요</b><p class="note" style="margin:0">사람 눈에 뚜렷이 다른데 ${N("의")} 눈에 비슷해지는 두 색을 찾지 못했어요. 빨강·주황·초록 물건이 있는 곳을 찍으면 차이가 드러나요.</p>`}
+  if(S.src){const cr=colorRank(),man=S.floorPick&&S.floorSrc===S.src,row=(c,first)=>`<div class="crow${first?" first":""}"><b>${c.name}</b><span class="pp"><i style="background:${c.hex}"></i><small>내 눈</small><span class="ar">→</span><i style="background:${c.pet}"></i><small>${N("의")} 눈</small></span><span class="st ${c.p>=cr.need?"ok":c.p>=12?"fix":"no"}">${c.p>=cr.need?"잘 보임":c.p>=12?"애매":"묻힘"}</span></div>`;
+    $("#repColors").innerHTML=`<div class="floorRef"><i style="background:rgb(${cr.fl.join(",")})"></i><div><b>${man?"직접 고른 바닥 색":"사진 아래쪽(바닥으로 보이는 곳)의 평균 색"}</b><small>이 색 위에 물건을 놓았다고 보고 계산했어요. 바닥이 다르게 잡혔다면 직접 골라 주세요.</small></div></div><button type="button" class="ghost" id="goFloor" style="margin:0 0 12px">바닥 색 직접 고르기</button><b>잘 보이는 색</b>${cr.best.map((c,i)=>row(c,i===0)).join("")}<b style="display:block;margin-top:12px">피할 색</b>${cr.worst.map((c,i)=>row(c,i===0)).join("")}<p class="note" style="margin:8px 0 0">왼쪽 동그라미는 원래 색, 오른쪽은 ${N("의")} 눈에 보이는 색이에요. 피할 색은 오른쪽이 바닥 색과 비슷해져요.</p><details style="margin-top:10px"><summary>17가지 색 전체 순위와 숫자 보기</summary>${cr.all.map((c,i)=>row(c,i===0).replace(/<\/div>$/,`<small style="margin-left:6px">차이 ${c.p}</small></div>`)).join("")}<p class="note">숫자는 ${N("의")} 눈에서 바닥과의 색 차이(ΔE)예요. ${cr.need} 이상이면 잘 보인다고 봤어요(이 앱이 정한 값).</p></details><button type="button" class="ghost" data-go="color" id="goShop">살 물건 사진으로 직접 확인하기</button>`;
+    const cp=confusePair();$("#repFact").innerHTML=cp?`<b class="t">이 사진에서 ${N("가")} 헷갈릴 두 색</b><div class="pair"><span class="sw"><i style="background:rgb(${cp[0].rgb.join(",")})"></i><i style="background:rgb(${cp[1].rgb.join(",")})"></i></span><span>내 눈에는 <b>확실히 다른 두 색</b>(차이 ${cp[2]})</span><span class="sw"><i style="background:rgb(${cp[0].pr.join(",")})"></i><i style="background:rgb(${cp[1].pr.join(",")})"></i></span><span>${N("의")} 눈에는 <b>거의 같은 색</b>(차이 ${cp[3]})</span></div><p class="note" style="margin:0">위 두 사진의 <b>노란 동그라미 ①②</b>가 그 두 곳이에요. 사진을 작은 칸으로 나눠 모든 칸 쌍을 비교해서 골랐어요(Viénot 외 1999·CIE Lab).</p>`:`<b class="t">이 사진엔 ${N("가")} 헷갈릴 색 조합이 거의 없어요</b><p class="note" style="margin:0">사람 눈에 뚜렷이 다른데 ${N("의")} 눈에 비슷해지는 두 색을 찾지 못했어요. 빨강·주황·초록 물건이 있는 곳을 찍으면 차이가 드러나요.</p>`}
   {const ts=S.src?tiles():[];$("#tiles").innerHTML=ts.map((t,i)=>`<button type="button" data-t="${i}" aria-expanded="${S.tileOpen===i}"><b>${t[0]}</b>${t[1]}<small>${S.tileOpen===i?"접기":"계산 근거 ›"}</small></button>`).join("");
     const tm=$("#tileMore"),o=ts[S.tileOpen];tm.classList.toggle("hide",!o);if(o)tm.innerHTML=o[2]}
   $("#sumTxt").textContent=profileLine()+" 기준으로 계산했어요.";
@@ -1212,15 +1313,18 @@ function todo(){const a=[],dog=isDog(),r=rec(),L=S.lost||{cnt:0,red:0,green:0},p
   if(S.spotNow&&SPOT_ADV[S.spotNow])a.push(`<b>${SPOTS.find(s=>s[0]===S.spotNow)[1]}</b>: ${spotTip(S.spotNow)}`);
   return a}
 /* 사진이 아니라 프로필(종·나이·몸집·주둥이)에 따라 달라지는 팁 */
-function tips(){const a=[],dog=isDog(),s=SNOUT[S.snout];
-  if(isSenior())a.push(`<b>노령기(${ageTxt()})라 색 차이가 더 커야 잘 보인다고 보고 계산했어요.</b> 그래서 잘 보이는 색 기준을 25가 아니라 35로 잡았어요(예시). 가구와 그릇 자리는 그대로 두고, 복도와 계단 근처에는 밤에도 은은한 조명을 켜 두세요.`);
-  else{const left=ageYears()===null?null:Math.max(1,Math.round(senStart()-ageYears()));a.push(`<b>${ageTxt()}예요.</b> ${left?`노령기까지 약 ${left}년 남았어요. `:""}지금은 색 차이 25 이상이면 잘 보인다고 보고 계산했어요. 노령기가 되면 이 앱은 기준을 35로 올려 다시 계산해요(예시).`)}
-  if(dog){a.push(`<b>${SIZE[S.size].n}견은 눈이 바닥에서 ${SIZE[S.size].eye}쯤이에요(추정).</b> 사진을 그 높이로 낮춰 찍으면 ${N("가")} 실제로 보는 풍경에 가까워져요. 가구 아래와 문턱이 ${N("의")} 풍경이에요.`);
-    if(S.snout==="long")a.push(`<b>주둥이가 긴 편이라 좌우로 넓은 가로 띠를 가장 또렷하게 볼 가능성이 있어요.</b> 장난감은 정면보다 바닥을 따라 굴려 주면 알아채기 쉬워요(망막 연구 22마리 기반의 예시).`);
-    else if(S.snout==="short")a.push(`<b>주둥이가 짧은 편이라 정면 가운데를 가장 또렷하게 볼 가능성이 있어요.</b> 간식과 장난감은 옆보다 정면에서 보여 주세요(망막 연구 22마리 기반의 예시).`);
-    else a.push(`<b>주둥이 길이가 중간이라</b> 시야 전체를 비교적 고르게 본다고 계산했어요. 주둥이가 짧거나 긴 개는 가장 또렷한 곳의 모양이 달라요(망막 연구 22마리).`)}
-  else a.push(`<b>고양이는 코앞 약 25cm 안쪽에서 초점이 흐려져요.</b> 간식과 장난감은 한 뼘 넘게 떨어뜨려 보여 주세요. 대신 어두운 곳에서는 사람보다 5.5~7배쯤 잘 본다고 추정돼요.`);
+/* 보호자가 바로 해 볼 수 있는 일만 팁으로. 계산 기준 설명은 calcBasis()로 따로 접어 둔다 */
+function tips(){const a=[],dog=isDog(),cr=S.src?colorRank():null,b=cr?cr.best[0].name:"파랑";
+  if(isSenior()){a.push(`<b>가구와 밥그릇·물그릇 자리를 바꾸지 마세요.</b> 노령기에는 시력이 떨어져도 익숙한 배치로 길을 찾아요.`);
+    a.push(`<b>복도와 계단 근처에 밤에도 은은한 조명을 켜 두세요.</b> 계단 끝에는 ${b} 같은 바닥과 대비되는 테이프를 붙이면 턱이 잘 보여요.`)}
+  else{const left=ageYears()===null?null:Math.max(1,Math.round(senStart()-ageYears()));if(left)a.push(`<b>노령기까지 약 ${left}년 남았어요.</b> 그 전부터 검진 때 눈도 함께 봐 달라고 하세요. 눈이 뿌옇거나 물건에 부딪히면 미루지 마세요.`)}
+  if(dog){a.push(`<b>사진은 바닥에서 ${SIZE[S.size].eye} 높이로 낮춰 찍어 보세요.</b> ${SIZE[S.size].n}견의 눈높이예요(추정). 가구 아래와 문턱이 ${N("의")} 풍경이에요.`);
+    if(S.snout==="long")a.push(`<b>장난감은 정면보다 바닥을 따라 옆으로 굴려 주세요.</b> 주둥이가 긴 개는 좌우로 넓은 띠를 가장 또렷하게 볼 가능성이 있어요(망막 연구 22마리, 예시).`);
+    else if(S.snout==="short")a.push(`<b>간식과 장난감은 옆보다 정면에서 보여 주세요.</b> 주둥이가 짧은 개는 정면 가운데를 가장 또렷하게 볼 가능성이 있어요(망막 연구 22마리, 예시).`)}
+  else a.push(`<b>간식과 장난감은 코앞보다 한 뼘 넘게 떨어뜨려 보여 주세요.</b> 고양이는 약 25cm 안쪽에서 초점이 흐려져요.`);
+  a.push(`<b>장난감을 살 때는 ${cr?cr.best.slice(0,2).map(c=>c.name).join("이나 "):"파랑이나 노랑"} 계열로 고르세요.</b> 지금 가진 물건이 괜찮은지는 ‘색 점검 → 살 물건’에서 사진으로 확인할 수 있어요.`);
   return a}
+function calcBasis(){const dog=isDog();return `<ul class="plain"><li><b>색</b>: 사람 적록색맹 계산법(Viénot 외 1999)으로 바꾼 뒤, 바닥과의 색 차이(ΔE)가 ${needDE()} 이상이면 ‘잘 보임’으로 봤어요. ${isSenior()?"노령기라 일반 기준 25보다 높게 잡았어요(예시).":"노령기가 되면 35로 올려 계산해요(예시)."} 개·고양이·견종 모두 같은 색 계산이에요.</li><li><b>나이</b>: ${ageTxt()} · 노령기 시작은 ${dog?lifeTxt():"10살 초과(AAHA·AAFP 2021)"}.</li>${dog?`<li><b>또렷한 곳</b>: 주둥이 ${SNOUT[S.snout]}${S.snout==="mid"?"이라 시야 전체를 고르게 처리했어요":"에 맞춰 망막 연구(22마리)를 그림으로 옮긴 예시예요"}.</li><li><b>눈높이</b>: ${SIZE[S.size].n}견 ${SIZE[S.size].eye}(이 앱의 추정).</li>`:""}<li>25·35, 17가지 색, ‘사진 아래 40% = 바닥’은 이 앱이 정한 값이에요.</li></ul>`}
 function spotsUI(){const did=SPOTS.filter(s=>S.spots[s[0]]),done=did.length;$("#spotCount").textContent=done+" / "+SPOTS.length;$("#spotBar").style.width=(done/SPOTS.length*100)+"%";
   $("#spotList").innerHTML=SPOTS.map(s=>{const r=S.spots[s[0]];return `<div class="spot${r?" done":""}" data-spot="${s[0]}"><button type="button" class="spotMain">${r&&r.img?`<img src="${r.img}" alt="">`:`<i class="ph">${r?"✓":"+"}</i>`}<span><b>${s[1]}</b><em>${r?(r.p>=1?"색에 묻히는 곳 약 "+pctTxt(r.p)+"%":"색에 묻히는 곳 거의 없음")+" · "+r.d:`아직 안 했어요<span class="pc">사진을 이 줄로 끌어다 놓아도 돼요</span>`}</em>${r&&r.p>=1?`<em class="adv">${SPOT_ADV[s[0]]}</em>`:""}</span><u>${r?(r.img?"다시 보기":"사진 다시 넣기"):"사진 넣기"}</u></button>${r?`<button type="button" class="spotDel" data-del="${s[0]}">지우기</button>`:""}</div>`}).join("");
   const sum=$("#spotSum");sum.classList.toggle("hide",!done);if(done){const worst=did.slice().sort((a,b)=>S.spots[b[0]].p-S.spots[a[0]].p)[0],wp=S.spots[worst[0]].p;
@@ -1401,7 +1505,7 @@ function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pa
   if(av){const r=74,cx=W-pad-r,cy=150+r;x.save();x.beginPath();x.arc(cx,cy,r+6,0,7);x.fillStyle="#fff";x.fill();x.beginPath();x.arc(cx,cy,r,0,7);x.clip();x.drawImage(av,cx-r,cy-r,r*2,r*2);x.restore()}
   const card=(X,Y,w,h,r)=>{x.save();x.shadowColor="rgba(25,31,40,.08)";x.shadowBlur=24;x.shadowOffsetY=6;x.fillStyle="#fff";rr(x,X,Y,w,h,r);x.fill();x.restore()};
   const pic=(img,Y,label,blue)=>{x.save();rr(x,pad+in_,Y,iw,ih,22);x.clip();x.drawImage(img,pad+in_,Y,iw,ih);x.restore();x.save();x.font="bold 30px "+FF;const tw=x.measureText(label).width+40;x.fillStyle=blue?"#1b2a6b":"rgba(0,0,0,.62)";rr(x,pad+in_+18,Y+18,tw,52,26);x.fill();x.fillStyle="#fff";x.fillText(label,pad+in_+38,Y+29);x.restore()};
-  card(pad,picY,cw,picH,40);pic(Lc,picY+in_,"내 눈",false);pic(Rc,picY+in_+ih+16,N("의")+" 눈",true);if(Lc!==S.src)free(Lc);free(Rc);
+  card(pad,picY,cw,picH,40);pic(Lc,picY+in_,"내 눈",false);pic(Rc,picY+in_+ih+16,N("의")+" 눈",true);markPair(x,pad+in_,picY+in_,iw,ih,cp);markPair(x,pad+in_,picY+in_+ih+16,iw,ih,cp);if(Lc!==S.src)free(Lc);free(Rc);
   const sw=(X,Y,rgb,r)=>{x.beginPath();x.arc(X,Y,r,0,7);x.fillStyle="rgb("+rgb.join(",")+")";x.fill();x.lineWidth=5;x.strokeStyle="#fff";x.stroke();x.lineWidth=1.5;x.strokeStyle="#d1d6db";x.beginPath();x.arc(X,Y,r+3,0,7);x.stroke()};
   if(cp){card(pad,fY,cw,fH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText(N("가")+" 헷갈릴 두 색",pad+in_+8,fY+30);
     const y1=fY+120,y2=fY+170;sw(pad+in_+40,y1-6,cp[0].rgb,26);sw(pad+in_+84,y1-6,cp[1].rgb,26);sw(pad+in_+40,y2+12,cp[0].pr,26);sw(pad+in_+84,y2+12,cp[1].pr,26);
@@ -1412,7 +1516,29 @@ function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pa
   x.fillStyle="#6b7684";x.font="24px "+FF;x.fillText("한 뼘 시선 · 논문 근거로 계산, 일부는 예시예요 · 진단이 아니에요",W/2,tY+52);x.textAlign="left"}
 async function cardBlob(){let av=null;if(S.photo)av=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=S.photo});makeCard(av);return new Promise(r=>$("#cCard").toBlob(r,"image/png"))}
 async function saveCard(){const b=await cardBlob();if(!b)return;const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="eye-report-"+Date.now()+".png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast("보고서 사진을 내려받았어요. 다운로드 폴더에서 볼 수 있어요.")}
-async function shareCard(){try{const b=await cardBlob(),f=new File([b],"report.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:N("의")+" 눈 보고서"});else saveCard()}catch(e){if(!e||e.name!=="AbortError"){toast("보내기가 안 돼서 사진으로 저장할게요.");saveCard()}}}
+const APP_URL=/github\.io$/.test(location.hostname)?location.origin+location.pathname.replace(/index\.html$/,""):"https://bright0918.github.io/hanbbyeom/";
+const SHARE_TXT=()=>N("의")+" 눈으로 본 우리 집 · 한 뼘 시선\n우리 아이 눈에는 우리 집이 어떻게 보일까? "+APP_URL;
+async function shareCard(){try{const b=await cardBlob(),f=new File([b],"report.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:N("의")+" 눈 보고서",text:SHARE_TXT()});else saveCard()}catch(e){if(!e||e.name!=="AbortError"){toast("보내기가 안 돼서 사진으로 저장할게요.");saveCard()}}}
+/* 2부 맞춤 리포트 한 장: 바닥 색, 잘 보이는 색·피할 색(내 눈 → 아이 눈), 팁 */
+function makeCard2(){if(!S.src)return;const W=1080,pad=56,c=$("#cCard2"),cw=W-pad*2,cr=colorRank(),tp=tips().map(t=>{const m=t.match(/<b>(.*?)<\/b>/);return(m?m[1]:t).replace(/<[^>]+>/g,"")});
+  let x=c.getContext("2d");c.width=W;c.height=10;x.font="bold 34px "+FF;const wr=tp.map(l=>wrapLines(x,l,cw-140));let th=0;wr.forEach(a=>th+=a.length*48+28);
+  const hh=300,rowH=96,cY=hh-40,cH=150+rowH*6+70,tY=cY+cH+28,tH=110+th,fY=tY+tH+44,H=fY+150;c.height=H;x=c.getContext("2d");x.textBaseline="top";
+  x.fillStyle="#f4f6fb";x.fillRect(0,0,W,H);x.fillStyle="#1b2a6b";x.fillRect(0,0,W,hh);
+  x.fillStyle="#ffd21f";rr(x,pad,64,300,52,26);x.fill();x.fillStyle="#3d3000";x.font="bold 26px "+FF;x.fillText("한 뼘 시선 · 맞춤 리포트",pad+24,76);
+  x.fillStyle="#fff";x.font="bold 60px "+FF;x.fillText(N("의")+" 눈에 잘 보이는 색",pad,140);x.fillStyle="#c3cbec";x.font="28px "+FF;x.fillText(profileLine().slice(0,34),pad,218);
+  const card=(X,Y,w,h,r)=>{x.save();x.shadowColor="rgba(20,27,58,.08)";x.shadowBlur=24;x.shadowOffsetY=6;x.fillStyle="#fff";rr(x,X,Y,w,h,r);x.fill();x.restore()};
+  const dot=(X,Y,r,fill)=>{x.beginPath();x.arc(X,Y,r,0,7);x.fillStyle=fill;x.fill();x.lineWidth=2;x.strokeStyle="#d5dbea";x.stroke()};
+  card(pad,cY,cw,cH,40);x.fillStyle="#5d6685";x.font="26px "+FF;x.fillText("바닥 색",pad+40,cY+40);dot(pad+160,cY+54,22,"rgb("+cr.fl.join(",")+")");x.fillText("내 눈 → "+N("의")+" 눈",pad+cw-330,cY+40);
+  let y=cY+110;const row=(c,label,col)=>{x.fillStyle=col;x.font="bold 24px "+FF;x.fillText(label,pad+40,y+20);x.fillStyle="#141b3a";x.font="bold 34px "+FF;x.fillText(c.name,pad+150,y+16);dot(pad+cw-260,y+34,28,c.hex);x.fillStyle="#a3abc6";x.font="30px "+FF;x.fillText("→",pad+cw-210,y+16);dot(pad+cw-120,y+34,28,c.pet);y+=rowH};
+  cr.best.forEach(c=>row(c,"잘 보임","#1b7a3a"));cr.worst.forEach(c=>row(c,"피하기","#b04a12"));
+  card(pad,tY,cw,tH,40);x.fillStyle="#141b3a";x.font="bold 38px "+FF;x.fillText(N("에게")==="에게"?"이렇게 해 보세요":"이렇게 해 보세요",pad+40,tY+36);y=tY+106;
+  wr.forEach((a,i)=>{x.fillStyle="#ffd21f";x.beginPath();x.arc(pad+60,y+22,22,0,7);x.fill();x.fillStyle="#3d3000";x.font="bold 24px "+FF;x.textAlign="center";x.fillText(String(i+1),pad+60,y+9);x.textAlign="left";x.fillStyle="#141b3a";x.font="bold 34px "+FF;a.forEach((l,j)=>x.fillText(l,pad+104,y+j*48));y+=a.length*48+28});
+  x.textAlign="center";x.fillStyle="#141b3a";x.font="bold 28px "+FF;x.fillText("우리 아이 눈으로 우리 집 보기 · "+APP_URL.replace(/^https:\/\//,""),W/2,fY);x.fillStyle="#5d6685";x.font="22px "+FF;x.fillText("논문 근거로 계산, 일부는 예시예요 · 진단이 아니에요",W/2,fY+48);x.textAlign="left"}
+const card2Blob=()=>{makeCard2();return new Promise(r=>$("#cCard2").toBlob(r,"image/png"))};
+async function saveBlob(b,name,msg){const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast(msg)}
+async function shareCard2(){try{const b=await card2Blob(),f=new File([b],"my-pet-report.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:N("의")+" 맞춤 리포트",text:SHARE_TXT()});else saveBlob(b,"my-pet-report.png","맞춤 리포트 사진을 내려받았어요.")}catch(e){if(!e||e.name!=="AbortError")toast("보내기가 안 됐어요. ‘저장’으로 받아 보내 주세요.")}}
+async function shareLink(){try{if(navigator.share)await navigator.share({title:"한 뼘 시선",text:"우리 아이 눈에는 우리 집이 어떻게 보일까? 사진 한 장이면 돼요.",url:APP_URL});else copyLink()}catch(e){if(!e||e.name!=="AbortError")copyLink()}}
+async function copyLink(){try{await navigator.clipboard.writeText(APP_URL);toast("주소를 복사했어요. 카카오톡에 붙여 넣어 보내세요.")}catch(e){toast("복사가 안 됐어요. 주소를 길게 눌러 복사해 주세요.")}}
 
 /* ---------- 화면 연결 ---------- */
 $("#breed").innerHTML=`<option value="">견종을 골라 주세요</option>`+BREEDS.map(b=>`<option value="${b[0]}">${b[1]}</option>`).join("");
@@ -1471,7 +1597,8 @@ $("#btnLiveOn").addEventListener("click",startCam);
     $("#sheetNo").addEventListener("click",()=>{$("#instSheet").classList.add("hide");try{localStorage.setItem("hb-inst-off",Date.now())}catch(e){}})}
   document.addEventListener("click",e=>{if(e.target.closest(".instBtn,#btnInstall"))tryInstall();if(e.target.closest("#instClose"))$("#instModal").classList.add("hide")});
   show()}
-document.addEventListener("click",e=>{if(e.target.closest("#goShop")){S.mode.color="shop";ui();applySplit();draw()}});
+document.addEventListener("click",e=>{if(e.target.closest("#goShop")){S.mode.color="shop";ui();applySplit();draw()}
+  if(e.target.closest("#goFloor")){go("color");S.mode.color="shop";ui();applySplit();draw();const b=$("#floorBox");if(b.classList.contains("hide"))$("#btnFloor").click();setTimeout(()=>b.scrollIntoView({behavior:"smooth",block:"center"}),80)}});
 document.addEventListener("click",e=>{if(e.target.closest("#pickPhoto,#bentoPhoto"))$("#s-photo").scrollIntoView({behavior:"smooth",block:"start"})});$("#btnLiveStop").addEventListener("click",stopCam);
 $("#liveMode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.liveMode=b.dataset.m;liveUI()});
 $("#liveCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.liveCat=+b.dataset.v;liveUI()});
@@ -1522,6 +1649,8 @@ $("#floorStage").addEventListener("click",e=>{if(!S.src)return;const p=rel(e,$("
 $("#shopFile").addEventListener("change",e=>{shopFile(e.target.files[0]);e.target.value=""});
 $("#shopStage").addEventListener("click",e=>{if(!S.shop)return;const p=rel(e,$("#cShop"));if(!p.ok)return;shopPick(Math.round(Math.max(0,Math.min(1,p.x))*S.shop.width),Math.round(Math.max(0,Math.min(1,p.y))*S.shop.height))});
 $("#btnSave").addEventListener("click",saveCard);$("#btnShare").addEventListener("click",shareCard);
+$("#btnShare2").addEventListener("click",shareCard2);$("#btnSave2").addEventListener("click",async()=>saveBlob(await card2Blob(),"my-pet-report-"+Date.now()+".png","맞춤 리포트 사진을 내려받았어요."));
+$("#btnLink").addEventListener("click",shareLink);$("#btnCopy").addEventListener("click",copyLink);
 /* 사진 위에서 비교선 끌기: 가로로 6px 넘게 움직였을 때만 시작해 세로 스크롤을 방해하지 않는다 */
 {const st=$("#stage");let sx=null,drag=false;const mv=e=>{const p=rel(e,st);if(!p.ok)return;const v=Math.max(0,Math.min(100,p.x*100));S.userSplit=v;setSplit(v);$("#split").value=v};
   st.addEventListener("pointerdown",e=>{if((S.tab!=="see"&&S.tab!=="old"&&S.tab!=="ill")||!S.src)return;S.sweeping=false;sx=e.clientX;drag=false});

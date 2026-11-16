@@ -1175,10 +1175,17 @@ function findLost(src){
   const keep=new Uint8Array(cols*rows);let cnt=0,red=0,green=0;
   for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){const i=r*cols+q;if(!flag[i])continue;let nb=0;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){if(!a&&!b)continue;const rr=r+a,qq=q+b;if(rr>=0&&rr<rows&&qq>=0&&qq<cols&&flag[rr*cols+qq])nb++}if(nb>=1){keep[i]=1;cnt++;const a=hu[i][1];if(a>15)red++;else if(a<-10)green++}}
   /* 둘레만 잡히고 속이 빈 곳(잔디 위 빨간 공처럼)을 채운다: 사진 가장자리에서 표시 없는 칸을 따라 닿지 않는 빈칸은 둘러싸인 속이다 */
-  if(cnt){const out=new Uint8Array(cols*rows),st=[];const push=i=>{if(!out[i]&&!keep[i]){out[i]=1;st.push(i)}};
+  /* 둘레에 한 칸짜리 틈이 있어도 속이 새어 나가지 않게, 둘레를 한 칸 넓힌 벽으로 막고 찾는다 */
+  if(cnt){const N=cols*rows,wall=new Uint8Array(N),out=new Uint8Array(N),st=[];
+    for(let i=0;i<N;i++)if(keep[i]){const r=(i/cols)|0,q=i%cols;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const rr=r+a,qq=q+b;if(rr>=0&&rr<rows&&qq>=0&&qq<cols)wall[rr*cols+qq]=1}}
+    const push=i=>{if(!out[i]&&!wall[i]){out[i]=1;st.push(i)}};
     for(let q=0;q<cols;q++){push(q);push((rows-1)*cols+q)}for(let r=0;r<rows;r++){push(r*cols);push(r*cols+cols-1)}
     while(st.length){const i=st.pop(),r=(i/cols)|0,q=i%cols;if(q>0)push(i-1);if(q<cols-1)push(i+1);if(r>0)push(i-cols);if(r<rows-1)push(i+cols)}
-    for(let i=0;i<cols*rows;i++)if(!keep[i]&&!out[i]){keep[i]=1;cnt++;const a=hu[i][1];if(a>15)red++;else if(a<-10)green++}}
+    /* 바깥에서 닿지 않는 곳 전체를 한 칸 깎아(넓힌 벽 두께만큼 되돌림) 속만 남긴다 */
+    const inS=i=>!out[i];const add=i=>{keep[i]=1;cnt++;const a=hu[i][1];if(a>15)red++;else if(a<-10)green++};const fill=[];
+    for(let i=0;i<N;i++){if(keep[i]||!inS(i))continue;const r=(i/cols)|0,q=i%cols;let all=true;
+      for(let a=-1;a<=1&&all;a++)for(let b=-1;b<=1;b++){const rr=r+a,qq=q+b;if(rr<0||rr>=rows||qq<0||qq>=cols||!inS(rr*cols+qq)){all=false;break}}if(all)fill.push(i)}
+    fill.forEach(add)}
   return{cols,rows,keep,cnt,red,green,share:cols*rows?cnt/(cols*rows):0}}/* 아주 가늘고 긴 사진은 칸이 0개라 0으로 나누지 않게 */
 /* 사진 아래쪽 40%를 바닥으로 보고 평균 밝기와 색을 잰다 */
 function analyze(src){const W=48,H=Math.max(8,Math.round(src.height*W/src.width)),c=mk(W,H),x=c.getContext("2d");x.drawImage(src,0,0,W,H);const d=x.getImageData(0,0,W,H).data,y0=Math.floor(H*.6);let n=0,L=0,A=0,B=0,all=0,sr=0,sg=0,sb=0;
@@ -1204,11 +1211,17 @@ const dotC=(c,big)=>`<i class="dot" style="background:${c.hex}${big?";width:16px
 /* 점 수를 약 600개로 맞춘다. 긴 화면 캡처처럼 세로로 아주 긴 사진에서 두 점씩 다 비교하다 몇 초씩 멈추던 문제 */
 function confusePair(){if(S.cpSrc===S.src)return S.cp;const k=Math.sqrt(600/(S.src.width*S.src.height)),W=Math.max(1,Math.round(S.src.width*k)),H=Math.max(1,Math.round(S.src.height*k)),c=mk(W,H),x=c.getContext("2d",{willReadFrequently:true});x.drawImage(S.src,0,0,W,H);const d=x.getImageData(0,0,W,H).data;free(c);
   const px=[];for(let i=0;i<d.length;i+=4){const rgb=[d[i],d[i+1],d[i+2]];px.push({rgb,h:lab(...rgb),p:lab(...dich(...rgb)),pr:dich(...rgb),i:i/4})}
-  let best=null,bs=0;for(let a=0;a<px.length;a++)for(let b=a+1;b<px.length;b++){const h=dE(px[a].h,px[b].h);if(h<30)continue;const p=dE(px[a].p,px[b].p);if(p>=25||p>h*.4)continue;const s=h-p*1.5;if(s>bs){bs=s;best=[px[a],px[b],Math.round(h),Math.round(p)]}}
-  if(best){best.pos=[best[0],best[1]].map(p=>({x:(p.i%W+.5)/W,y:(Math.floor(p.i/W)+.5)/H}))}
+  /* 실제 사진 145장 시험: 점 한두 개짜리 색끼리 짝지어져 표시가 엉뚱한 곳(사진 가장자리, 티끌)에 찍혔다.
+     비슷한 색(사람 눈 색 차이 12 미만)이 사진에 3곳 이상 있는 색만 후보로 쓴다(이 앱이 정한 값) */
+  const n=px.length,cnt=new Uint16Array(n);for(let a=0;a<n;a++)for(let b=a+1;b<n;b++)if(dE(px[a].h,px[b].h)<12){cnt[a]++;cnt[b]++}
+  const cand=px.filter((_,i)=>cnt[i]>=2);
+  let best=null,bs=0;for(let a=0;a<cand.length;a++)for(let b=a+1;b<cand.length;b++){const h=dE(cand[a].h,cand[b].h);if(h<30)continue;const p=dE(cand[a].p,cand[b].p);if(p>=25||p>h*.4)continue;const s=h-p*1.5;if(s>bs){bs=s;best=[cand[a],cand[b],Math.round(h),Math.round(p)]}}
+  /* 표시 위치: 같은 색이 있는 곳 중 사진 가장자리에서 가장 먼 곳 */
+  const edge=i=>{const q=i%W,r=Math.floor(i/W);return Math.min(q,W-1-q,r,H-1-r)};
+  if(best){best.pos=[best[0],best[1]].map(o=>{let m=o;for(const z of px)if(dE(z.h,o.h)<12&&edge(z.i)>edge(m.i))m=z;return{x:(m.i%W+.5)/W,y:(Math.floor(m.i/W)+.5)/H}})}
   S.cpSrc=S.src;S.cp=best;return best}
 /* 헷갈리는 두 색이 사진 어디에 있는지 ①② 동그라미로 표시 */
-function markPair(x,X,Y,w,h,cp){if(!cp||!cp.pos)return;const r=Math.max(14,w/20);cp.pos.forEach((p,i)=>{const cx=X+p.x*w,cy=Y+p.y*h;x.save();x.lineWidth=Math.max(3,w/150);x.strokeStyle="#ffd21f";x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();x.fillStyle="#ffd21f";x.beginPath();x.arc(cx+r*.75,cy-r*.75,r*.55,0,7);x.fill();x.fillStyle="#141b3a";x.font="bold "+Math.round(r*.7)+"px sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(String(i+1),cx+r*.75,cy-r*.72);x.restore()})}
+function markPair(x,X,Y,w,h,cp){if(!cp||!cp.pos)return;const r=Math.max(14,w/20);cp.pos.forEach((p,i)=>{const cx=X+Math.min(w-r*1.4,Math.max(r*1.1,p.x*w)),cy=Y+Math.min(h-r*1.1,Math.max(r*1.4,p.y*h));/* 동그라미가 사진 밖으로 잘리지 않게 */x.save();x.lineWidth=Math.max(3,w/150);x.strokeStyle="#ffd21f";x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();x.fillStyle="#ffd21f";x.beginPath();x.arc(cx+r*.75,cy-r*.75,r*.55,0,7);x.fill();x.fillStyle="#141b3a";x.font="bold "+Math.round(r*.7)+"px sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(String(i+1),cx+r*.75,cy-r*.72);x.restore()})}
 /* 자리별 조언: 사진 속 바닥에 맞춘 구체적인 색 이름을 넣어 말한다 */
 function spotTip(id){const cr=colorRank(),ex=cr.best.map(c=>dotC(c)).join(" · ");return{bowl:`그릇을 새로 사지 않아도 돼요. 그릇 밑에 ${ex} 같은 색의 매트를 깔면 밥 자리를 찾기 쉬워요.`,bed:`잠자리에는 ${ex} 같은 색의 담요나 방석을 써 보세요. 가장자리가 바닥에서 도드라져요.`,toy:`장난감은 ${ex} 같은 색으로 고르면 이 바닥에서 잘 보여요. ${cr.worst[0].name}·${cr.worst[1].name}${josa(cr.worst[1].name,"은")} 피해 주세요.`,path:`문턱이나 계단 끝에 ${ex} 같은 색의 테이프나 매트를 붙이면 턱이 잘 보여요.`}[id]}
 function spotTipOld(id){const r=rec(),ex=r.full;return{bowl:`그릇을 새로 사지 않아도 돼요. 그릇 밑에 ${ex} 같은 ${r.name}의 매트를 깔면 밥 자리를 찾기 쉬워요.`,bed:`잠자리에는 ${ex} 같은 ${r.name}의 담요나 방석을 써 보세요. 가장자리가 바닥에서 도드라져요.`,toy:`장난감은 ${ex} 같은 ${r.name}으로 고르면 이 바닥에서 잘 보여요.`,path:`문턱이나 계단 끝에 ${ex} 같은 ${r.name}의 테이프나 매트를 붙이면 턱이 잘 보여요.`}[id]}

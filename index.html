@@ -1443,7 +1443,9 @@ function meLines(){const a=[],dog=isDog(),cr=colorRank(),h=hook(),b2=cr.best.sli
     else a.push("고양이는 10살이 넘으면 노령기(AAHA·AAFP 2021): 그때부터 검진 때 눈도")}
   return a.slice(0,5)}
 /* 보고서 맨 위 '한눈에 보기': 스크롤하지 않아도 할 일이 보이게 */
-function sumCard(){const h=hook(),cr=colorRank(),sure=an().sure||(S.floorPick&&S.floorSrc===S.src),best=cr.best.slice(0,2),bad=(cr.trap.length?cr.trap:cr.worst).slice(0,2);
+/* 피할 색: 사진 속에서 짚은 물건 색을 맨 앞에(제목은 '빨강 물건'인데 피할 색엔 '갈색'만 나오던 어긋남) */
+function badColors(cr,h){const l=(cr.trap.length?cr.trap:cr.worst).slice();if(h&&h.k==="item"&&!l.some(c=>c.name===h.color.name))l.unshift({hex:h.color.hex,name:h.color.name});return l.slice(0,2)}
+function sumCard(){const h=hook(),cr=colorRank(),sure=an().sure||(S.floorPick&&S.floorSrc===S.src),best=cr.best.slice(0,2),bad=badColors(cr,h);
   return `<small style="color:var(--sub);font-weight:700">한눈에 보기</small><p class="hk">${sure?h.sent:"바닥이 잘 안 보이는 사진이에요. 바닥이 함께 나오게 찍으면 더 정확해요."}</p>`
    +`<div class="sr"><span>잘 보이는 색</span><span>${best.map(c=>dotC(c)).join(" · ")}</span></div>`
    +`<div class="sr"><span>피할 색</span><span>${bad.map(c=>dotC(c)).join(" · ")}</span></div>`
@@ -1657,7 +1659,7 @@ function wrapLines(x,text,maxW){const out=[];let line="";for(const w of text.spl
 function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pad*2,in_=24,iw=cw-in_*2,ih=Math.round(iw*S.src.height/S.src.width),o=seeOpts(),Lc=renderHuman(S.src,o),Rc=renderPet(S.src,o);
   /* 공유 카드는 '우리 아이 이름 + 이 사진에서 찾은 의외의 사실'을 제목으로 한다(숫자보다 이야기가 퍼진다) */
   let x=c.getContext("2d");c.width=W;c.height=10;x.font="30px "+FF;const sub=S.touched?wrapLines(x,profileLine(),cw-(av?170:0)):[];
-  const cr=colorRank(),hk=hook(),tl=hk.card,dog=isDog(),bad=(cr.trap.length?cr.trap:cr.worst).slice(0,2);
+  const cr=colorRank(),hk=hook(),tl=hk.card,dog=isDog(),bad=badColors(cr,hk);
   /* 공유 카드에는 아이·집마다 달라지는 것만 넣는다(무지개·시력처럼 모든 개가 같은 정보는 뺌):
      우리 집 바닥 색에 따른 색, 크기별 눈높이, 주둥이 길이별 또렷한 곳(예시), 나이별 노령기 */
   x.font="28px "+FF;const me=meLines().filter(t=>!t.startsWith("장난감·방석·매트")).map(t=>wrapLines(x,t,cw-in_*2-40)),meN=me.reduce((s,a)=>s+a.length,0);

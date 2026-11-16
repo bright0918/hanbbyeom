@@ -615,13 +615,12 @@ input[type=text]:focus,select:focus,.calc input:focus{outline:none;box-shadow:0 
 </style>
 </head>
 <body>
-<div id="splash" aria-hidden="true"><div class="sp-logo"><i></i></div><b>한 뼘 시선</b><span>우리 아이 눈으로 우리 집 보기</span></div>
 <div class="app">
 <header class="bar"><div class="logo" aria-hidden="true"></div><b>한 뼘 시선</b><button type="button" class="who" id="who" aria-label="아이 바꾸기·프로필 보기"></button><button type="button" class="tbtn" id="btnTheme" aria-label="밝은 화면·어두운 화면 바꾸기"></button></header>
 
 <!-- 홈 -->
 <section class="scr" id="scr-home">
-  <div class="samBar hide" id="samBar"><div><b>색이 칙칙해 보이나요?</b>휴대폰이 다크 모드라 삼성 인터넷이 밝은 화면을 강제로 어둡게 바꾸고 있어요. 앱의 어두운 화면으로 보면 원래 색 그대로 보여요.</div><button type="button" class="go" id="samGo">어둡게 보기</button><button type="button" class="x" id="samX" aria-label="닫기">✕</button></div>
+  <div class="samBar hide" id="samBar"><div><b>노랑이 탁한 주황으로 보이나요?</b>휴대폰이 다크 모드면 삼성 인터넷이 모든 사이트 색을 강제로 바꿔요. 앱에서는 막을 수 없어서, 아래 설정을 한 번만 켜 주세요.</div><button type="button" class="go" id="samGo">켜는 법</button><button type="button" class="x" id="samX" aria-label="닫기">✕</button></div>
   <div class="hero">
     <h2>잔디 위의 빨간 공,<br><span data-n="의">아이의</span> 눈에는<br>잔디와 비슷한 색일 수 있어요.</h2>
     <p>집 사진 한 장으로 <span data-n="의">아이의</span> 눈에 비친 우리 집을 확인하고, 바꿔 주면 좋은 것을 찾아보세요.</p>
@@ -1090,7 +1089,7 @@ function setTheme(p,keep){if(p!=="light"&&p!=="dark")p="auto";const t=p==="auto"
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==="dark"?"#0d1226":"#f4f6fb";if(keep)try{localStorage.setItem("hb-theme",p)}catch(e){}samCheck()}
 /* 삼성 인터넷 + 휴대폰 다크 모드인데 '밝게'로 보면 삼성이 색을 강제로 어둡게 바꾼다. 그때만 어둡게 보기를 권한다(크롬으로 보내지 않음) */
 function samCheck(){const b=$("#samBar");if(!b)return;const sam=/SamsungBrowser/.test(navigator.userAgent);let off=0;try{off=+localStorage.getItem("hb-sam-off")||0}catch(e){}
-  b.classList.toggle("hide",!(sam&&sysDark()&&document.documentElement.dataset.theme==="light"&&Date.now()-off>3*864e5))}
+  b.classList.toggle("hide",!(sam&&sysDark()&&Date.now()-off>3*864e5))}
 {let t="auto";try{t=localStorage.getItem("hb-theme")||"auto"}catch(e){}setTheme(t);if(window.matchMedia)try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(document.documentElement.dataset.pref==="auto")setTheme("auto")})}catch(e){}}
 
 /* ---------- 색 계산 ---------- */
@@ -1615,7 +1614,7 @@ $("#btnLiveOn").addEventListener("click",startCam);
   /* 삼성 인터넷처럼 설치 창을 직접 띄울 수 없는 곳에서는, 같은 주소를 크롬으로 열어 그곳의 '설치'를 쓰게 한다(크롬이 진짜 앱처럼 설치해 준다) */
   const toChrome=()=>{location.href="intent://"+location.href.replace(/^https?:\/\//,"")+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent("https://play.google.com/store/apps/details?id=com.android.chrome")+";end"};
   const tryInstall=async()=>{if(!dp)dp=window.__dp||null;if(dp){dp.prompt();let ok=false;try{ok=(await dp.userChoice).outcome==="accepted"}catch(e){}dp=null;window.__dp=null;if(ok)toast("설치를 시작했어요. 앱스 화면(위로 쓸어 올리기)에 ‘한 뼘 시선’이 생기면 끝이에요.");return}
-    $("#instGuide").innerHTML=guide();$("#instModal").classList.remove("hide")};
+    $("#instGuide").innerHTML=guide();$("#instModal .mbox>b").textContent="홈 화면에 추가하기";$("#instModal").classList.remove("hide")};
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;window.__dp=e});
   window.addEventListener("appinstalled",()=>{dp=null;toast("설치가 끝났어요. 앱스 화면의 ‘한 뼘 시선’을 길게 눌러 홈 화면으로 옮길 수 있어요.");$("#instSheet").classList.add("hide");show()});
   /* 폰·태블릿으로 처음 열면 아래쪽에 설치 제안을 띄운다. ✕를 누르면 3일 동안 다시 띄우지 않는다 */
@@ -1702,12 +1701,9 @@ $("#btnLink").addEventListener("click",shareLink);$("#btnCopy").addEventListener
     toast("붙여 넣을 사진이 없어요. 사진을 먼저 복사해 주세요.")})}
 $("#mySlotP").appendChild($("#s-profile"));$("#p-ill").appendChild($("#illWrap"));
 load();setTheme(document.documentElement.dataset.pref||"auto");$("#pickMsg").textContent=PICK0;heroDemo();segUI();ui();texts();restoreRecent();
-/* 시작 화면: 글꼴이 준비되면(최대 1.4초) 부드럽게 걷어 낸다. 너무 빨리 사라지면 번쩍여 보여 최소 0.5초는 둔다 */
-{const t0=performance.now(),sp=$("#splash"),out=()=>{const w=Math.max(0,500-(performance.now()-t0));setTimeout(()=>{sp.classList.add("out");setTimeout(()=>sp.remove(),800)},w)};
-  Promise.race([document.fonts?document.fonts.ready:Promise.resolve(),new Promise(r=>setTimeout(r,1400))]).then(out)}
 /* 삼성 인터넷 + 휴대폰 다크 모드: 삼성이 앱 색을 강제로 어둡게 바꾸므로 크롬으로 열기를 권한다 */
 samCheck();
-$("#samGo").addEventListener("click",()=>{setTheme("auto",true);toast("휴대폰 설정에 맞춰 어두운 화면으로 바꿨어요. 마이 → 화면에서 바꿀 수 있어요.")});
+$("#samGo").addEventListener("click",()=>{$("#instGuide").innerHTML=`<p>삼성 인터넷이 이 앱의 색을 바꾸지 않게 하는 설정이에요. 한 번만 켜면 돼요.</p><ol><li>삼성 인터넷을 열고 오른쪽 아래 <b>≡</b> 메뉴</li><li><b>설정</b> → 맨 아래 <b>Labs</b>(실험실)</li><li><b>웹사이트 다크 테마 사용</b>을 켜기</li><li>이 앱을 완전히 닫았다가 다시 열기</li></ol><p class="note">메뉴 이름은 삼성 인터넷 버전에 따라 조금 다를 수 있어요. 휴대폰을 라이트 모드로 바꾸거나, 크롬으로 열어도 원래 색으로 보여요.</p>`;$("#instModal .mbox>b").textContent="원래 색으로 보는 법";$("#instModal").classList.remove("hide")});
 $("#samX").addEventListener("click",()=>{$("#samBar").classList.add("hide");try{localStorage.setItem("hb-sam-off",Date.now())}catch(e){}});
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 window.__S=S;

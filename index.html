@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f6f2">
 <title>한 뼘 시선 · 우리 아이의 눈 보고서</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -1614,8 +1614,8 @@ $("#btnLiveOn").addEventListener("click",startCam);
 {const ua=navigator.userAgent,iOS=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),sam=/SamsungBrowser/.test(ua),crios=/CriOS/.test(ua),android=/Android/.test(ua),mac=/Macintosh/.test(ua)&&!iOS,safari=/Safari/.test(ua)&&!/Chrome|CriOS|Edg|SamsungBrowser/.test(ua),
     standalone=()=>(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
   let dp=window.__dp||null;
-  const guide=()=>iOS&&crios?"<ol><li>주소창 오른쪽 <b>공유 버튼</b> <b>⬆︎</b>을 눌러요</li><li><b>홈 화면에 추가</b>를 눌러요</li></ol><p class=\"note\">아이폰·아이패드는 애플 정책상 웹에서 설치 창을 직접 띄울 수 없어서, 이 두 번만 눌러 주시면 돼요.</p>"
-    :iOS?"<ol><li>사파리 "+(/iPad/.test(ua)||navigator.maxTouchPoints>1&&/Macintosh/.test(ua)?"위쪽":"아래쪽")+"의 <b>공유 버튼</b> <b>⬆︎</b>을 눌러요</li><li>목록을 조금 내려 <b>홈 화면에 추가</b>를 눌러요</li><li>오른쪽 위 <b>추가</b>를 눌러요</li></ol><p class=\"note\">아이폰·아이패드는 애플 정책상 웹에서 설치 창을 직접 띄울 수 없어요. 대신 이 세 번이면 앱처럼 아이콘이 생겨요.</p>"
+  const guide=()=>iOS&&crios?"<ol><li>주소창 오른쪽 <b>공유 버튼</b> <b>⬆︎</b>을 눌러요</li><li>목록에서 <b>더 보기</b>(More)를 눌러요</li><li><b>홈 화면에 추가</b>(Add to Home Screen)를 눌러요</li><li>오른쪽 위 <b>추가</b>(Add)를 눌러요</li></ol><p class=\"note\">아이폰·아이패드는 애플 정책상 웹에서 설치 창을 직접 띄울 수 없어요. 괄호 안은 영어로 설정된 기기에서 보이는 이름이에요.</p>"
+    :iOS?"<ol><li>사파리 "+(/iPad/.test(ua)||navigator.maxTouchPoints>1&&/Macintosh/.test(ua)?"위쪽 주소창 옆":"아래쪽")+"의 <b>공유 버튼</b> <b>⬆︎</b>을 눌러요</li><li>목록에 ‘홈 화면에 추가’가 바로 안 보이면 <b>더 보기</b>(More)를 눌러요</li><li><b>홈 화면에 추가</b>(Add to Home Screen)를 눌러요</li><li>오른쪽 위 <b>추가</b>(Add)를 눌러요</li></ol><p class=\"note\">아이폰·아이패드는 애플 정책상 웹에서 설치 창을 직접 띄울 수 없어요. 괄호 안은 영어로 설정된 기기에서 보이는 이름이에요.</p>"
     :mac&&safari?"<ol><li>화면 맨 위 <b>파일</b> 메뉴</li><li><b>Dock에 추가</b></li></ol>"
     :sam?"<ol><li>오른쪽 아래 <b>≡</b> 메뉴</li><li><b>현재 페이지 추가</b> → <b>앱스 화면</b>(또는 <b>홈 화면</b>)</li></ol><p class=\"note\">설치한 앱은 홈 화면이 아니라 <b>앱스 화면</b>(홈에서 위로 쓸어 올리기)에 생길 수 있어요. 거기서 ‘한 뼘 시선’을 길게 눌러 홈 화면으로 끌어다 놓으세요.</p>"
     :android?"<ol><li>오른쪽 위 <b>⋮</b> 메뉴</li><li><b>앱 설치</b>(‘바로가기 만들기’가 아니라 ‘설치’)</li></ol><p class=\"note\">설치한 앱은 <b>앱스 화면</b>(홈에서 위로 쓸어 올리기)에 생길 수 있어요. 이미 설치했다면 앱스 화면의 ‘한 뼘 시선’ 아이콘으로 여세요.</p>"

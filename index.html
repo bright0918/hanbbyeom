@@ -1409,10 +1409,26 @@ function hook(){if(!S.src)return null;const sure=an().sure||(S.floorPick&&S.floo
   if(oi.length){const c=oi[0].name,g=oi.outdoor?"땅":"바닥";return{k:"item",color:oi[0],card:[n+" 눈엔",`이 ${c} 물건이`,`${g}이랑 똑같아 보여요`],sent:`사진 속 ${dotC(oi[0])} 물건이 ${N("의")} 눈엔 ${g}과 거의 같은 색으로 보여요.`,share:`${n} 눈엔 이 ${c} 물건이 ${g}이랑 똑같아 보인대 😮`}}
   if(p>=3)return{k:"lost",card:[n+" 눈엔",`이 사진의 ${pctTxt(p)}%가`,"주변 색에 묻혀 보여요"],sent:`이 사진의 약 ${pctTxt(p)}%가 ${N("의")} 눈엔 주변 색에 묻혀 보여요.`,share:`${n} 눈엔 우리 집이 이렇게 보인대 😮`};
   return{k:"none",card:[N("의")+" 눈으로 본","우리 집"],sent:`이 사진엔 ${N("의")} 눈에 묻히는 물건이 거의 없어요.`,share:`${n} 눈으로 본 우리 집이래 😮`}}
+/* 견종·나이별 눈 건강 한 줄. 출처를 확인한 것만 넣었다(2026-11-16 확인):
+   녹내장: 아메리칸 코커 스패니얼(북미 유병률 5.5%로 가장 높음), 시바(폐쇄각), 비글(개방각, 미국 계통) — 개 원발성 녹내장 총설·PDSA·국내 후향 연구
+   각막궤양·안구건조증: 단두종은 잡종보다 각막궤양 11.2배(퍼그 19배), 안구건조증 3.6배 — O'Neill 외 2017(영국 1차 진료 자료) 등. 시츄·요크셔테리어·보스턴테리어는 안구건조증 소인 보고
+   유전성 백내장: 비숑 프리제, 미니어처 슈나우저, 골든 리트리버 — MSD(머크) 수의 매뉴얼
+   고양이: 7살부터 혈압 검사 권장, 고혈압은 망막박리로 갑작스러운 실명을 부를 수 있음 — iCatCare
+   확인 못 한 것(토이 푸들, 말티즈 등)은 넣지 않고 나이에 따른 일반 조언만 준다 */
+const EYE={glau:["cocker","shiba","beagle"],brachy:["pug","shihtzu","peke","frenchie","boston"],dry:["yorkie"],cat:["bichon","schnauzer","golden"]};
+function healthTip(){const dog=isDog(),b=S.breed,bn=breedName(),ag=ageYears(),st=stageKey();
+  if(!dog){const old=(ag!==null&&ag>=7)||st==="mature"||st==="senior";return old?{s:"7살부터는 검진 때 혈압도 재기: 고혈압은 갑작스러운 실명의 원인이 될 수 있어요",l:`<b>7살부터는 검진 때 혈압도 재 달라고 하세요.</b> 나이 든 고양이의 고혈압은 증상 없이 지내다 망막이 떨어져 갑자기 앞을 못 보게 만들 수 있어요. 갑자기 물건에 부딪히거나 동공이 커져 있으면 그날 병원에 가세요(iCatCare).`}:{s:"눈곱·눈물이 갑자기 늘거나 한쪽 눈을 감고 있으면 미루지 말고 병원",l:`<b>눈곱·눈물이 갑자기 늘거나 한쪽 눈을 감고 있으면 미루지 마세요.</b> 7살부터는 검진 때 혈압도 함께 재는 것을 권해요(iCatCare).`}}
+  if(EYE.glau.includes(b))return{s:`${bn}${josa(bn,"는")} 녹내장이 잘 생기는 견종: 눈이 갑자기 빨갛고 뿌옇다면 그날 병원`,l:`<b>${bn}${josa(bn,"는")} 녹내장이 잘 생기는 견종으로 보고돼요.</b> 눈이 갑자기 빨갛고 뿌옇거나, 한쪽 눈을 찡그리면 그날 병원에 가세요. 검진 때 안압 검사도 물어보세요(개 원발성 녹내장 연구${b==="cocker"?": 아메리칸 코커 스패니얼 북미 유병률 5.5%":""}).`};
+  if(EYE.brachy.includes(b))return{s:"눈이 튀어나온 얼굴형이라 각막 상처가 잘 나요: 눈을 찡그리거나 비비면 그날 병원",l:`<b>얼굴이 납작한 견종은 각막 상처(궤양)가 잡종보다 약 11배 잘 생겨요(퍼그는 약 19배).</b> 눈을 찡그리거나 비비거나 눈물이 갑자기 늘면 그날 병원에 가세요. 각막 상처는 빨리 나빠질 수 있어요(영국 1차 진료 자료 연구, O'Neill 외 2017).`};
+  if(EYE.dry.includes(b))return{s:`${bn}${josa(bn,"는")} 안구건조증이 알려진 견종: 눈곱이 끈적해지면 눈물량 검사`,l:`<b>${bn}${josa(bn,"는")} 안구건조증이 잘 생기는 견종으로 보고돼요.</b> 눈곱이 끈적하고 누렇거나 눈이 탁해 보이면 검진 때 눈물량 검사를 물어보세요.`};
+  if(EYE.cat.includes(b))return{s:`${bn}${josa(bn,"는")} 유전성 백내장이 알려진 견종: 눈동자가 하얘지면 미루지 말고 검진`,l:`<b>${bn}${josa(bn,"는")} 유전성 백내장이 알려진 견종이에요(MSD 수의 매뉴얼).</b> 눈동자 가운데가 하얗게 보이면 나이와 상관없이 미루지 말고 검진받으세요. 수술이 필요할 때도 일찍 볼수록 선택지가 많아요.`};
+  if(st==="senior")return{s:"노령기: 눈이 푸르스름하면 검진 때 백내장인지 확인",l:`<b>노령견 눈이 푸르스름해지는 건 흔히 핵경화(노화)지만, 겉으로는 백내장과 구분이 어려워요.</b> 검진 때 꼭 확인해 달라고 하세요.`};
+  return{s:"눈이 갑자기 빨갛거나 뿌옇거나, 한쪽 눈을 찡그리면 그날 병원",l:`<b>눈이 갑자기 빨갛거나 뿌옇거나, 한쪽 눈을 찡그리면 그날 병원에 가세요.</b> 눈 질환은 하루 이틀 사이에 나빠질 수 있어요.`}}
 /* 이 아이·이 사진에만 해당하는 말(공유 카드 '맞춤'과 맞춤 리포트 카드 '이렇게 해 보세요'에 씀).
    모든 개가 같은 정보는 넣지 않는다. 태어난 해가 없어도 견종 수명 자료로 노령기 시작 나이를 말한다 */
 function meLines(){const a=[],dog=isDog(),cr=colorRank(),h=hook(),b2=cr.best.slice(0,2).map(c=>c.name).join("·"),ag=ageYears(),p=lostPct();
   if(h&&h.k==="item")a.push(`사진 속 ${h.color.name} 물건은 ${b2} 계열로 바꾸기`);else if(p>=1)a.push(`이 사진의 약 ${pctTxt(p)}%가 ${N("의")} 눈엔 주변 색에 묻혀요`);
+  if(S.touched)a.push("건강 · "+healthTip().s);
   a.push(`장난감·방석·매트는 우리 바닥에서 잘 띄는 ${b2} 계열로`);
   if(S.touched){if(dog){a.push(`${N("의")} 눈높이는 바닥에서 약 ${SIZE[S.size].eye}(${SIZE[S.size].n}견, 추정): 그 높이로 집을 둘러보기`);
       if(S.snout==="long")a.push("주둥이가 긴 편: 장난감은 옆으로 굴려 주기(또렷한 곳이 옆으로 넓을 가능성, 예시)");else if(S.snout==="short")a.push("주둥이가 짧은 편: 간식은 정면에서 보여 주기(정면 가운데가 또렷할 가능성, 예시)")}
@@ -1452,6 +1468,7 @@ function todo(){const a=[],dog=isDog(),r=rec(),L=S.lost||{cnt:0,red:0,green:0},p
 /* 사진이 아니라 프로필(종·나이·몸집·주둥이)에 따라 달라지는 팁 */
 /* 보호자가 바로 해 볼 수 있는 일만 팁으로. 계산 기준 설명은 calcBasis()로 따로 접어 둔다 */
 function tips(){const a=[],dog=isDog(),cr=S.src?colorRank():null,b=cr?cr.best[0].name:"파랑";
+  if(S.touched)a.push(healthTip().l);/* 견종·나이별 눈 건강 한 줄(출처 확인한 것만) */
   if(isSenior()){a.push(`<b>가구와 밥그릇·물그릇 자리를 바꾸지 마세요.</b> 노령기에는 시력이 떨어져도 익숙한 배치로 길을 찾아요.`);
     a.push(`<b>복도와 계단 근처에 밤에도 은은한 조명을 켜 두세요.</b> 계단 끝에는 ${b} 같은 바닥과 대비되는 테이프를 붙이면 턱이 잘 보여요.`)}
   else{const left=ageYears()===null?null:Math.max(1,Math.round(senStart()-ageYears()));if(left)a.push(`<b>노령기까지 약 ${left}년 남았어요.</b> 그 전부터 검진 때 눈도 함께 봐 달라고 하세요. 눈이 뿌옇거나 물건에 부딪히면 미루지 마세요.`)}
@@ -1659,7 +1676,7 @@ function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pa
     row(cY+100,"잘 띄는 색",cr.best.slice(0,3),"#1b2a6b");row(cY+190,"묻히는 색",bad,"#c0392b")}
   /* 이 아이만의 것: 프로필(크기·주둥이·나이)로 달라지는 내용 */
   if(me.length){card(pad,gY,cw,gH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText(N("의")+" 맞춤",pad+in_+8,gY+30);
-    x.font="28px "+FF;let yy=gY+92;me.forEach(ls=>{x.fillStyle="#1b2a6b";x.beginPath();x.arc(pad+in_+18,yy+16,6,0,7);x.fill();x.fillStyle="#191f28";ls.forEach((l,j)=>x.fillText(l,pad+in_+36,yy+j*42));yy+=ls.length*42+12})}
+    x.font="28px "+FF;let yy=gY+92;me.forEach(ls=>{x.fillStyle=ls[0].startsWith("건강")?"#d0342c":"#1b2a6b";x.beginPath();x.arc(pad+in_+18,yy+16,6,0,7);x.fill();x.fillStyle="#191f28";ls.forEach((l,j)=>x.fillText(l,pad+in_+36,yy+j*42));yy+=ls.length*42+12})}
   x.textAlign="center";x.fillStyle="#191f28";x.font="bold 34px "+FF;x.fillText("너네 아이 눈엔 어떻게 보일까?",W/2,tY);
   x.fillStyle="#1b2a6b";x.font="bold 28px "+FF;x.fillText("한 뼘 시선 · "+APP_URL.replace(/^https?:\/\//,"").replace(/\/$/,""),W/2,tY+54);
   x.fillStyle="#6b7684";x.font="22px "+FF;x.fillText("논문 근거로 계산, 일부는 예시예요 · 진단이 아니에요",W/2,tY+100);x.textAlign="left"}

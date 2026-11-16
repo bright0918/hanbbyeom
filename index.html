@@ -915,8 +915,8 @@ input[type=text]:focus,select:focus,.calc input:focus{outline:none;box-shadow:0 
     <p class="note" style="margin-top:10px">안드로이드의 크롬·삼성 인터넷에서는 버튼 한 번으로 설치돼요. 아이폰·아이패드·맥은 애플 정책상 웹에서 설치 창을 띄울 수 없어서, 버튼을 누르면 누를 곳을 알려 드려요. 기록과 사진은 이 기기·이 브라우저 안에만 저장돼요. 다른 사람과 섞이지 않고, 서버로 보내지 않아요. 그래서 다른 브라우저로 열거나 사생활 보호(비밀) 모드에서는 기록이 보이지 않아요.</p></div>
   <div class="card"><h3>기록 관리</h3>
     <p class="lead" style="margin-bottom:6px">프로필, 넣은 사진, 우리 집 점검, 진행 단계는 이 기기 안에만 저장돼요. 앱을 지우고 다시 설치해도 남아 있어요.</p>
-    <button type="button" class="ghost" id="btnReset">처음부터 다시 시작하기</button>
-    <p class="note">모든 기록을 지우고 처음 쓰는 화면으로 돌아가요. 되돌릴 수 없어요.</p></div>
+    <button type="button" class="ghost" id="btnReset" style="color:var(--warn)">모든 기록 초기화</button>
+    <p class="note">프로필·사진·점검 기록을 모두 지우고 처음 쓰는 화면으로 돌아가요. 되돌릴 수 없어요.</p></div>
   <div class="card"><h3>‘한 뼘 시선’이란</h3>
     <p style="font-size:14.5px">한 뼘은 손을 폈을 때 엄지 끝에서 새끼손가락 끝까지, 약 20cm예요. 고양이와 작은 개의 눈이 바닥에서 딱 그만큼 높이에 있어요. <b>바닥에서 한 뼘 높이로 내려가 아이의 눈으로 집을 다시 본다</b>는 뜻으로 지었어요.</p>
     <p style="font-size:14.5px;display:flex;gap:10px;align-items:center"><span class="logo" aria-hidden="true"></span><span>로고는 눈이에요. 가운데 검은 원이 눈동자이고, 파랑과 노랑은 개와 고양이가 가장 잘 구분하는 두 색이에요.</span></p>
@@ -1682,7 +1682,7 @@ $("#shopFile").addEventListener("change",e=>{shopFile(e.target.files[0]);e.targe
 $("#shopStage").addEventListener("click",e=>{if(!S.shop)return;const p=rel(e,$("#cShop"));if(!p.ok)return;shopPick(Math.round(Math.max(0,Math.min(1,p.x))*S.shop.width),Math.round(Math.max(0,Math.min(1,p.y))*S.shop.height))});
 $("#btnSave").addEventListener("click",saveCard);$("#btnShare").addEventListener("click",shareCard);
 $("#btnShare2").addEventListener("click",shareCard2);$("#btnSave2").addEventListener("click",async()=>saveBlob(await card2Blob(),"my-pet-report-"+Date.now()+".png","맞춤 리포트 사진을 내려받았어요."));
-$("#btnReset").addEventListener("click",async()=>{if(!confirm("프로필, 사진, 우리 집 점검, 진행 단계를 모두 지울까요?\n지운 기록은 되돌릴 수 없어요."))return;
+$("#btnReset").addEventListener("click",async()=>{if(!confirm("모든 기록을 초기화할까요?\n프로필, 사진, 우리 집 점검, 진행 단계가 모두 지워지고 되돌릴 수 없어요."))return;
   try{Object.keys(localStorage).filter(k=>/^hb-/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}
   try{const d=await IDB.db();if(d)d.close()}catch(e){}
   await new Promise(r=>{try{const q=indexedDB.deleteDatabase("hb");q.onsuccess=q.onerror=q.onblocked=()=>r()}catch(e){r()}});

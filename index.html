@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="한 뼘 시선">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
-<meta name="color-scheme" content="only light">
+<meta name="color-scheme" content="light dark">
 <script>
 /* 카카오톡·인스타그램 등 앱 안의 브라우저로 열리면 카메라·저장·설치가 막힐 수 있어, 폰의 기본 브라우저로 자동으로 다시 연다 */
 (function(){var u=navigator.userAgent,h=location.href;try{
@@ -26,6 +26,8 @@
   else if(kakao){location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(h)}
   else if(step&&history.replaceState){history.replaceState(null,"",h)}
 }catch(e){}
+/* 화면이 그려지기 전에 밝게·어둡게를 먼저 정해, 처음 몇 순간 다른 색이 번쩍이지 않게 한다 */
+try{var pf="auto";try{pf=localStorage.getItem("hb-theme")||"auto"}catch(e){}var th=pf==="auto"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):pf;document.documentElement.dataset.theme=th;document.documentElement.dataset.pref=pf}catch(e){}
 /* 설치 창 신호는 일찍 올 수 있어 미리 받아 둔다 */
 addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__dp=e})})();
 </script>
@@ -338,7 +340,8 @@ input[type=number]{font-size:16px}
 /* "only"를 붙이면 크롬·삼성 인터넷의 자동 다크 모드가 이 앱 색을 바꾸지 않는다(앱의 어둡게 화면은 앱이 직접 그린다) */
 :root{color-scheme:only light}[data-theme=dark]{color-scheme:only dark}
 /* 삼성 인터넷은 어두운 화면을 스스로 지원하는 사이트만 강제 다크 처리를 건너뛴다. 그 신호로 시스템 다크 설정을 직접 받는다 */
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:only dark}}
+/* 휴대폰이 다크 모드일 때 앱이 스스로 어두운 화면을 그린다는 신호(삼성 인터넷은 이런 사이트에는 강제 다크를 덜 건다) */
+@media (prefers-color-scheme:dark){:root[data-pref=auto]{color-scheme:only dark;--bg:#0d1226;--card:#161d3a;--ink:#eef1fb;--sub:#9aa3c7;--line:#252e55;--soft:#1d2548;--pri:#ffd21f;--pri-ink:#141b3a;--outer:#070a16}}
 .sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav) + 10px + env(safe-area-inset-bottom));width:calc(100% - 24px);max-width:456px;z-index:8;background:var(--card);color:var(--ink);border-radius:20px;box-shadow:0 10px 32px rgba(25,31,40,.22);padding:12px 12px 12px 14px;display:flex;align-items:center;gap:10px}
 .sheet>i{width:40px;height:40px;border-radius:50%;background:var(--pri-soft);color:var(--pri);display:flex;align-items:center;justify-content:center;flex:none}.sheet>i svg{width:20px;height:20px}
 .sheet>div{flex:1;min-width:0;font-size:12.5px;color:var(--sub);line-height:1.4}.sheet b{display:block;font-size:15px;color:var(--ink)}
@@ -583,6 +586,23 @@ details[open]>*:not(summary){animation:fadeUp .45s var(--ease-out) both}
 .sheet{left:12px;right:12px;width:auto;transform:none;margin:0 auto}
 /* 유리 느낌 알림·창 */
 .toast{background:rgba(20,27,58,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+/* 앱 시작 화면: 시스템 글꼴로 바로 그리고, 준비되면 부드럽게 사라진다 */
+#splash{position:fixed;inset:0;z-index:60;background:radial-gradient(120% 70% at 50% 38%,#2c3f96 0%,#1b2a6b 42%,#0e1540 100%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard Variable","Noto Sans KR","Malgun Gothic",sans-serif;transition:opacity .6s var(--ease),transform .7s var(--ease)}
+#splash.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#splash:before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;top:calc(50% - 190px);left:calc(50% - 130px);background:radial-gradient(circle,rgba(255,210,31,.22) 0%,rgba(255,210,31,0) 65%);animation:glow 2.4s ease-in-out infinite alternate}
+@keyframes glow{from{opacity:.55;transform:scale(.92)}to{opacity:1;transform:scale(1.05)}}
+#splash .sp-logo{width:96px;height:96px;border-radius:28px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;box-shadow:0 20px 50px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);margin-bottom:14px;animation:spIn .9s var(--ease) both;position:relative}
+#splash .sp-logo i{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#33449a 0 50%,#ffd21f 50% 100%);position:relative}
+#splash .sp-logo i:after{content:"";position:absolute;inset:12px;border-radius:50%;background:#141b3a;box-shadow:0 0 0 3px #fff}
+#splash b{font-size:22px;font-weight:700;letter-spacing:-.6px;animation:fadeUp .7s .1s var(--ease-out) both}
+#splash b{position:relative;font-size:24px;letter-spacing:-.7px}
+#splash span{position:relative;font-size:13px;color:#c3cbec;letter-spacing:-.1px;animation:fadeUp .7s .18s var(--ease-out) both}
+#splash .sp-logo i{width:54px!important;height:54px!important}
+@keyframes spIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+/* 삼성 인터넷 다크 모드 안내 */
+.samBar{display:flex;gap:10px;align-items:center;background:var(--yel-soft);color:var(--ink);border-radius:18px;padding:12px 14px;margin:0 0 12px;font-size:13px;line-height:1.45}
+.samBar b{display:block;font-size:14px}.samBar button{border:0;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer;flex:none}
+.samBar .go{background:var(--pri);color:var(--pri-ink)}.samBar .x{background:none;color:var(--sub);padding:6px}
 body:has(#instSheet:not(.hide)) .toast{bottom:calc(var(--nav) + 104px + env(safe-area-inset-bottom))}
 .modal{background:rgba(10,14,30,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .mbox{box-shadow:0 30px 80px rgba(0,0,0,.25)}
@@ -595,11 +615,13 @@ input[type=text]:focus,select:focus,.calc input:focus{outline:none;box-shadow:0 
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-logo"><i></i></div><b>한 뼘 시선</b><span>우리 아이 눈으로 우리 집 보기</span></div>
 <div class="app">
 <header class="bar"><div class="logo" aria-hidden="true"></div><b>한 뼘 시선</b><button type="button" class="who" id="who" aria-label="아이 바꾸기·프로필 보기"></button><button type="button" class="tbtn" id="btnTheme" aria-label="밝은 화면·어두운 화면 바꾸기"></button></header>
 
 <!-- 홈 -->
 <section class="scr" id="scr-home">
+  <div class="samBar hide" id="samBar"><div><b>색이 칙칙해 보이나요?</b>휴대폰이 다크 모드라 삼성 인터넷이 밝은 화면을 강제로 어둡게 바꾸고 있어요. 앱의 어두운 화면으로 보면 원래 색 그대로 보여요.</div><button type="button" class="go" id="samGo">어둡게 보기</button><button type="button" class="x" id="samX" aria-label="닫기">✕</button></div>
   <div class="hero">
     <h2>잔디 위의 빨간 공,<br><span data-n="의">아이의</span> 눈에는<br>잔디와 비슷한 색일 수 있어요.</h2>
     <p>집 사진 한 장으로 <span data-n="의">아이의</span> 눈에 비친 우리 집을 확인하고, 바꿔 주면 좋은 것을 찾아보세요.</p>
@@ -887,7 +909,7 @@ input[type=text]:focus,select:focus,.calc input:focus{outline:none;box-shadow:0 
   <div id="mySlotP"></div>
   <button type="button" class="ghost hide" id="btnDelPet">이 반려동물 프로필 지우기</button>
   <div class="card"><h3>화면</h3>
-    <label class="f" style="margin-top:0">밝기</label><div class="seg" id="themeSeg"><button type="button" data-v="light">밝게</button><button type="button" data-v="dark">어둡게</button></div>
+    <label class="f" style="margin-top:0">밝기</label><div class="seg" id="themeSeg"><button type="button" data-v="auto">자동<small>휴대폰 따라</small></button><button type="button" data-v="light">밝게</button><button type="button" data-v="dark">어둡게</button></div>
     <label class="f">글자 크기</label><div class="seg" id="zoomSeg"><button type="button" data-v="1">보통</button><button type="button" data-v="1.15" style="font-size:16.5px">크게</button><button type="button" data-v="1.3" style="font-size:18.5px">아주 크게</button></div>
   </div>
   <div class="card inst"><h3>앱처럼 홈 화면에 두기</h3><div id="instBody"></div><button type="button" class="primary hide" id="btnInstall">앱으로 설치하기</button><p class="hide"></p>
@@ -1061,8 +1083,15 @@ function load(){let d=null;try{d=JSON.parse(localStorage.getItem("hb-pets")||"nu
 function switchPet(i){save();usePet(i);save();segUI();ui();draw()}
 
 /* ---------- 밝은 화면·어두운 화면 ---------- */
-function setTheme(t,keep){document.documentElement.dataset.theme=t;$("#btnTheme").innerHTML=ic(t==="dark"?"sun":"moon")+(t==="dark"?"밝게":"어둡게");$$("#themeSeg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===t)));const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==="dark"?"#202027":"#ffffff";if(keep)try{localStorage.setItem("hb-theme",t)}catch(e){}}
-{let t=null;try{t=localStorage.getItem("hb-theme")}catch(e){}if(!t)t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";setTheme(t)}
+/* 밝기: 자동(휴대폰 설정을 따름) / 밝게 / 어둡게. 처음엔 자동 */
+const sysDark=()=>!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);
+function setTheme(p,keep){if(p!=="light"&&p!=="dark")p="auto";const t=p==="auto"?(sysDark()?"dark":"light"):p,r=document.documentElement;r.dataset.theme=t;r.dataset.pref=p;
+  $("#btnTheme").innerHTML=ic(t==="dark"?"sun":"moon")+(t==="dark"?"밝게":"어둡게");$$("#themeSeg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===p)));
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==="dark"?"#0d1226":"#f4f6fb";if(keep)try{localStorage.setItem("hb-theme",p)}catch(e){}samCheck()}
+/* 삼성 인터넷 + 휴대폰 다크 모드인데 '밝게'로 보면 삼성이 색을 강제로 어둡게 바꾼다. 그때만 어둡게 보기를 권한다(크롬으로 보내지 않음) */
+function samCheck(){const b=$("#samBar");if(!b)return;const sam=/SamsungBrowser/.test(navigator.userAgent);let off=0;try{off=+localStorage.getItem("hb-sam-off")||0}catch(e){}
+  b.classList.toggle("hide",!(sam&&sysDark()&&document.documentElement.dataset.theme==="light"&&Date.now()-off>3*864e5))}
+{let t="auto";try{t=localStorage.getItem("hb-theme")||"auto"}catch(e){}setTheme(t);if(window.matchMedia)try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(document.documentElement.dataset.pref==="auto")setTheme("auto")})}catch(e){}}
 
 /* ---------- 색 계산 ---------- */
 const LUT=new Float32Array(256);for(let i=0;i<256;i++){const c=i/255;LUT[i]=c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4)}
@@ -1579,13 +1608,13 @@ $("#btnLiveOn").addEventListener("click",startCam);
   const guide=()=>iOS&&crios?"<ol><li>주소창 오른쪽 <b>공유 버튼</b> <b>⬆︎</b>을 눌러요</li><li><b>홈 화면에 추가</b>를 눌러요</li></ol><p class=\"note\">아이폰·아이패드는 애플 정책상 웹에서 설치 창을 직접 띄울 수 없어서, 이 두 번만 눌러 주시면 돼요.</p>"
     :iOS?"<ol><li>사파리 "+(/iPad/.test(ua)||navigator.maxTouchPoints>1&&/Macintosh/.test(ua)?"위쪽":"아래쪽")+"의 <b>공유 버튼</b> <b>⬆︎</b>을 눌러요</li><li>목록을 조금 내려 <b>홈 화면에 추가</b>를 눌러요</li><li>오른쪽 위 <b>추가</b>를 눌러요</li></ol><p class=\"note\">아이폰·아이패드는 애플 정책상 웹에서 설치 창을 직접 띄울 수 없어요. 대신 이 세 번이면 앱처럼 아이콘이 생겨요.</p>"
     :mac&&safari?"<ol><li>화면 맨 위 <b>파일</b> 메뉴</li><li><b>Dock에 추가</b></li></ol>"
-    :sam?"<p>삼성 인터넷에서는 설치 버튼을 누르면 크롬으로 열어 진짜 앱처럼 설치해요.</p><p class=\"note\">설치한 앱은 홈 화면이 아니라 <b>앱스 화면</b>(홈에서 위로 쓸어 올리기)에 생길 수 있어요. 거기서 ‘한 뼘 시선’을 길게 눌러 홈 화면으로 끌어다 놓으세요.</p>"
+    :sam?"<ol><li>오른쪽 아래 <b>≡</b> 메뉴</li><li><b>현재 페이지 추가</b> → <b>앱스 화면</b>(또는 <b>홈 화면</b>)</li></ol><p class=\"note\">설치한 앱은 홈 화면이 아니라 <b>앱스 화면</b>(홈에서 위로 쓸어 올리기)에 생길 수 있어요. 거기서 ‘한 뼘 시선’을 길게 눌러 홈 화면으로 끌어다 놓으세요.</p>"
     :android?"<ol><li>오른쪽 위 <b>⋮</b> 메뉴</li><li><b>앱 설치</b>(‘바로가기 만들기’가 아니라 ‘설치’)</li></ol><p class=\"note\">설치한 앱은 <b>앱스 화면</b>(홈에서 위로 쓸어 올리기)에 생길 수 있어요. 이미 설치했다면 앱스 화면의 ‘한 뼘 시선’ 아이콘으로 여세요.</p>"
     :"<p>주소창 오른쪽 끝의 <b>설치 아이콘</b>(모니터에 아래 화살표)을 누르거나, 브라우저 메뉴에서 <b>앱 설치</b>를 고르세요.</p>";
   const show=()=>{const on=!standalone();$$(".instBtn").forEach(b=>b.classList.toggle("hide",!on));$("#instBody").innerHTML=on?guide():"<p>지금 앱으로 설치해서 쓰고 계세요.</p>";$("#btnInstall").classList.toggle("hide",!on)};
   /* 삼성 인터넷처럼 설치 창을 직접 띄울 수 없는 곳에서는, 같은 주소를 크롬으로 열어 그곳의 '설치'를 쓰게 한다(크롬이 진짜 앱처럼 설치해 준다) */
   const toChrome=()=>{location.href="intent://"+location.href.replace(/^https?:\/\//,"")+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent("https://play.google.com/store/apps/details?id=com.android.chrome")+";end"};
-  const tryInstall=async()=>{if(!dp)dp=window.__dp||null;if(!dp&&sam&&android){toast("크롬에서 열어 설치할게요. 크롬에서 ‘설치’를 한 번 더 눌러 주세요.");setTimeout(toChrome,600);return}if(dp){dp.prompt();let ok=false;try{ok=(await dp.userChoice).outcome==="accepted"}catch(e){}dp=null;window.__dp=null;if(ok)toast("설치를 시작했어요. 앱스 화면(위로 쓸어 올리기)에 ‘한 뼘 시선’이 생기면 끝이에요.");return}
+  const tryInstall=async()=>{if(!dp)dp=window.__dp||null;if(dp){dp.prompt();let ok=false;try{ok=(await dp.userChoice).outcome==="accepted"}catch(e){}dp=null;window.__dp=null;if(ok)toast("설치를 시작했어요. 앱스 화면(위로 쓸어 올리기)에 ‘한 뼘 시선’이 생기면 끝이에요.");return}
     $("#instGuide").innerHTML=guide();$("#instModal").classList.remove("hide")};
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;window.__dp=e});
   window.addEventListener("appinstalled",()=>{dp=null;toast("설치가 끝났어요. 앱스 화면의 ‘한 뼘 시선’을 길게 눌러 홈 화면으로 옮길 수 있어요.");$("#instSheet").classList.add("hide");show()});
@@ -1672,7 +1701,14 @@ $("#btnLink").addEventListener("click",shareLink);$("#btnCopy").addEventListener
     const t=e.target;if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"))return;
     toast("붙여 넣을 사진이 없어요. 사진을 먼저 복사해 주세요.")})}
 $("#mySlotP").appendChild($("#s-profile"));$("#p-ill").appendChild($("#illWrap"));
-load();setTheme(document.documentElement.dataset.theme);$("#pickMsg").textContent=PICK0;heroDemo();segUI();ui();texts();restoreRecent();
+load();setTheme(document.documentElement.dataset.pref||"auto");$("#pickMsg").textContent=PICK0;heroDemo();segUI();ui();texts();restoreRecent();
+/* 시작 화면: 글꼴이 준비되면(최대 1.4초) 부드럽게 걷어 낸다. 너무 빨리 사라지면 번쩍여 보여 최소 0.5초는 둔다 */
+{const t0=performance.now(),sp=$("#splash"),out=()=>{const w=Math.max(0,500-(performance.now()-t0));setTimeout(()=>{sp.classList.add("out");setTimeout(()=>sp.remove(),800)},w)};
+  Promise.race([document.fonts?document.fonts.ready:Promise.resolve(),new Promise(r=>setTimeout(r,1400))]).then(out)}
+/* 삼성 인터넷 + 휴대폰 다크 모드: 삼성이 앱 색을 강제로 어둡게 바꾸므로 크롬으로 열기를 권한다 */
+samCheck();
+$("#samGo").addEventListener("click",()=>{setTheme("auto",true);toast("휴대폰 설정에 맞춰 어두운 화면으로 바꿨어요. 마이 → 화면에서 바꿀 수 있어요.")});
+$("#samX").addEventListener("click",()=>{$("#samBar").classList.add("hide");try{localStorage.setItem("hb-sam-off",Date.now())}catch(e){}});
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 window.__S=S;
 </script>

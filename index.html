@@ -823,7 +823,7 @@ input[type=text]:focus,select:focus,.calc input:focus{outline:none;box-shadow:0 
         <div class="cmp"><div class="sw2"><span id="sh3"></span><span id="sh4"></span></div><div class="w"><span data-n="의">아이의</span> 눈에는<b id="shP"></b></div><div class="num" id="shNP"></div></div>
         <div class="verdict" id="shopV"></div>
       </div>
-      <p class="note">바닥 색은 집 사진 아래쪽 40%의 평균이에요. 쇼핑몰 사진은 조명과 화면에 따라 실제 색과 다를 수 있어서, 참고용으로만 봐 주세요. 무늬가 있는 물건은 가장 넓은 색을 눌러 주세요. 판정 기준(색 차이 25 이상이면 잘 구분)은 이 앱이 정했어요.</p>
+      <p class="note">바닥 색은 집 사진 아래쪽 가장자리에서 가장 넓게 보이는 색이에요(직접 고르면 그 색). 쇼핑몰 사진은 조명과 화면에 따라 실제 색과 다를 수 있어서, 참고용으로만 봐 주세요. 무늬가 있는 물건은 가장 넓은 색을 눌러 주세요. 판정 기준(색 차이 25 이상이면 잘 구분)은 이 앱이 정했어요.</p>
     </div>
     <div id="p-pick" class="hide">
       <div class="why" id="pickMsg"></div>
@@ -1187,9 +1187,20 @@ function findLost(src){
       for(let a=-1;a<=1&&all;a++)for(let b=-1;b<=1;b++){const rr=r+a,qq=q+b;if(rr<0||rr>=rows||qq<0||qq>=cols||!inS(rr*cols+qq)){all=false;break}}if(all)fill.push(i)}
     fill.forEach(add)}
   return{cols,rows,keep,cnt,red,green,share:cols*rows?cnt/(cols*rows):0}}/* 아주 가늘고 긴 사진은 칸이 0개라 0으로 나누지 않게 */
-/* 사진 아래쪽 40%를 바닥으로 보고 평균 밝기와 색을 잰다 */
-function analyze(src){const W=48,H=Math.max(8,Math.round(src.height*W/src.width)),c=mk(W,H),x=c.getContext("2d");x.drawImage(src,0,0,W,H);const d=x.getImageData(0,0,W,H).data,y0=Math.floor(H*.6);let n=0,L=0,A=0,B=0,all=0,sr=0,sg=0,sb=0;
-  for(let y=0;y<H;y++)for(let q=0;q<W;q++){const i=(y*W+q)*4,l=lab(d[i],d[i+1],d[i+2]);all+=l[0];if(y>=y0){L+=l[0];A+=l[1];B+=l[2];sr+=d[i];sg+=d[i+1];sb+=d[i+2];n++}}return{L:L/n,a:A/n,b:B/n,all:all/(W*H),rgb:[Math.round(sr/n),Math.round(sg/n),Math.round(sb/n)]}}
+/* 바닥 색 찾기: 사진 아래쪽 40% 중 양옆 가장자리(각 25%)와 맨 아래 10%를 보고, 그중 가장 넓게 보이는 색 무리를 바닥으로 본다.
+   예전처럼 아래쪽 40% 전체 평균을 쓰면, 장난감만 크게 찍은 사진에서 장난감이 바닥으로 잡히고 잔디 위 공 사진에서 공 색이 섞였다(실제 사진 시험에서 발견).
+   가장 넓은 색 무리가 살펴본 곳의 35% 미만이면 '바닥이 잘 안 보이는 사진'으로 표시한다(35%는 이 앱이 정한 값) */
+function analyze(src){const W=48,H=Math.max(8,Math.round(src.height*W/src.width)),c=mk(W,H),x=c.getContext("2d",{willReadFrequently:true});x.drawImage(src,0,0,W,H);const d=x.getImageData(0,0,W,H).data;free(c);
+  const y0=Math.floor(H*.6),y1=Math.floor(H*.9),smp=[],bins={};let all=0;
+  for(let y=0;y<H;y++)for(let q=0;q<W;q++){const i=(y*W+q)*4,l=lab(d[i],d[i+1],d[i+2]);all+=l[0];
+    if(y>=y0&&(y>=y1||q<W*.25||q>=W*.75)){smp.push({l,rgb:[d[i],d[i+1],d[i+2]]});const k=Math.round(l[0]/12)+","+Math.round(l[1]/12)+","+Math.round(l[2]/12);(bins[k]=bins[k]||[]).push(smp.length-1)}}
+  let top=null;for(const k in bins)if(!top||bins[k].length>top.length)top=bins[k];
+  /* 잔디·나뭇결처럼 밝고 어두운 결이 섞인 바닥도 한 무리로 잡히게, 밝기 차이는 절반만 친다 */
+  const m=[0,1,2].map(j=>top.reduce((s,i)=>s+smp[i].l[j],0)/top.length),near=s=>Math.hypot((s.l[0]-m[0])*.5,s.l[1]-m[1],s.l[2]-m[2])<18;let cl=smp.filter(near);
+  /* 햇빛·그늘이 섞인 잔디는 색 무리가 여럿으로 쪼개져 '바닥이 안 보임'으로 잘못 나왔다(잔디 위 공 사진). 초록 쪽 색(Lab 색상각 95~200도)이 40% 넘으면 그 전체를 바닥으로 */
+  const gr=smp.filter(s=>{const ch=Math.hypot(s.l[1],s.l[2]),h=Math.atan2(s.l[2],s.l[1])*57.3;return ch>=8&&h>=95&&h<=200});if(gr.length>=smp.length*.4&&gr.length>cl.length)cl=gr;const n=cl.length;
+  const avg=j=>cl.reduce((s,z)=>s+z.rgb[j],0)/n,ml=[0,1,2].map(j=>cl.reduce((s,z)=>s+z.l[j],0)/n),share=n/smp.length;
+  return{L:ml[0],a:ml[1],b:ml[2],all:all/(W*H),rgb:[0,1,2].map(j=>Math.round(avg(j))),share,sure:share>=.35}}
 function an(){if(S.anSrc!==S.src){S.an=analyze(S.src);S.anSrc=S.src}return S.an}
 /* 이 바닥 위에서 잘 띄는 색 추천. 경계 숫자(밝기 60·40, 색 −12·25)는 이 앱이 정했다 */
 function rec(){const f=an(),k=f.L>=60?"d":f.L<=40?"l":"m",D=[["#1b2a6b","남색"],["#222222","검정"],["#5a3a22","진한 갈색"]],Lt=[["#ffffff","흰색"],["#ffe066","밝은 노랑"],["#cfe8ff","연한 하늘색"]],
@@ -1334,7 +1345,7 @@ function texts(){
   $("#todo2").innerHTML=tips().map(t=>"<li>"+t+"</li>").join("");$("#calcBasis").innerHTML=calcBasis();$("#appUrl").textContent=APP_URL;
   $("#repFor").textContent=S.touched?profileLine()+"에 맞춰 계산했어요. 프로필을 바꾸면 결과도 바뀌어요.":"아직 아이 정보를 넣지 않아 기본값(강아지·소형)으로 계산했어요. ‘마이’에서 종류·크기·나이를 넣으면 결과가 아이에게 맞춰져요.";
   if(S.src){const cr=colorRank(),man=S.floorPick&&S.floorSrc===S.src,row=(c,first)=>`<div class="crow${first?" first":""}"><b>${c.name}</b><span class="pp"><i style="background:${c.hex}"></i><small>내 눈</small><span class="ar">→</span><i style="background:${c.pet}"></i><small>${N("의")} 눈</small></span><span class="st ${c.p>=cr.need?"ok":c.p>=12?"fix":"no"}">${c.p>=cr.need?"잘 보임":c.p>=12?"애매":"묻힘"}</span></div>`;
-    $("#repColors").innerHTML=`<div class="floorRef"><i style="background:rgb(${cr.fl.join(",")})"></i><div><b>${man?"직접 고른 바닥 색":"사진 아래쪽(바닥으로 보이는 곳)의 평균 색"}</b><small>이 색 위에 물건을 놓았다고 보고 계산했어요. 바닥이 다르게 잡혔다면 직접 골라 주세요.</small></div></div><button type="button" class="ghost" id="goFloor" style="margin:0 0 12px">바닥 색 직접 고르기</button><b>잘 보이는 색</b>${cr.best.map((c,i)=>row(c,i===0)).join("")}<b style="display:block;margin-top:12px">피할 색</b>${cr.worst.map((c,i)=>row(c,i===0)).join("")}<p class="note" style="margin:8px 0 0">왼쪽 동그라미는 원래 색, 오른쪽은 ${N("의")} 눈에 보이는 색이에요. 피할 색은 오른쪽이 바닥 색과 비슷해져요.</p><details style="margin-top:10px"><summary>17가지 색 전체 순위와 숫자 보기</summary>${cr.all.map((c,i)=>row(c,i===0).replace(/<\/div>$/,`<small style="margin-left:6px">차이 ${c.p}</small></div>`)).join("")}<p class="note">숫자는 ${N("의")} 눈에서 바닥과의 색 차이(ΔE)예요. ${cr.need} 이상이면 잘 보인다고 봤어요(이 앱이 정한 값).</p></details><button type="button" class="ghost" data-go="color" id="goShop">살 물건 사진으로 직접 확인하기</button>`;
+    $("#repColors").innerHTML=`<div class="floorRef"><i style="background:rgb(${cr.fl.join(",")})"></i><div><b>${man?"직접 고른 바닥 색":an().sure?"사진 아래쪽 가장자리에서 가장 넓게 보이는 색(바닥)":"바닥이 잘 안 보이는 사진이에요"}</b><small>${man||an().sure?"이 색 위에 물건을 놓았다고 보고 계산했어요. 바닥이 다르게 잡혔다면 직접 골라 주세요.":"물건만 크게 찍은 사진 같아요. 아래 버튼으로 바닥을 직접 누르거나, 바닥이 함께 나오게 다시 찍어 주세요."}</small></div></div><button type="button" class="ghost" id="goFloor" style="margin:0 0 12px">바닥 색 직접 고르기</button><b>잘 보이는 색</b>${cr.best.map((c,i)=>row(c,i===0)).join("")}<b style="display:block;margin-top:12px">피할 색</b>${cr.worst.map((c,i)=>row(c,i===0)).join("")}<p class="note" style="margin:8px 0 0">왼쪽 동그라미는 원래 색, 오른쪽은 ${N("의")} 눈에 보이는 색이에요. 피할 색은 오른쪽이 바닥 색과 비슷해져요.</p><details style="margin-top:10px"><summary>17가지 색 전체 순위와 숫자 보기</summary>${cr.all.map((c,i)=>row(c,i===0).replace(/<\/div>$/,`<small style="margin-left:6px">차이 ${c.p}</small></div>`)).join("")}<p class="note">숫자는 ${N("의")} 눈에서 바닥과의 색 차이(ΔE)예요. ${cr.need} 이상이면 잘 보인다고 봤어요(이 앱이 정한 값).</p></details><button type="button" class="ghost" data-go="color" id="goShop">살 물건 사진으로 직접 확인하기</button>`;
     const cp=confusePair();$("#repFact").innerHTML=cp?`<b class="t">이 사진에서 ${N("가")} 헷갈릴 두 색</b><div class="pair"><span class="sw"><i style="background:rgb(${cp[0].rgb.join(",")})"></i><i style="background:rgb(${cp[1].rgb.join(",")})"></i></span><span>내 눈에는 <b>확실히 다른 두 색</b>(차이 ${cp[2]})</span><span class="sw"><i style="background:rgb(${cp[0].pr.join(",")})"></i><i style="background:rgb(${cp[1].pr.join(",")})"></i></span><span>${N("의")} 눈에는 <b>거의 같은 색</b>(차이 ${cp[3]})</span></div><p class="note" style="margin:0">위 두 사진의 <b>노란 동그라미 ①②</b>가 그 두 곳이에요. 사진을 작은 칸으로 나눠 모든 칸 쌍을 비교해서 골랐어요(Viénot 외 1999·CIE Lab).</p>`:`<b class="t">이 사진엔 ${N("가")} 헷갈릴 색 조합이 거의 없어요</b><p class="note" style="margin:0">사람 눈에 뚜렷이 다른데 ${N("의")} 눈에 비슷해지는 두 색을 찾지 못했어요. 빨강·주황·초록 물건이 있는 곳을 찍으면 차이가 드러나요.</p>`}
   {const ts=S.src?tiles():[];$("#tiles").innerHTML=ts.map((t,i)=>`<button type="button" data-t="${i}" aria-expanded="${S.tileOpen===i}"><b>${t[0]}</b>${t[1]}<small>${S.tileOpen===i?"접기":"계산 근거 ›"}</small></button>`).join("");
     const tm=$("#tileMore"),o=ts[S.tileOpen];tm.classList.toggle("hide",!o);if(o)tm.innerHTML=o[2]}
@@ -1357,7 +1368,7 @@ function tiles(){const p=lostPct(),r=rec(),dog=isDog(),L=S.lost||{cols:0,rows:0,
   [`<i class="dot" style="background:${b.hex};width:18px;height:18px;vertical-align:-3px"></i>${b.name}`,"잘 보이는 색 1위",colorWhy(cr)],
   [`<i class="dot" style="background:${w.hex};width:18px;height:18px;vertical-align:-3px"></i>${w.name}`,"피할 색 1위",colorWhy(cr)],
   [p>=1?"약 "+pctTxt(p)+"%":"거의 없음","색에 묻히는 곳",`<b>색에 묻히는 곳은 이렇게 셌어요.</b><br>① 사진을 가로 ${L.cols}칸 × 세로 ${L.rows}칸(모두 ${L.cols*L.rows}칸)으로 나눠요.<br>② 이웃한 칸끼리 색 차이(ΔE)를 사람 눈 기준과 ${N("의")} 눈 기준으로 각각 재요.<br>③ 사람 눈에는 22 이상 다른데 ${N("의")} 눈에는 25 미만(‘약함’ 이하)이고 원래의 40% 이하로 줄어든 칸을 세요.<br>④ 이 사진은 ${L.cols*L.rows}칸 중 ${L.cnt}칸 = <b>${pctTxt(p)}%</b>예요.<br><span class="note">색 바꾸기는 Viénot 외(1999), 색 차이는 CIE 1976 Lab 공식이에요. 22·25·40%라는 기준은 이 앱이 정했어요. 예: 빨간 공과 초록 잔디는 사람 눈에 88, 개 눈에 21로 76% 줄어요.</span>`]]}
-function colorWhy(cr){const dog=isDog();return `<b>색 순위는 이렇게 매겼어요.</b><br>① 사진 아래쪽 40%를 바닥으로 보고 평균 색을 쟀어요 <i class="dot" style="background:rgb(${cr.fl.join(",")})"></i>${S.floorPick&&S.floorSrc===S.src?"(직접 고른 바닥)":""}.<br>② 물건에 흔한 색 17가지를 하나씩 이 바닥 색 옆에 놓았다고 보고, ${N("의")} 눈으로 바꾼 뒤 색 차이(ΔE)를 쟀어요.<br>③ 차이가 큰 순서가 ‘잘 보이는 색’, 작은 순서가 ‘피할 색’이에요. ${cr.need} 이상이면 잘 보인다고 봤어요${isSenior()?"(노령기라 일반 기준 25보다 높게 잡았어요, 예시)":""}.<br><span class="note">색 바꾸기는 사람 적록색맹 계산법(Viénot 외 1999)이라 ${dog?"개":"고양이"} 모두 같은 계산이에요. 견종에 따라 색 구분이 다르다는 연구는 찾지 못했어요. 개·고양이가 좋아하는 색이 아니라 잘 구분하는 색이에요. 25·35라는 기준과 17가지 색은 이 앱이 정했어요.</span>`}
+function colorWhy(cr){const dog=isDog();return `<b>색 순위는 이렇게 매겼어요.</b><br>① 사진 아래쪽 40%의 양옆과 맨 아래에서 가장 넓게 보이는 색을 바닥으로 봤어요 <i class="dot" style="background:rgb(${cr.fl.join(",")})"></i>${S.floorPick&&S.floorSrc===S.src?"(직접 고른 바닥)":""}.<br>② 물건에 흔한 색 17가지를 하나씩 이 바닥 색 옆에 놓았다고 보고, ${N("의")} 눈으로 바꾼 뒤 색 차이(ΔE)를 쟀어요.<br>③ 차이가 큰 순서가 ‘잘 보이는 색’, 작은 순서가 ‘피할 색’이에요. ${cr.need} 이상이면 잘 보인다고 봤어요${isSenior()?"(노령기라 일반 기준 25보다 높게 잡았어요, 예시)":""}.<br><span class="note">색 바꾸기는 사람 적록색맹 계산법(Viénot 외 1999)이라 ${dog?"개":"고양이"} 모두 같은 계산이에요. 견종에 따라 색 구분이 다르다는 연구는 찾지 못했어요. 개·고양이가 좋아하는 색이 아니라 잘 구분하는 색이에요. 25·35라는 기준과 17가지 색은 이 앱이 정했어요.</span>`}
 function tilesOld(){const dog=isDog();return[
   [dog?"약 0.27":"0.2","시력(추정)",dog?`<b>시력 0.27은 이렇게 나왔어요.</b><br>개의 시력은 보통 20/75로 추정돼요. 우리 시력표 숫자로 바꾸면 20 ÷ 75 = <b>0.27</b>이에요. 사람이 75피트(약 23m)에서 알아보는 것을 20피트(약 6m)까지 다가와야 알아본다는 뜻이에요.<br><span class="note">출처: Byosiere 외(2018) 총설. 실제로 잰 개는 비글 3마리(20/45~20/85), 시바 3마리(20/60~20/85)처럼 수가 적어서 ‘추정’이라고 적었어요. 견종별 시력 숫자는 없어요.</span>`:`<b>시력 0.2는 이렇게 나왔어요.</b><br>고양이 시력은 연구마다 20/30에서 20/200까지 크게 갈려요. 이 앱은 그 사이의 20/100을 골랐고, 우리 시력표 숫자로 바꾸면 20 ÷ 100 = <b>0.2</b>예요.<br><span class="note">출처: 수의안과 전문의 설명(PetMD). 연구 사이의 차이가 커서 ‘추정’이라고 적었어요.</span>`],
   [r.name,"이 바닥에 추천",`<b>추천은 이 사진의 바닥 밝기를 보고 골랐어요.</b><br>① 사진 아래쪽 40%를 바닥으로 보고 평균 밝기를 쟀어요: <b>${r.L}</b> (0 검정 ~ 100 흰색, ${r.tone}).<br>② ${dog?"개":"고양이"}는 빨강~초록의 색 차이는 잘 못 느끼지만 <b>밝기 차이는 느껴요</b>. 그래서 물건 색의 이름보다 바닥과 밝기가 얼마나 다른지가 먼저예요. ‘밝기가 다르다’는 것은 흑백 사진으로 찍어도 바닥과 물건이 구분된다는 뜻이에요.<br>③ ${r.why} 잘 보여요. 예: ${r.full}.<br>④ 바닥과 밝기가 비슷한 물건을 써야 한다면 파랑이나 노랑 계열이어야 구분돼요${dog?"(개가 구분하는 색, Byosiere 외 2018)":"(수의안과 전문의 설명)"}.<br><span class="note">밝기 60 이상을 밝은 바닥, 40 이하를 어두운 바닥으로 본 것은 이 앱이 정한 기준이에요. 개·고양이가 어떤 색을 ‘좋아하는지’를 잰 연구는 확인하지 못했어요. 여기서 추천하는 것은 좋아하는 색이 아니라 잘 구분하는 색이에요.</span>`]]}
@@ -1367,30 +1378,39 @@ const numYe=n=>{const s=String(n);return s+("013678".includes(s[s.length-1])?"�
    가장 가까운 흔한 색 이름으로 부른다. 흰색·회색·검정·베이지·갈색은 벽·바닥·그림자에 흔해 뺐다(이 앱이 정한 값) */
 function ownItems(){if(S.oiSrc===S.src&&S.oiK===colorRank())return S.oi;const cr=colorRank(),fl=cr.fl,fH=lab(...fl),fP=lab(...dich(...fl)),need=cr.need;
   const k=Math.sqrt(1600/(S.src.width*S.src.height)),W=Math.max(1,Math.round(S.src.width*k)),H=Math.max(1,Math.round(S.src.height*k)),c=mk(W,H),x=c.getContext("2d",{willReadFrequently:true});x.drawImage(S.src,0,0,W,H);const d=x.getImageData(0,0,W,H).data;free(c);
-  const pal=PALETTE.filter(p=>!["흰색","회색","검정","베이지","갈색"].includes(p[1])).map(([hex,name])=>({hex,name,L:lab(...hexRgb(hex))})),cnt={},area={};
+  /* 머스터드는 누런 털·마른 잔디·나무와 겹쳐 '머스터드 물건'으로 잘못 부르는 일이 많아 뺐다(실제 사진 시험).
+     주황은 황금색 털과 겹치지 않게, 장난감처럼 진한 주황(채도 50 이상)만 센다(이 앱이 정한 값) */
+  const minCh={"주황":50,"하늘색":28};/* 하늘색은 눈밭·흰 벽의 푸른 그림자(채도 15~25)와 겹치지 않게 */
+  const pal=PALETTE.filter(p=>!["흰색","회색","검정","베이지","갈색","머스터드"].includes(p[1])).map(([hex,name])=>({hex,name,L:lab(...hexRgb(hex))})),cnt={},area={};
   /* 채도(색의 진하기) 20 미만은 흰 이불의 그림자처럼 거의 무채색이라 색 이름을 붙이지 않는다(이 앱이 정한 값) */
   let grass=0;
-  for(let i=0;i<d.length;i+=4){const rgb=[d[i],d[i+1],d[i+2]],h=lab(...rgb),ch=Math.hypot(h[1],h[2]),hue=Math.atan2(h[2],h[1])*57.3;if(ch>=8&&hue>=95&&hue<=200)grass++;if(ch<20)continue;let m=null,md=99;for(const p of pal){const e=dE(p.L,h);if(e<md){md=e;m=p}}if(!m||md>=25)continue;
-    area[m.name]=(area[m.name]||0)+1;if(dE(h,fH)<20)continue;if(dE(lab(...dich(...rgb)),fP)>=need)continue;cnt[m.name]=(cnt[m.name]||0)+1}
+  for(let i=0;i<d.length;i+=4){const rgb=[d[i],d[i+1],d[i+2]],h=lab(...rgb),ch=Math.hypot(h[1],h[2]),hue=Math.atan2(h[2],h[1])*57.3;if(ch>=8&&hue>=95&&hue<=200)grass++;if(ch<20)continue;let m=null,md=99;for(const p of pal){const e=dE(p.L,h);if(e<md){md=e;m=p}}if(!m||md>=25)continue;if(ch<(minCh[m.name]||0))continue;
+    /* 물건은 바닥 위에 있으니 사진 아래쪽 60%에서만 센다. 하늘·강물·벽을 '하늘색·민트 물건'으로 부르던 문제(한국 사진 시험) */
+    area[m.name]=(area[m.name]||0)+1;if(i/4<W*Math.floor(H*.4))continue;if(dE(h,fH)<20)continue;if(dE(lab(...dich(...rgb)),fP)>=need)continue;cnt[m.name]=(cnt[m.name]||0)+1}
   /* 사진의 30% 넘게 덮은 색은 물건이 아니라 잔디·카펫 같은 배경으로 본다(이 앱이 정한 값) */
   /* 잔디처럼 초록·연두·민트·머스터드로 나뉘어 잡히는 배경은 한 무리로 묶어 잰다 */
   /* 어두운 잔디는 색 이름이 안 붙어 빠지므로, 초록 쪽 색상(Lab 색상각 95~200도)인 칸 전체로 잰다 */
   const tot=W*H;if(grass>tot*.3)["초록","연두","민트"].forEach(k=>delete cnt[k]);
   for(const k in area)if(area[k]>tot*.3)delete cnt[k];const out=Object.entries(cnt).map(([name,n])=>({name,hex:PALETTE.find(p=>p[1]===name)[0],pct:n*100/tot})).filter(o=>o.pct>=1).sort((a,b)=>b.pct-a.pct).slice(0,2);
+  /* 바깥 사진인지: 잔디가 30% 넘거나, 위쪽 20%가 밝고 푸른 하늘이면 산책길로 보고 말을 바꾼다 */
+  let sky=0,sn=0;for(let y=0;y<Math.max(1,Math.floor(H*.2));y++)for(let q=0;q<W;q++){const i=(y*W+q)*4,l=lab(d[i],d[i+1],d[i+2]);sn++;if(l[0]>55&&l[2]<-8)sky++}
+  out.outdoor=grass>tot*.3||sky>sn*.4;
   S.oiSrc=S.src;S.oiK=cr;S.oi=out;return out}
 function todo(){const a=[],dog=isDog(),r=rec(),L=S.lost||{cnt:0,red:0,green:0},p=lostPct();
-  {const oi=ownItems(),best=colorRank().best;if(oi.length){const nm=oi.map(o=>dotC(o)).join(" · ");
-    a.push(`<b>사진 속 ${nm} 물건이 ${N("의")} 눈엔 바닥과 거의 같은 색으로 보여요</b>(사진의 약 ${pctTxt(oi.reduce((s,o)=>s+o.pct,0))}%). 그게 ${N("의")} 장난감·그릇·방석이라면 ${best.slice(0,2).map(c=>dotC(c)).join(" · ")} 계열로 바꾸거나, 밑에 그 색 매트를 깔아 주세요.`)}}
+  const sure=an().sure||(S.floorPick&&S.floorSrc===S.src);
+  /* 바닥이 안 보이는 사진(물건만 크게 찍음)은 바닥 기준 계산이 틀리므로 먼저 알리고, 사진 속 물건 짚기는 하지 않는다 */
+  if(!sure)a.push(`<b>바닥이 잘 안 보이는 사진이에요.</b> 색 추천은 바닥 색을 기준으로 하는데, 이 사진에선 바닥을 찾기 어려웠어요. ‘바닥 색 직접 고르기’로 바닥을 누르거나, 물건과 바닥이 함께 나오게 다시 찍어 주세요.`);
+  {const oi=sure?ownItems():[],best=colorRank().best,two=best.slice(0,2).map(c=>dotC(c)).join(" · ");if(oi.length){const nm=oi.map(o=>dotC(o)).join(" · ");
+    a.push(`<b>사진 속 ${nm} 물건이 ${N("의")} 눈엔 ${oi.outdoor?"땅":"바닥"}과 거의 같은 색으로 보여요</b>(사진의 약 ${pctTxt(oi.reduce((s,o)=>s+o.pct,0))}%). `+(oi.outdoor?`산책 때 쓰는 공이나 장난감이 이 색이라면 ${two} 계열로 바꿔 주세요.`:`그게 ${N("의")} 장난감·그릇·방석이라면 ${two} 계열로 바꾸거나, 밑에 그 색 매트를 깔아 주세요.`))}}
   if(p>=1){const rs=L.red/L.cnt,gs=L.green/L.cnt,what=rs>.25&&gs>.25?"빨강·주황 계열과 초록 계열이 맞닿은 곳":rs>=gs&&rs>.25?"빨강·주황 계열이 있는 곳":gs>.25?"초록 계열과 그 위에 놓인 것이 있는 곳":"빨강~초록 사이의 색이 섞인 곳";
     /* 기준: 실제 집·산책 사진 145장(위키미디어 공용)으로 시험했을 때 102장(70%)은 0%, 95%는 17% 이하였다 */
     const lv=p>=10?"많은 편이에요":p>=3?"눈여겨볼 만해요":"적은 편이에요";
-    a.push(`<b>색에 묻히는 곳이 사진의 약 ${pctTxt(p)}%로, ${lv}.</b> 주로 ${what}이에요. ‘색 점검’에서 노란 테두리로 위치를 확인해 보세요. 거기 있는 것이 ${N("의")} 물건이라면 ${N("가")} 찾기 어려울 수 있어요. <span class="note">비교 기준: 실제 집·산책 사진 145장 중 70%는 0%, 95%는 17% 이하였어요(이 앱의 시험).</span>`)}
+    a.push(`<b>색에 묻히는 곳이 사진의 약 ${pctTxt(p)}%로, ${lv}.</b> 주로 ${what}이에요. ‘색 점검’의 노란 테두리 안에 ${N("의")} 물건이 있다면 찾기 어려울 수 있어요. <span class="note">비교: 실제 사진 145장 중 70%는 0%, 95%는 17% 이하(이 앱의 시험)</span>`)}
   /* 위에서 사진 속 물건을 이미 짚었다면 '바꾸지 않아도 돼요'는 서로 어긋나므로 말하지 않는다(한국 사진 247장 시험에서 발견) */
-  else if(!ownItems().length)a.push(`<b>이 사진에는 색 때문에 묻히는 곳이 거의 없어요.</b> 지금 보이는 물건들은 색을 바꾸지 않아도 돼요.`);
-  const cr=colorRank(),cp=confusePair();
-  const jo=(l,p)=>josa(l[l.length-1].name,p);
-  a.push(`<b>이 바닥(${r.tone}, 밝기 ${r.L})에는 ${cr.best.map(c=>dotC(c)).join(" · ")}${jo(cr.best,"이")} 잘 보여요.</b> 반대로 ${cr.worst.map(c=>dotC(c)).join(" · ")}${jo(cr.worst,"은")} ${N("의")} 눈에 바닥과 비슷하게 보여요.`);
-  if(cr.trap.length)a.push(`<b>사람 눈엔 잘 보이지만 ${N("의")} 눈엔 묻히는 색: ${cr.trap.map(c=>dotC(c)).join(" · ")}</b>. 이 바닥에서 사람이 고르기 쉬운 함정 색이에요. 장난감을 살 때 조심하세요.`);
+  else if(sure&&!ownItems().length)a.push(`<b>이 사진에는 색 때문에 묻히는 곳이 거의 없어요.</b> 지금 보이는 물건들은 색을 바꾸지 않아도 돼요.`);
+  const cr=colorRank();
+  /* '이 바닥엔 ○○이 잘 보이고 ○○은 묻혀요'는 바로 위 1번 '잘 보이는 색·피할 색'과 같은 내용이라 뺐다(보고서 줄이기) */
+  if(sure&&cr.trap.length)a.push(`<b>사람 눈엔 잘 보이지만 ${N("의")} 눈엔 묻히는 색: ${cr.trap.map(c=>dotC(c)).join(" · ")}</b>. 이 바닥에서 사람이 고르기 쉬운 함정 색이에요. 장난감을 살 때 조심하세요.`);
   /* '헷갈리는 두 색'은 1부에 그림과 함께 이미 있어 여기서 되풀이하지 않는다(보호자 입장 검토: 같은 말 두 번, 숫자만 다름) */
   if(r.all<30)a.push(`<b>사진이 어두워요.</b> 어두운 사진은 색 계산이 부정확할 수 있어요. 불을 켜거나 낮에 다시 찍어 보세요.`);
   else if(r.all>96&&r.L>96)a.push(`<b>사진이 하얗게 날아갔어요.</b> 너무 밝은 사진은 색이 지워져 계산이 부정확할 수 있어요. 창 쪽을 등지고 다시 찍어 보세요.`);
@@ -1406,9 +1426,10 @@ function tips(){const a=[],dog=isDog(),cr=S.src?colorRank():null,b=cr?cr.best[0]
     if(S.snout==="long")a.push(`<b>장난감은 정면보다 바닥을 따라 옆으로 굴려 주세요.</b> 주둥이가 긴 개는 좌우로 넓은 띠를 가장 또렷하게 볼 가능성이 있어요(망막 연구 22마리, 예시).`);
     else if(S.snout==="short")a.push(`<b>간식과 장난감은 옆보다 정면에서 보여 주세요.</b> 주둥이가 짧은 개는 정면 가운데를 가장 또렷하게 볼 가능성이 있어요(망막 연구 22마리, 예시).`)}
   else a.push(`<b>간식과 장난감은 코앞보다 한 뼘 넘게 떨어뜨려 보여 주세요.</b> 고양이는 약 25cm 안쪽에서 초점이 흐려져요.`);
-  a.push(`<b>장난감을 살 때는 ${cr?cr.best.slice(0,2).map(c=>c.name).join("이나 "):"파랑이나 노랑"} 계열로 고르세요.</b> 지금 가진 물건이 괜찮은지는 ‘색 점검 → 살 물건’에서 사진으로 확인할 수 있어요.`);
+  /* 사진이 있으면 추천 색은 이미 1번에 있으니, 여기선 '살 물건 확인'으로 이어 주기만 한다(보고서 줄이기) */
+  a.push(cr?`<b>새 장난감을 사기 전에 ‘색 점검 → 살 물건’에 쇼핑몰 사진을 넣어 보세요.</b> 이 바닥에서 보일지 바로 알려 줘요.`:`<b>장난감을 살 때는 파랑이나 노랑 계열로 고르세요.</b> 지금 가진 물건이 괜찮은지는 ‘색 점검 → 살 물건’에서 사진으로 확인할 수 있어요.`);
   return a}
-function calcBasis(){const dog=isDog();return `<ul class="plain"><li><b>색</b>: 사람 적록색맹 계산법(Viénot 외 1999)으로 바꾼 뒤, 바닥과의 색 차이(ΔE)가 ${needDE()} 이상이면 ‘잘 보임’으로 봤어요. ${isSenior()?"노령기라 일반 기준 25보다 높게 잡았어요(예시).":"노령기가 되면 35로 올려 계산해요(예시)."} 개·고양이·견종 모두 같은 색 계산이에요.</li><li><b>나이</b>: ${ageTxt()} · 노령기 시작은 ${dog?lifeTxt():"10살 초과(AAHA·AAFP 2021)"}.</li>${dog?`<li><b>또렷한 곳</b>: 주둥이 ${SNOUT[S.snout]}${S.snout==="mid"?"이라 시야 전체를 고르게 처리했어요":"에 맞춰 망막 연구(22마리)를 그림으로 옮긴 예시예요"}.</li><li><b>눈높이</b>: ${SIZE[S.size].n}견 ${SIZE[S.size].eye}(이 앱의 추정).</li>`:""}<li>25·35, 17가지 색, ‘사진 아래 40% = 바닥’은 이 앱이 정한 값이에요.</li></ul>`}
+function calcBasis(){const dog=isDog();return `<ul class="plain"><li><b>색</b>: 사람 적록색맹 계산법(Viénot 외 1999)으로 바꾼 뒤, 바닥과의 색 차이(ΔE)가 ${needDE()} 이상이면 ‘잘 보임’으로 봤어요. ${isSenior()?"노령기라 일반 기준 25보다 높게 잡았어요(예시).":"노령기가 되면 35로 올려 계산해요(예시)."} 개·고양이·견종 모두 같은 색 계산이에요.</li><li><b>나이</b>: ${ageTxt()} · 노령기 시작은 ${dog?lifeTxt():"10살 초과(AAHA·AAFP 2021)"}.</li>${dog?`<li><b>또렷한 곳</b>: 주둥이 ${SNOUT[S.snout]}${S.snout==="mid"?"이라 시야 전체를 고르게 처리했어요":"에 맞춰 망막 연구(22마리)를 그림으로 옮긴 예시예요"}.</li><li><b>눈높이</b>: ${SIZE[S.size].n}견 ${SIZE[S.size].eye}(이 앱의 추정).</li>`:""}<li>25·35, 17가지 색, ‘사진 아래쪽 가장자리에서 가장 넓은 색 = 바닥’은 이 앱이 정한 방법이에요.</li></ul>`}
 function spotsUI(){const did=SPOTS.filter(s=>S.spots[s[0]]),done=did.length;$("#spotCount").textContent=done+" / "+SPOTS.length;$("#spotBar").style.width=(done/SPOTS.length*100)+"%";
   $("#spotList").innerHTML=SPOTS.map(s=>{const r=S.spots[s[0]];return `<div class="spot${r?" done":""}" data-spot="${s[0]}"><button type="button" class="spotMain">${r&&r.img?`<img src="${r.img}" alt="">`:`<i class="ph">${r?"✓":"+"}</i>`}<span><b>${s[1]}</b><em>${r?(r.p>=1?"색에 묻히는 곳 약 "+pctTxt(r.p)+"%":"색에 묻히는 곳 거의 없음")+" · "+r.d:`아직 안 했어요<span class="pc">사진을 이 줄로 끌어다 놓아도 돼요</span>`}</em>${r&&r.p>=1?`<em class="adv">${SPOT_ADV[s[0]]}</em>`:""}</span><u>${r?(r.img?"다시 보기":"사진 다시 넣기"):"사진 넣기"}</u></button>${r?`<button type="button" class="spotDel" data-del="${s[0]}">지우기</button>`:""}</div>`}).join("");
   const sum=$("#spotSum");sum.classList.toggle("hide",!done);if(done){const worst=did.slice().sort((a,b)=>S.spots[b[0]].p-S.spots[a[0]].p)[0],wp=S.spots[worst[0]].p;

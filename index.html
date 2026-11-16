@@ -14,6 +14,15 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <meta name="color-scheme" content="light dark">
+<script>
+/* 카카오톡·인스타그램 등 앱 안의 브라우저로 열리면 카메라·저장·설치가 막힐 수 있어, 폰의 기본 브라우저로 자동으로 다시 연다 */
+(function(){var u=navigator.userAgent,h=location.href;try{
+  if(/KAKAOTALK/i.test(u)){location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(h)}
+  else if(/Android/.test(u)&&/Instagram|FBAN|FBAV|Line\/|NAVER\(inapp|DaumApps|everytimeApp/i.test(u)){location.href="intent://"+h.replace(/^https?:\/\//,"")+"#Intent;scheme=https;package=com.android.chrome;end"}
+}catch(e){}
+/* 설치 창 신호는 일찍 올 수 있어 미리 받아 둔다 */
+addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__dp=e})})();
+</script>
 <style>
 /* 글꼴은 같은 폴더의 파일을 쓴다(외부 서버 연결 없음). Pretendard, SIL OFL 1.1 */
 @font-face{font-family:"Pretendard Variable";font-weight:45 920;font-style:normal;font-display:swap;src:url("PretendardVariable.woff2") format("woff2-variations"),url("PretendardVariable.woff2") format("woff2")}
@@ -447,6 +456,8 @@ footer{color:var(--mute);margin-top:30px}
     <div class="demo" aria-hidden="true"><canvas id="hA"></canvas><canvas id="hB"></canvas><u></u><span class="l">내 눈</span><span class="r">강아지 눈</span></div>
   </div>
 
+  <button type="button" class="instBtn feat card hide"><i data-ic="download"></i><span><b>앱으로 설치하기</b>한 번 설치하면 홈 화면 아이콘으로 바로 열려요</span></button>
+
   <div class="card">
     <h3>이 순서로 써 보세요</h3>
     <p class="lead" style="margin-bottom:4px">위에서부터 차례로 누르면 돼요. 끝낸 단계는 파랗게 표시돼요.</p>
@@ -709,8 +720,8 @@ footer{color:var(--mute);margin-top:30px}
     <label class="f" style="margin-top:0">밝기</label><div class="seg" id="themeSeg"><button type="button" data-v="light">밝게</button><button type="button" data-v="dark">어둡게</button></div>
     <label class="f">글자 크기</label><div class="seg" id="zoomSeg"><button type="button" data-v="1">보통</button><button type="button" data-v="1.15" style="font-size:16.5px">크게</button><button type="button" data-v="1.3" style="font-size:18.5px">아주 크게</button></div>
   </div>
-  <div class="card inst"><h3>앱처럼 홈 화면에 두기</h3><div id="instBody"></div><button type="button" class="primary hide" id="btnInstall">앱으로 설치하기</button>
-    <p class="note" style="margin-top:10px">기록과 사진은 이 기기·이 브라우저 안에만 저장돼요. 다른 사람과 섞이지 않고, 서버로 보내지 않아요. 그래서 다른 브라우저로 열거나 사생활 보호(비밀) 모드에서는 기록이 보이지 않아요.</p></div>
+  <div class="card inst"><h3>앱처럼 홈 화면에 두기</h3><div id="instBody"></div><button type="button" class="primary hide" id="btnInstall">앱으로 설치하기</button><p class="hide"></p>
+    <p class="note" style="margin-top:10px">안드로이드의 크롬·삼성 인터넷에서는 버튼 한 번으로 설치돼요. 아이폰·아이패드·맥은 애플 정책상 웹에서 설치 창을 띄울 수 없어서, 버튼을 누르면 누를 곳을 알려 드려요. 기록과 사진은 이 기기·이 브라우저 안에만 저장돼요. 다른 사람과 섞이지 않고, 서버로 보내지 않아요. 그래서 다른 브라우저로 열거나 사생활 보호(비밀) 모드에서는 기록이 보이지 않아요.</p></div>
   <div class="card"><h3>‘한 뼘 시선’이란</h3>
     <p style="font-size:14.5px">한 뼘은 손을 폈을 때 엄지 끝에서 새끼손가락 끝까지, 약 20cm예요. 고양이와 작은 개의 눈이 바닥에서 딱 그만큼 높이에 있어요. <b>바닥에서 한 뼘 높이로 내려가 아이의 눈으로 집을 다시 본다</b>는 뜻으로 지었어요.</p>
     <p style="font-size:14.5px;display:flex;gap:10px;align-items:center"><span class="logo" aria-hidden="true"></span><span>로고는 눈이에요. 가운데 검은 원이 눈동자이고, 파랑과 노랑은 개와 고양이가 가장 잘 구분하는 두 색이에요.</span></p>
@@ -783,6 +794,7 @@ footer{color:var(--mute);margin-top:30px}
 </nav>
 </div>
 <div class="modal hide" id="crop" role="dialog" aria-label="프로필 사진 자르기"><div class="mbox"><b>프로필에 보일 부분 고르기</b><p class="note">사진을 끌어서 옮기고, 아래 막대로 크기를 조절해 주세요. 동그라미 안이 프로필에 보여요.</p><div class="cropv"><canvas id="cropC" width="300" height="300"></canvas></div><input type="range" id="cropZ" min="0" max="100" value="0" aria-label="사진 크기"><div class="row"><button type="button" class="ghost" id="cropFill">원에 꽉 채우기</button><button type="button" class="ghost" id="cropFit">사진 전체 보이기</button></div><div class="row"><button type="button" class="ghost" id="cropNo" style="margin-top:12px">취소</button><button type="button" class="primary" id="cropOk">확인</button></div></div></div>
+<div class="modal hide" id="instModal" role="dialog" aria-label="앱 설치 방법"><div class="mbox"><b>홈 화면에 추가하기</b><div class="inst" id="instGuide"></div><button type="button" class="primary" id="instClose">알겠어요</button></div></div>
 <video id="video" playsinline webkit-playsinline muted autoplay></video>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -1358,20 +1370,25 @@ $("#fxOld").addEventListener("click",e=>{const row=e.target.closest(".fx");if(!r
 $("#file").addEventListener("change",e=>{fromFile(e.target.files[0]);e.target.value=""});
 $("#btnSample").addEventListener("click",()=>{stopCam();const c=sampleScene();setSource(c,c.width,c.height)});
 document.addEventListener("click",e=>{if(e.target.closest("#repGoSpots")){go("home");setTimeout(()=>$("#spotList").closest(".card").scrollIntoView({behavior:"smooth",block:"start"}),60)}});
-$("#btnLiveOn").addEventListener("click",startCam);/* 기기·브라우저별 홈 화면 추가 방법 */
-{const ua=navigator.userAgent,iOS=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),sam=/SamsungBrowser/.test(ua),kakao=/KAKAOTALK/i.test(ua),crios=/CriOS/.test(ua),android=/Android/.test(ua),mac=/Macintosh/.test(ua)&&!iOS,safari=/Safari/.test(ua)&&!/Chrome|CriOS|Edg|SamsungBrowser/.test(ua),
-    standalone=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
-  let h;if(standalone)h="<p>지금 앱으로 설치해서 쓰고 계세요.</p>";
-  else if(kakao)h="<p>지금은 카카오톡 안에서 열려 있어요. 카카오톡 안에서는 카메라와 저장이 제한될 수 있어요.</p><ol><li>오른쪽 아래(또는 위) <b>⋮</b> 메뉴</li><li><b>다른 브라우저로 열기</b></li><li>열린 브라우저에서 아래 방법으로 홈 화면에 추가</li></ol>";
-  else if(iOS&&crios)h="<ol><li>주소창 오른쪽 <b>공유 버튼</b>(네모에 위 화살표)</li><li><b>홈 화면에 추가</b></li></ol><p class=\"note\">iOS 16.4 이상에서 돼요. 메뉴에 없으면 사파리로 열어 주세요.</p>";
-  else if(iOS)h="<ol><li>사파리 아래쪽(아이패드는 위쪽)의 <b>공유 버튼</b>(네모에 위 화살표)</li><li>목록을 내려 <b>홈 화면에 추가</b></li><li>오른쪽 위 <b>추가</b></li></ol>";
-  else if(sam)h="<ol><li>오른쪽 아래 <b>≡</b> 메뉴</li><li><b>현재 페이지 추가</b> → <b>홈 화면</b></li></ol><p class=\"note\">메뉴에 ‘앱 설치’가 보이면 그걸 눌러도 돼요.</p>";
-  else if(android)h="<p>아래 버튼을 누르거나, 크롬 오른쪽 위 <b>⋮</b> 메뉴 → <b>설치</b>(또는 <b>홈 화면에 추가</b>)를 누르세요.</p><p class=\"note\">‘설치’는 앱처럼 따로 열리고, ‘바로가기 만들기’는 브라우저 탭으로 열려요. 설치를 권해요.</p>";
-  else if(mac&&safari)h="<ol><li>화면 맨 위 <b>파일</b> 메뉴</li><li><b>Dock에 추가</b></li></ol><p class=\"note\">macOS 14(소노마) 이상 사파리에서 돼요.</p>";
-  else h="<p>주소창 오른쪽 끝의 <b>설치 아이콘</b>(모니터에 아래 화살표)을 누르거나, 브라우저 메뉴에서 <b>앱 설치</b>를 고르세요.</p>";
-  $("#instBody").innerHTML=h;
-  let dp=null;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;$("#btnInstall").classList.remove("hide")});
-  $("#btnInstall").addEventListener("click",async()=>{if(!dp)return;dp.prompt();try{await dp.userChoice}catch(e){}dp=null;$("#btnInstall").classList.add("hide")})}
+$("#btnLiveOn").addEventListener("click",startCam);
+/* 설치: 버튼 하나로 되는 브라우저(안드로이드 크롬·삼성 인터넷·엣지)는 바로 설치 창을 띄우고,
+   애플 기기처럼 웹에서 설치를 띄울 수 없는 곳은 그 기기의 버튼 위치를 그림처럼 보여 준다 */
+{const ua=navigator.userAgent,iOS=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),sam=/SamsungBrowser/.test(ua),crios=/CriOS/.test(ua),android=/Android/.test(ua),mac=/Macintosh/.test(ua)&&!iOS,safari=/Safari/.test(ua)&&!/Chrome|CriOS|Edg|SamsungBrowser/.test(ua),
+    standalone=()=>(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone;
+  let dp=window.__dp||null;
+  const guide=()=>iOS&&crios?"<ol><li>주소창 오른쪽 <b>공유 버튼</b> <b>⬆︎</b>을 눌러요</li><li><b>홈 화면에 추가</b>를 눌러요</li></ol><p class=\"note\">아이폰·아이패드는 애플 정책상 웹에서 설치 창을 직접 띄울 수 없어서, 이 두 번만 눌러 주시면 돼요.</p>"
+    :iOS?"<ol><li>사파리 "+(/iPad/.test(ua)||navigator.maxTouchPoints>1&&/Macintosh/.test(ua)?"위쪽":"아래쪽")+"의 <b>공유 버튼</b> <b>⬆︎</b>을 눌러요</li><li>목록을 조금 내려 <b>홈 화면에 추가</b>를 눌러요</li><li>오른쪽 위 <b>추가</b>를 눌러요</li></ol><p class=\"note\">아이폰·아이패드는 애플 정책상 웹에서 설치 창을 직접 띄울 수 없어요. 대신 이 세 번이면 앱처럼 아이콘이 생겨요.</p>"
+    :mac&&safari?"<ol><li>화면 맨 위 <b>파일</b> 메뉴</li><li><b>Dock에 추가</b></li></ol>"
+    :sam?"<ol><li>오른쪽 아래 <b>≡</b> 메뉴</li><li><b>현재 페이지 추가</b> → <b>홈 화면</b></li></ol><p class=\"note\">이미 설치했다면 홈 화면의 ‘한 뼘 시선’ 아이콘으로 여세요.</p>"
+    :android?"<ol><li>오른쪽 위 <b>⋮</b> 메뉴</li><li><b>설치</b>(또는 <b>홈 화면에 추가</b>)</li></ol><p class=\"note\">이미 설치했다면 이 버튼이 바로 동작하지 않아요. 홈 화면의 ‘한 뼘 시선’ 아이콘으로 여세요.</p>"
+    :"<p>주소창 오른쪽 끝의 <b>설치 아이콘</b>(모니터에 아래 화살표)을 누르거나, 브라우저 메뉴에서 <b>앱 설치</b>를 고르세요.</p>";
+  const show=()=>{const on=!standalone();$$(".instBtn").forEach(b=>b.classList.toggle("hide",!on));$("#instBody").innerHTML=on?guide():"<p>지금 앱으로 설치해서 쓰고 계세요.</p>";$("#btnInstall").classList.toggle("hide",!on)};
+  const tryInstall=async()=>{if(!dp)dp=window.__dp||null;if(dp){dp.prompt();let ok=false;try{ok=(await dp.userChoice).outcome==="accepted"}catch(e){}dp=null;window.__dp=null;if(ok)toast("설치했어요. 홈 화면의 아이콘으로 열 수 있어요.");return}
+    $("#instGuide").innerHTML=guide();$("#instModal").classList.remove("hide")};
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;window.__dp=e});
+  window.addEventListener("appinstalled",()=>{dp=null;show()});
+  document.addEventListener("click",e=>{if(e.target.closest(".instBtn,#btnInstall"))tryInstall();if(e.target.closest("#instClose"))$("#instModal").classList.add("hide")});
+  show()}
 document.addEventListener("click",e=>{if(e.target.closest("#goShop")){S.mode.color="shop";ui();applySplit();draw()}});
 document.addEventListener("click",e=>{if(e.target.closest("#pickPhoto"))$("#s-photo").scrollIntoView({behavior:"smooth",block:"start"})});$("#btnLiveStop").addEventListener("click",stopCam);
 $("#liveMode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.liveMode=b.dataset.m;liveUI()});

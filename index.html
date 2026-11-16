@@ -1438,6 +1438,7 @@ function setSource(img,w,h){const M=960,s=Math.min(1,M/Math.max(w,h)),c=mk(w*s,h
 /* 넣은 사진(최대 6장)과 진행 단계를 이 기기에 저장한다. 사진은 용량이 커서 localStorage 대신 IndexedDB에 둔다. 서버로는 보내지 않는다 */
 const IDB={p:null,db(){if(!this.p)this.p=new Promise(r=>{try{const q=indexedDB.open("hb",1);q.onupgradeneeded=()=>q.result.createObjectStore("kv");q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}});return this.p},
   async put(k,v){const d=await this.db();if(!d)return false;return new Promise(r=>{try{const t=d.transaction("kv","readwrite");t.objectStore("kv").put(v,k);t.oncomplete=()=>r(true);t.onerror=t.onabort=()=>r(false)}catch(e){r(false)}})},
+  async clear(){const d=await this.db();if(!d)return false;return new Promise(r=>{try{const t=d.transaction("kv","readwrite");t.objectStore("kv").clear();t.oncomplete=()=>r(true);t.onerror=t.onabort=()=>r(false)}catch(e){r(false)}})},
   async get(k){const d=await this.db();if(!d)return null;return new Promise(r=>{try{const q=d.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)}catch(e){r(null)}})}};
 function saveSeen(){try{localStorage.setItem("hb-seen",JSON.stringify(S.seen))}catch(e){}}
 let rsT=0;function saveRecent(){clearTimeout(rsT);rsT=setTimeout(async()=>{const list=[];for(const r of S.recent){const b=await new Promise(ok=>{try{r.c.toBlob(ok,"image/jpeg",.85)}catch(e){ok(null)}});if(b)list.push({b,t:r.t,cam:!!r.cam})}await IDB.put("recent",{list,idx:S.rIdx});
@@ -1683,10 +1684,12 @@ $("#shopStage").addEventListener("click",e=>{if(!S.shop)return;const p=rel(e,$("
 $("#btnSave").addEventListener("click",saveCard);$("#btnShare").addEventListener("click",shareCard);
 $("#btnShare2").addEventListener("click",shareCard2);$("#btnSave2").addEventListener("click",async()=>saveBlob(await card2Blob(),"my-pet-report-"+Date.now()+".png","맞춤 리포트 사진을 내려받았어요."));
 $("#btnReset").addEventListener("click",async()=>{if(!confirm("모든 기록을 초기화할까요?\n프로필, 사진, 우리 집 점검, 진행 단계가 모두 지워지고 되돌릴 수 없어요."))return;
+  /* 저장 공간을 확실히 비운 뒤(끝날 때까지 기다림), 새로고침 없이 화면을 그 자리에서 처음 상태로 되돌린다 */
+  clearTimeout(rsT);await IDB.clear();
   try{Object.keys(localStorage).filter(k=>/^hb-/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}
-  try{const d=await IDB.db();if(d)d.close()}catch(e){}
-  await new Promise(r=>{try{const q=indexedDB.deleteDatabase("hb");q.onsuccess=q.onerror=q.onblocked=()=>r()}catch(e){r()}});
-  location.reload()});
+  stopCam();S.pets=[newPet()];usePet(0);S.recent=[];S.rIdx=-1;S.src=null;S.lost=null;S.pet=null;S.seen={};S.picks=[];S.shop=null;S.floorPick=null;S.cp=null;S.cpSrc=null;S.cr=null;S.crK=null;S.an=null;S.anSrc=null;S.mode={see:"now",color:"auto"};S.liveMode="now";
+  pickClear();setTheme("auto");setZoom(1);$("#cardPrev").removeAttribute("src");$("#cardPrev2").removeAttribute("src");
+  segUI();go("home");texts();toast("모든 기록을 초기화했어요.")});
 $("#btnLink").addEventListener("click",shareLink);$("#btnCopy").addEventListener("click",copyLink);
 /* 사진 위에서 비교선 끌기: 가로로 6px 넘게 움직였을 때만 시작해 세로 스크롤을 방해하지 않는다 */
 {const st=$("#stage");let sx=null,drag=false;const mv=e=>{const p=rel(e,st);if(!p.ok)return;const v=Math.max(0,Math.min(100,p.x*100));S.userSplit=v;setSplit(v);$("#split").value=v};

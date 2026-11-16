@@ -1623,8 +1623,10 @@ function wrapLines(x,text,maxW){const out=[];let line="";for(const w of text.spl
 function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pad*2,in_=24,iw=cw-in_*2,ih=Math.round(iw*S.src.height/S.src.width),o=seeOpts(),Lc=renderHuman(S.src,o),Rc=renderPet(S.src,o);
   /* 공유 카드는 '우리 아이 이름 + 이 사진에서 찾은 의외의 사실'을 제목으로 한다(숫자보다 이야기가 퍼진다) */
   let x=c.getContext("2d");c.width=W;c.height=10;x.font="30px "+FF;const sub=S.touched?wrapLines(x,profileLine(),cw-(av?170:0)):[];
-  const cr=colorRank(),hk=hook(),tl=hk.card,dog=isDog(),gd=dog?["어두운 곳","약 240도 시야","빠른 깜빡임"]:["어두운 곳","약 200도 시야"];/* 보고서 5번과 같은 근거만 */
-  const hh=150+tl.length*76+sub.length*42+90,picY=hh-56,picH=in_*2+ih*2+16,cY=picY+picH+28,cH=200,gY=cY+cH+28,gH=200,tY=gY+gH+48,H=tY+170;
+  const cr=colorRank(),hk=hook(),tl=hk.card,dog=isDog(),RB=[["#d0342c","빨강"],["#f07a1a","주황"],["#ffd21f","노랑"],["#4f9a4a","초록"],["#2f6fd6","파랑"],["#7a4fb0","보라"]];
+  /* 시력: 개 20/75(Byosiere 외 2018 총설, 추정), 고양이 20/100(수의안과 전문의 설명, 추정). 보고서 근거와 같은 값 */
+  const va=dog?{v:"0.27",far:"23m"}:{v:"0.2",far:"30m"};
+  const hh=150+tl.length*76+sub.length*42+90,picY=hh-56,picH=in_*2+ih*2+16,cY=picY+picH+28,cH=330,gY=cY+cH+28,gH=250,tY=gY+gH+48,H=tY+150;
   c.height=H;x=c.getContext("2d");x.textBaseline="top";
   x.fillStyle="#f2f4f6";x.fillRect(0,0,W,H);
   {const g=x.createLinearGradient(0,0,W,hh);g.addColorStop(0,"#1b2a6b");g.addColorStop(1,"#1b2a6b");x.fillStyle=g;x.fillRect(0,0,W,hh)}
@@ -1636,11 +1638,13 @@ function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pa
   const pic=(img,Y,label,blue)=>{x.save();rr(x,pad+in_,Y,iw,ih,22);x.clip();x.drawImage(img,pad+in_,Y,iw,ih);x.restore();x.save();x.font="bold 30px "+FF;const tw=x.measureText(label).width+40;x.fillStyle=blue?"#1b2a6b":"rgba(0,0,0,.62)";rr(x,pad+in_+18,Y+18,tw,52,26);x.fill();x.fillStyle="#fff";x.fillText(label,pad+in_+38,Y+29);x.restore()};
   card(pad,picY,cw,picH,40);pic(Lc,picY+in_,"내 눈",false);pic(Rc,picY+in_+ih+16,N("의")+" 눈",true);if(Lc!==S.src)free(Lc);free(Rc);
   const sw=(X,Y,rgb,r)=>{x.beginPath();x.arc(X,Y,r,0,7);x.fillStyle="rgb("+rgb.join(",")+")";x.fill();x.lineWidth=5;x.strokeStyle="#fff";x.stroke();x.lineWidth=1.5;x.strokeStyle="#d1d6db";x.beginPath();x.arc(X,Y,r+3,0,7);x.stroke()};
-  card(pad,cY,cw,cH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText(N("가")+" 잘 보는 색",pad+in_+8,cY+30);
-  cr.best.forEach((b,i)=>{const X=pad+in_+40+i*(cw-in_*2)/3;sw(X,cY+130,hexRgb(b.hex),30);x.fillStyle="#191f28";x.font="bold 32px "+FF;x.fillText(b.name,X+44,cY+112)});
-  /* 못 보는 것만 말하면 서글프니, 나보다 잘 보는 것도 함께(보고서 5번과 같은 내용) */
-  card(pad,gY,cw,gH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText(N("가")+" 나보다 잘 보는 것",pad+in_+8,gY+30);
-  x.font="bold 32px "+FF;{const bw=(cw-in_*2)/gd.length;gd.forEach((t,i)=>{const X=pad+in_+8+i*bw;x.fillStyle="#1b2a6b";rr(x,X,gY+100,bw-16,64,32);x.fill();x.fillStyle="#fff";x.textAlign="center";x.fillText(t,X+(bw-16)/2,gY+115);x.textAlign="left"})}
+  /* 무지개 비교: 같은 여섯 색이 내 눈과 아이 눈에 어떻게 다른지 한눈에(Viénot 1999 계산) */
+  card(pad,cY,cw,cH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText(N("의")+" 눈에 보이는 무지개",pad+in_+8,cY+30);
+  {const bw=(cw-in_*2-120)/6,X0=pad+in_+130;x.font="bold 26px "+FF;x.fillStyle="#6b7684";x.fillText("내 눈",pad+in_+8,cY+118);x.fillStyle="#1b2a6b";x.fillText(N("의")+" 눈",pad+in_+8,cY+228);
+    RB.forEach(([h,nm],i)=>{const X=X0+i*bw+bw/2,c0=hexRgb(h);sw(X,cY+132,c0,34);sw(X,cY+242,dich(...c0),34);x.textAlign="center";x.fillStyle="#6b7684";x.font="22px "+FF;x.fillText(nm,X,cY+176);x.textAlign="left"})}
+  /* 알고 있었나요: 시력(추정)과, 대신 더 잘 보는 것 */
+  card(pad,gY,cw,gH,36);x.fillStyle="#191f28";x.font="bold 36px "+FF;x.fillText("알고 있었나요?",pad+in_+8,gY+30);
+  x.font="30px "+FF;[`${N("의")} 시력은 약 ${va.v}(추정).`,`내가 ${va.far}에서 알아보는 걸 ${N("는")} 6m까지 와야 알아봐요.`,`대신 어두운 곳과 넓은 시야는 ${N("가")} 한 수 위예요.`].forEach((t,i)=>{x.fillStyle=i===2?"#1b2a6b":"#191f28";if(i===2)x.font="bold 30px "+FF;wrapLines(x,t,cw-in_*2-16).slice(0,1).forEach(l=>x.fillText(l,pad+in_+8,gY+96+i*48))});
   x.textAlign="center";x.fillStyle="#191f28";x.font="bold 34px "+FF;x.fillText("너네 아이 눈엔 어떻게 보일까?",W/2,tY);
   x.fillStyle="#1b2a6b";x.font="bold 28px "+FF;x.fillText("한 뼘 시선 · "+APP_URL.replace(/^https?:\/\//,"").replace(/\/$/,""),W/2,tY+54);
   x.fillStyle="#6b7684";x.font="22px "+FF;x.fillText("논문 근거로 계산, 일부는 예시예요 · 진단이 아니에요",W/2,tY+100);x.textAlign="left"}
@@ -1648,7 +1652,7 @@ async function cardBlob(){let av=null;if(S.photo)av=await new Promise(r=>{const 
 async function saveCard(){const b=await cardBlob();if(!b)return;const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="eye-report-"+Date.now()+".png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast("보고서 사진을 내려받았어요. 다운로드 폴더에서 볼 수 있어요.")}
 const APP_URL=/github\.io$/.test(location.hostname)?location.origin+location.pathname.replace(/index\.html$/,""):"https://bright0918.github.io/hanbbyeom/";
 /* 공유 문구: 우리 아이 이름 + 이 사진에서 찾은 것 + "너네 아이는?" + 링크 */
-const SHARE_TXT=()=>{const h=hook();return (h?h.share:"우리 아이 눈으로 본 우리 집 😮")+"\n너네 아이 눈엔 어떻게 보일까? 사진 한 장이면 돼. 설치·가입 없이 → "+APP_URL};
+const SHARE_TXT=()=>{const h=hook();return (h?h.share:"우리 아이 눈으로 본 우리 집 😮")+"\n너네 아이 눈엔 어떻게 보일까?\n"+APP_URL};
 document.addEventListener("click",e=>{const b=e.target.closest("[data-jump]");if(b){const t=document.getElementById(b.dataset.jump);if(t)t.scrollIntoView({behavior:"smooth",block:"start"})}});
 async function shareCard(){try{const b=await cardBlob(),f=new File([b],"report.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:N("의")+" 눈 보고서",text:SHARE_TXT()});else saveCard()}catch(e){if(!e||e.name!=="AbortError"){toast("보내기가 안 돼서 사진으로 저장할게요.");saveCard()}}}
 /* 2부 맞춤 리포트 한 장: 바닥 색, 잘 보이는 색·피할 색(내 눈 → 아이 눈), 팁 */
@@ -1669,7 +1673,7 @@ function makeCard2(){if(!S.src)return;const W=1080,pad=56,c=$("#cCard2"),cw=W-pa
 const card2Blob=()=>{makeCard2();return new Promise(r=>$("#cCard2").toBlob(r,"image/png"))};
 async function saveBlob(b,name,msg){const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast(msg)}
 async function shareCard2(){try{const b=await card2Blob(),f=new File([b],"my-pet-report.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:N("의")+" 맞춤 리포트",text:SHARE_TXT()});else saveBlob(b,"my-pet-report.png","맞춤 리포트 사진을 내려받았어요.")}catch(e){if(!e||e.name!=="AbortError")toast("보내기가 안 됐어요. ‘저장’으로 받아 보내 주세요.")}}
-async function shareLink(){try{if(navigator.share)await navigator.share({title:"한 뼘 시선",text:"강아지·고양이 눈으로 우리 집을 보고, 뭘 바꿔 주면 좋을지 알려 줘요. 설치·가입 없이 링크로 바로.",url:APP_URL});else copyLink()}catch(e){if(!e||e.name!=="AbortError")copyLink()}}
+async function shareLink(){try{if(navigator.share)await navigator.share({title:"한 뼘 시선",text:"강아지·고양이 눈으로 우리 집을 보고, 뭘 바꿔 주면 좋을지 알려 줘요.",url:APP_URL});else copyLink()}catch(e){if(!e||e.name!=="AbortError")copyLink()}}
 async function copyLink(){try{await navigator.clipboard.writeText(APP_URL);toast("주소를 복사했어요. 카카오톡에 붙여 넣어 보내세요.")}catch(e){toast("복사가 안 됐어요. 주소를 길게 눌러 복사해 주세요.")}}
 
 /* ---------- 화면 연결 ---------- */

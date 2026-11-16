@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f6f2">
+<title>한 뼘 시선 · 우리 아이의 눈 보고서</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="한 뼘 시선">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<style>
+/* 글꼴은 같은 폴더의 파일을 쓴다(외부 서버 연결 없음). Pretendard, SIL OFL 1.1 */
+@font-face{font-family:"Pretendard Variable";font-weight:45 920;font-style:normal;font-display:swap;src:url("PretendardVariable.woff2") format("woff2-variations"),url("PretendardVariable.woff2") format("woff2")}
+:root{--bg:#f7f6f2;--card:#fff;--ink:#15171c;--sub:#69707d;--line:#e6e4dd;--soft:#f1efe9;--pri:#2b59f0;--pri-ink:#fff;--pri-soft:#e7edff;--pri-text:#1b3fb5;--yel:#f5c400;--yel-soft:#fff6cf;--warn:#c2410c;--nav-bg:rgba(255,255,255,.94);--ok-bg:#dcfce7;--ok-fg:#166534;--mid-bg:#fef3c7;--mid-fg:#92400e;--ex-bg:#fee2e2;--ex-fg:#991b1b;--outer:#e9e7e1;--knob:#fff;--off:#d3d6dc;--r:18px;--nav:62px}
+[data-theme=dark]{--bg:#0e1014;--card:#171a20;--ink:#f1f2f4;--sub:#9aa1ad;--line:#2a2e37;--soft:#1e222a;--pri:#7c9bff;--pri-ink:#0b1020;--pri-soft:#1c2748;--pri-text:#b9c8ff;--yel:#ffd43b;--yel-soft:#33300f;--warn:#fb923c;--nav-bg:rgba(14,16,20,.92);--ok-bg:#123321;--ok-fg:#86efac;--mid-bg:#3a2e0b;--mid-fg:#fcd34d;--ex-bg:#3b1515;--ex-fg:#fca5a5;--outer:#050608;--knob:#f1f2f4;--off:#3a3f4a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--outer);color:var(--ink);font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;line-height:1.55;-webkit-text-size-adjust:100%;word-break:keep-all;overflow-wrap:anywhere;-webkit-tap-highlight-color:transparent}
+button,select,input{font-family:inherit;color:inherit}
+.app{max-width:480px;margin:0 auto;background:var(--bg);min-height:100vh;min-height:100dvh;padding-bottom:calc(var(--nav) + 28px + env(safe-area-inset-bottom))}
+.app{zoom:var(--z,1)}
+.hide{display:none!important}
+.spot{display:flex;align-items:center;gap:4px;border-top:1px solid var(--line);padding:5px 4px}
+.spotMain{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:left;background:none;border:0;padding:4px 0;cursor:pointer;font-size:14px}
+.spotMain img{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none}
+.spotMain .ph{width:44px;height:44px;border-radius:10px;border:2px dashed var(--sub);color:var(--sub);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:22px;flex:none}
+.spotMain>span{flex:1;min-width:0}
+.spotMain>span b{display:block;font-size:14.5px}
+.spotMain em{display:block;font-style:normal;font-size:12.5px;color:var(--sub)}
+.spotMain em.adv{color:var(--pri-text)}
+.spotMain u{text-decoration:none;font-size:12.5px;color:var(--pri);font-weight:600;white-space:nowrap;border:1.5px solid var(--pri);border-radius:16px;padding:5px 10px;flex:none}
+.spotDel{border:0;background:none;color:var(--sub);font-size:12px;text-decoration:underline;cursor:pointer;padding:10px 4px;flex:none;max-width:84px}
+body.dropping .spot{outline:2px dashed var(--pri);outline-offset:-2px;border-radius:12px;border-top-color:transparent;margin-top:4px}
+body.dropping .spotMain u{font-size:0}body.dropping .spotMain u:after{content:"여기에 놓기";font-size:12.5px}
+.spot.hot{background:var(--pri-soft)}
+.mo{display:block}@media (hover:hover) and (pointer:fine){.mo{display:none}}
+.num{font-style:normal;font-weight:800;font-size:17px}
+.feat>i.num.done{background:var(--pri);color:var(--pri-ink)}
+.how{margin:8px 0 0;padding-left:20px;font-size:13.5px}.how li{margin:4px 0}
+.strip{display:flex;gap:8px;overflow-x:auto;margin:0 0 10px;padding-bottom:2px}
+.strip button{flex:none;width:68px;border:0;background:none;padding:0;cursor:pointer;font-size:11.5px;color:var(--sub);text-align:center}
+.strip img,.strip i{display:flex;width:68px;height:52px;border-radius:10px;object-fit:cover;border:2px solid transparent;align-items:center;justify-content:center;font-style:normal;font-size:22px}
+.strip i{border:2px dashed var(--sub)}
+.strip button[aria-pressed=true]{color:var(--pri-text);font-weight:700}
+.strip button[aria-pressed=true] img{border-color:var(--pri)}
+#cRep{touch-action:pan-y}
+.q .chips{margin:10px 0 0}.q .chips button{background:var(--card);color:var(--ink)}
+.q span.s{display:block;font-size:13px}
+/* 줄바꿈: 마지막 줄에 한두 단어만 남지 않게 */
+p,li,em,td,summary,.lead,.note,.why,.q,.feat span,.fx .t,.drop span,.measure{text-wrap:pretty}
+h2,h3,.verdict,.stageLine,.toast,.hint,.q b,.good3 b{text-wrap:balance}
+.modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.mbox{background:var(--card);color:var(--ink);border-radius:18px;padding:18px;width:100%;max-width:340px}
+.mbox>b{font-size:17px}
+.cropv{width:260px;max-width:100%;aspect-ratio:1;margin:12px auto 4px;border-radius:50%;overflow:hidden;background:var(--soft);touch-action:none;cursor:grab;box-shadow:0 0 0 2px var(--line)}
+#cropC{width:100%;height:100%;display:block}
+.tiles button{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 6px 8px;text-align:center;font-size:12px;color:var(--sub);cursor:pointer}
+.tiles button[aria-expanded=true]{border-color:var(--pri);background:var(--pri-soft)}
+.tiles button small{display:block;color:var(--pri);font-weight:600;margin-top:4px;font-size:11.5px}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:3px;box-shadow:0 0 0 1px var(--line)}
+.demo u{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:no-preference){.demo u{animation:sweepL 7s ease-in-out infinite}@keyframes sweepL{0%,100%{left:28%}50%{left:72%}}}
+
+.measure{background:var(--soft);border-radius:14px;padding:12px 14px;margin-top:10px;font-size:13.5px}
+.measure svg{width:100%;max-width:300px;height:auto;margin:0 auto 6px;color:var(--sub)}
+.measure ol{margin:6px 0 0;padding-left:20px}
+.measure li{margin:3px 0}
+svg{display:block}
+a{color:var(--pri)}
+
+/* 위 막대 */
+.bar{position:sticky;top:0;z-index:5;background:var(--nav-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);height:54px;display:flex;align-items:center;gap:8px;padding:0 12px 0 16px}
+.logo{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,#2b59f0 0 50%,#f5c400 50% 100%);flex:none;position:relative}
+.logo:after{content:"";position:absolute;inset:8px;border-radius:50%;background:#15171c}
+.bar b{font-size:17px;letter-spacing:-.4px;flex:1;white-space:nowrap}
+.who{border:1px solid var(--line);background:var(--card);border-radius:20px;font-size:12.5px;padding:6px 12px;color:var(--sub);cursor:pointer;max-width:52%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icb{width:40px;height:40px;border:0;background:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);flex:none}
+.icb svg{width:21px;height:21px}
+
+/* 아래 메뉴 */
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;z-index:6;background:var(--nav-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.nav button{flex:1;height:var(--nav);border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--sub);cursor:pointer;position:relative;padding:0}
+.nav button svg{width:23px;height:23px}
+.nav button[aria-current=page]{color:var(--ink);font-weight:700}
+.nav button[aria-current=page] svg{stroke-width:2.3}
+.nav button[aria-current=page]:after{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:3px;border-radius:0 0 3px 3px;background:var(--pri)}
+
+/* 공통 */
+.scr{padding:16px 16px 0}
+@media (prefers-reduced-motion:no-preference){.scr{animation:up .2s ease both}@keyframes up{from{opacity:0}to{opacity:1}}}
+h2{font-size:23px;line-height:1.3;margin:0 0 6px;letter-spacing:-.7px;font-weight:800}
+h3{font-size:16px;margin:24px 0 8px;letter-spacing:-.3px;display:flex;align-items:center;gap:8px;font-weight:700}
+p{margin:6px 0}
+.lead{color:var(--sub);font-size:14px;margin:0 0 12px}
+.note{font-size:12.5px;color:var(--sub)}
+.note.err{color:var(--warn);font-weight:600;font-size:13.5px}
+.card{border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px;background:var(--card)}
+.card h3{margin-top:0}
+.step{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12.5px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+label.f{display:block;font-size:15.5px;color:var(--ink);margin:20px 0 8px;font-weight:700}
+label.f .note{display:block;font-weight:400;margin-top:1px}
+input[type=text],select{width:100%;font-size:16px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--ink);appearance:none;-webkit-appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--sub) 50%),linear-gradient(135deg,var(--sub) 50%,transparent 50%);background-position:calc(100% - 20px) 21px,calc(100% - 14px) 21px;background-size:6px 6px;background-repeat:no-repeat;padding-right:36px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1 1 0;min-width:72px;min-height:46px;border:1.5px solid var(--line);background:var(--card);border-radius:12px;font-size:14.5px;padding:8px 6px;cursor:pointer}
+.seg button[aria-pressed=true]{border-color:var(--pri);background:var(--pri-soft);color:var(--pri-text);font-weight:700}
+.seg button small{display:block;font-size:11.5px;opacity:.8;font-weight:400}
+.seg button svg{margin:0 auto 2px;width:64px;height:40px}
+button.primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border:0;border-radius:14px;background:var(--pri);color:var(--pri-ink);font-size:16px;font-weight:700;padding:12px;cursor:pointer;margin-top:12px}
+button.ghost{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:46px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);font-size:14.5px;padding:10px;cursor:pointer;margin-top:8px}
+button.ghost svg,button.primary svg{width:20px;height:20px}
+button:focus-visible,label:focus-within,input:focus-visible,select:focus-visible{outline:3px solid var(--yel);outline-offset:2px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.stageLine{font-size:14px;background:var(--pri-soft);color:var(--pri-text);border-radius:12px;padding:10px 12px;margin-top:8px;font-weight:600}
+
+/* 홈 */
+.hero{background:linear-gradient(135deg,var(--pri-soft),var(--yel-soft));color:var(--ink);border-radius:var(--r);padding:18px;overflow:hidden}
+[data-theme=dark] .hero{background:#141a2e}
+.hero h2{font-size:21px}
+.hero p{margin:0 0 14px;font-size:14px;color:var(--sub)}
+.who{display:flex;align-items:center;gap:6px}
+.who span{overflow:hidden;text-overflow:ellipsis}
+.av{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--pri-soft);color:var(--pri-text);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:700;flex:none}
+.av.big{width:46px;height:46px;font-size:18px}
+.av.xl{width:72px;height:72px;font-size:26px}
+.tbtn{display:flex;gap:4px;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:20px;font-size:12.5px;padding:6px 10px;cursor:pointer;flex:none;white-space:nowrap}
+.tbtn svg{width:15px;height:15px}
+.feat.card{padding:14px 16px;border:1px solid var(--line);margin-top:14px}
+.feat.cur{border-color:var(--pri)}
+.ev{display:block;width:100%;text-align:left;border:0;background:none;font-size:12px;color:var(--sub);padding:8px 2px;cursor:pointer}
+.ev b{color:var(--pri);font-weight:600}
+.calc{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;margin-top:10px;font-size:13.5px;max-width:260px}
+.calc input{width:100%;font-size:16px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink)}
+#lostEx{display:block;width:100%;border-radius:12px;margin:6px 0}
+.pfrow{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+.pfrow label{font-size:13.5px;color:var(--pri);font-weight:600;cursor:pointer;text-decoration:underline}
+.demo{position:relative;border-radius:14px;overflow:hidden;background:#000;border:2px solid var(--ink)}
+.demo canvas{display:block;width:100%;height:auto}
+.demo canvas+canvas{position:absolute;inset:0;height:100%;clip-path:inset(0 0 0 50%)}
+.demo span{position:absolute;top:8px;font-size:11.5px;font-weight:600;background:rgba(0,0,0,.6);color:#fff;border-radius:20px;padding:3px 10px}
+.demo span.l{left:8px}.demo span.r{right:8px}
+@media (prefers-reduced-motion:no-preference){.demo canvas+canvas{animation:sweep 7s ease-in-out infinite}@keyframes sweep{0%,100%{clip-path:inset(0 0 0 28%)}50%{clip-path:inset(0 0 0 72%)}}}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;border:2px dashed var(--line);background:var(--soft);border-radius:16px;padding:22px 14px;cursor:pointer;color:var(--pri)}
+.drop svg{width:34px;height:34px}
+.drop b{font-size:16px;color:var(--ink)}
+.drop span{font-size:12.5px;color:var(--sub)}
+.pc{display:none}@media (hover:hover) and (pointer:fine){.pc{display:block}}
+body.dropping .drop{border-color:var(--pri);background:var(--pri-soft)}
+.privacy{font-size:12.5px;color:var(--sub);margin:12px 0 0;display:flex;gap:6px;align-items:flex-start}
+.privacy svg{width:16px;height:16px;flex:none;margin-top:2px}
+.feat{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:none;padding:11px 0;cursor:pointer;border-top:1px solid var(--line)}
+.feat:first-of-type{border-top:0}
+.feat>i{width:42px;height:42px;border-radius:13px;background:var(--pri-soft);color:var(--pri);display:flex;align-items:center;justify-content:center;flex:none}
+.feat span{font-size:13px;color:var(--sub);flex:1}
+.feat b{display:block;font-size:15px;color:var(--ink)}
+.feat:after{content:"›";font-size:22px;color:var(--sub)}
+.prog{height:8px;border-radius:4px;background:var(--soft);overflow:hidden;margin:8px 0 4px}
+.prog i{display:block;height:100%;background:var(--pri);border-radius:4px;transition:width .3s}
+
+/* 빈 화면 */
+.empty{text-align:center;padding:56px 10px}
+.empty>i{width:72px;height:72px;border-radius:24px;background:var(--soft);color:var(--sub);display:inline-flex;align-items:center;justify-content:center}
+.empty>i svg{width:34px;height:34px}
+.empty b{display:block;font-size:17px;margin-top:14px}
+.empty p{color:var(--sub);font-size:14px}
+
+/* 모드 고르기 */
+.chips{display:flex;gap:8px;margin:12px 0}
+.chips button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:0;background:var(--soft);border-radius:22px;font-size:14px;color:var(--sub);cursor:pointer}
+.chips button svg{width:18px;height:18px}
+.chips button[aria-pressed=true]{background:var(--ink);color:var(--bg);font-weight:700}
+.chips.wrap{flex-wrap:wrap}.chips.wrap button{flex:1 1 44%;font-size:13.5px}
+.chips.wrap button[aria-pressed=true]{background:var(--pri);color:var(--pri-ink)}
+.q{background:var(--pri-soft);color:var(--pri-text);border-radius:14px;padding:12px 14px;font-size:14px;margin:0 0 12px}
+.q b{display:block;font-size:15.5px;margin-bottom:2px}
+
+/* 사진 */
+.stage{position:relative;border-radius:16px;overflow:hidden;background:#111;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.repHead{background:linear-gradient(135deg,#2f6bff 0%,#6557ff 100%);color:#fff;border-radius:24px;padding:22px;display:flex;gap:16px;align-items:center}
+[data-theme=dark] .repHead{background:linear-gradient(135deg,#2b56d6 0%,#4b3fc7 100%)}
+.repHead .av{box-shadow:0 0 0 3px rgba(255,255,255,.9)}
+.repHead small{display:block;font-size:13px;opacity:.85;font-weight:600}
+.repHead b{display:block;font-size:22px;letter-spacing:-.6px;line-height:1.3}
+.repHead p{margin:4px 0 0;font-size:13.5px;opacity:.88;line-height:1.45}
+.repHead em{display:inline-block;font-style:normal;margin-top:8px;background:rgba(255,255,255,.2);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:700}
+.sn{width:26px;height:26px;border-radius:50%;background:var(--pri);color:var(--pri-ink);font-size:14px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.rs{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.rs:first-child{border-top:0}
+.rs img,.rs i{width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none;background:var(--soft);display:flex;align-items:center;justify-content:center;font-style:normal;color:var(--mute)}
+.rs span{flex:1;font-size:14.5px;font-weight:600}.rs span small{display:block;font-weight:400;font-size:12.5px;color:var(--sub)}
+.st{border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.st.ok{background:var(--ok-bg);color:var(--ok-fg)}.st.fix{background:var(--mid-bg);color:var(--mid-fg)}.st.no{background:var(--soft);color:var(--sub)}
+.vet{background:var(--ex-bg);color:var(--ex-fg);border-radius:18px;padding:16px;font-size:14.5px;line-height:1.65}
+.vet ul{margin:6px 0 0;padding-left:18px}
+.shareBox{background:var(--card);border-radius:24px;padding:20px;margin-top:30px}
+#cardPrev{display:block;width:62%;margin:4px auto 4px;border-radius:14px;box-shadow:0 6px 24px rgba(25,31,40,.15)}
+.pick2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#steps>*{border-top:1px solid var(--line)}#steps>:first-child{border-top:0}
+.stepPick{cursor:default;align-items:flex-start}.stepPick:after{display:none}.stepPick>span{min-width:0}
+.stepPick .pick2{margin-top:10px}.stepPick .pick2 button{padding:12px}.stepPick .pick2 i{width:36px;height:36px}.stepPick .pick2 b{font-size:15px}.stepPick .pick2 span{font-size:12.5px}
+.pick2 button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border:0;background:var(--soft);border-radius:18px;padding:16px 14px;cursor:pointer;color:var(--ink)}
+.pick2 i{width:42px;height:42px;border-radius:50%;background:var(--pri-soft);color:var(--pri);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.pick2 i svg{width:22px;height:22px}
+.pick2 b{font-size:16px}
+.pick2 span{font-size:13px;color:var(--sub);line-height:1.45}
+.liveBox{position:relative;border-radius:20px;overflow:hidden;background:#111;min-height:240px}
+#cLive{display:block;width:100%;height:auto}
+.liveTag{position:absolute;top:12px;left:12px;background:#e5303a;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 12px}
+.liveOff{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px;text-align:center;color:#fff;background:#1d1f27}
+.liveOff svg{width:40px;height:40px;opacity:.8}.liveOff .note{color:#c7cbd3}.liveOff .note.err{color:#ffb4a8}
+.liveOff button.primary{width:auto;padding:12px 28px}
+.stage.live:after{content:"● 실시간";position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#e5303a;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 12px;pointer-events:none}
+.stage canvas{display:block;width:100%;height:auto}
+.stage canvas.over{position:absolute;inset:0;height:100%}
+.divider{position:absolute;top:0;bottom:0;width:3px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.3);pointer-events:none}
+.divider:after{content:"◀ ▶";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#15171c;font-size:12px;font-weight:700;border-radius:24px;padding:10px 11px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.tag{position:absolute;top:10px;font-size:12px;font-weight:600;background:rgba(0,0,0,.62);color:#fff;border-radius:20px;padding:4px 11px;pointer-events:none;max-width:70%}
+.tag.l{left:10px}.tag.r{right:10px}
+input[type=range]{width:100%;margin:8px 0 0;accent-color:var(--pri);height:30px}
+.hint{font-size:13px;color:var(--sub);margin:2px 0 0;text-align:center;min-height:20px}
+#viewer[data-tab=lost] .divider,#viewer[data-tab=pick] .divider,#viewer[data-tab=lost] #split,#viewer[data-tab=pick] #split{display:none}
+#viewer[data-tab=see] .stage,#viewer[data-tab=old] .stage{cursor:ew-resize}
+#viewer[data-tab=pick] .stage{cursor:crosshair}
+#viewer[data-tab=shop],#viewer.nocat{display:none}
+#viewer[data-tab=ill] .stage{cursor:ew-resize}
+#seeMode button{font-size:13px;gap:4px}#seeMode button svg{width:16px;height:16px}
+#colorMode button{font-size:12.5px;gap:4px}#colorMode button svg{width:16px;height:16px}
+
+/* 효과 스위치 */
+.fx{display:grid;grid-template-columns:42px 1fr auto auto;align-items:center;column-gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.fx:first-child{border-top:0}
+.fx>i{width:42px;height:42px;border-radius:13px;background:var(--soft);color:var(--sub);display:flex;align-items:center;justify-content:center}
+.fx.on>i{background:var(--pri-soft);color:var(--pri)}
+.fx .t{font-size:13px;color:var(--sub);min-width:0}
+.fx .t b{display:block;font-size:15px;color:var(--ink)}
+.fx .info{height:34px;border:1px solid var(--line);background:none;color:var(--sub);cursor:pointer;border-radius:17px;font-size:12px;padding:0 10px}
+.switch{width:50px;height:30px;border-radius:15px;border:0;background:var(--off);position:relative;cursor:pointer;transition:background .15s;flex:none}
+.switch:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--knob);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
+.switch[aria-checked=true]{background:var(--pri)}
+.switch[aria-checked=true]:after{transform:translateX(20px)}
+.switch:disabled{opacity:.4;cursor:not-allowed}
+.fx .more{grid-column:1/-1;font-size:13.5px;background:var(--soft);border-radius:12px;padding:10px 12px;margin-top:10px}
+.why{font-size:14px;background:var(--soft);border-radius:14px;padding:12px 14px;margin-top:10px}
+.badge{display:inline-block;font-size:11px;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:1px;font-weight:600;white-space:nowrap}
+.badge.ok{background:var(--ok-bg);color:var(--ok-fg)}.badge.mid{background:var(--mid-bg);color:var(--mid-fg)}.badge.ex{background:var(--ex-bg);color:var(--ex-fg)}
+
+/* 색 비교 */
+.cmp{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:12px 14px;margin-top:10px}
+.cmp .w{flex:1;font-size:13px;color:var(--sub)}
+.cmp .w b{display:block;font-size:15.5px;color:var(--ink)}
+.cmp .num{font-size:26px;font-weight:800;letter-spacing:-1px;min-width:44px;text-align:right}
+.sw2{display:flex}
+.sw2 span{width:40px;height:40px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line)}
+.sw2 span+span{margin-left:-12px}
+.scale{margin-top:14px}
+.scale .track{position:relative;height:12px;border-radius:6px;background:linear-gradient(90deg,#f87171 0 12%,#fbbf24 12% 25%,#a3e635 25% 45%,#34d399 45% 100%)}
+.scale .pin{position:absolute;top:-22px;transform:translateX(-50%);font-size:11px;font-weight:700;background:var(--ink);color:var(--bg);border-radius:10px;padding:1px 7px;white-space:nowrap}
+.scale .pin:after{content:"";position:absolute;left:50%;top:100%;width:2px;height:22px;background:var(--ink);transform:translateX(-50%)}
+.scale .pin.pet{top:auto;bottom:-22px;background:var(--pri);color:var(--pri-ink)}
+.scale .pin.pet:after{top:auto;bottom:100%;background:var(--pri)}
+.scale .zones{position:relative;height:18px;margin-top:26px;font-size:11px;color:var(--sub)}
+.scale .zones span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.scale .box{padding:26px 6px 0}
+.verdict{font-size:15px;font-weight:600;margin-top:12px;padding:12px 14px;border-radius:14px}
+.verdict.good{background:var(--ok-bg);color:var(--ok-fg)}.verdict.mid{background:var(--mid-bg);color:var(--mid-fg)}.verdict.bad{background:var(--ex-bg);color:var(--ex-fg)}
+
+/* 보고서 */
+#cRep{display:block;width:100%;border-radius:16px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.tiles div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 6px;text-align:center;font-size:12px;color:var(--sub)}
+.tiles b{display:block;font-size:17px;color:var(--ink);letter-spacing:-.4px}
+ul.plain{margin:6px 0;padding-left:18px}ul.plain li{margin:5px 0;font-size:14.5px}
+ol.todo{margin:8px 0;padding:0;list-style:none;counter-reset:n}
+ol.todo li{counter-increment:n;position:relative;padding:12px 12px 12px 46px;background:var(--card);border:1px solid var(--line);border-radius:14px;margin:8px 0;font-size:14.5px}
+ol.todo li:before{content:counter(n);position:absolute;left:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--pri);color:var(--pri-ink);font-size:13px;text-align:center;line-height:24px;font-weight:700}
+.good3{display:grid;gap:8px;margin-top:8px}
+.good3 div{background:var(--yel-soft);border-radius:14px;padding:12px 14px;font-size:14.5px}
+.good3 b{display:block;font-size:15px}
+details{margin-top:8px;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:12px 14px;font-size:13.5px}
+details summary{cursor:pointer;font-weight:600;font-size:14px}
+details table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12.5px}
+details td,details th{border-top:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top}
+
+/* 눈 지식 */
+.k{border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:16px;margin-top:12px}
+.k h3{margin:0 0 4px}
+.k p{font-size:14px;margin:6px 0}
+.k .src{font-size:12px;color:var(--sub);border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.k canvas{display:block;width:100%;border-radius:10px;margin-top:6px}
+.k .cap{font-size:12px;color:var(--sub);margin:8px 0 0}
+.k svg.fov{width:100%;height:auto;margin-top:6px}
+.hz{display:grid;grid-template-columns:64px 1fr 70px;gap:6px 8px;align-items:center;font-size:13px;margin-top:8px}
+.hz i{display:block;height:14px;border-radius:7px;background:var(--pri)}
+.hz i.h{background:var(--sub)}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav) + 16px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(18,22,31,.95);color:#fff;font-size:14px;padding:10px 16px;border-radius:22px;z-index:9;opacity:0;pointer-events:none;transition:opacity .2s;max-width:88vw;text-align:center}
+.toast.on{opacity:1}
+/* 아이폰은 화면에서 완전히 숨긴(display:none) 영상의 프레임을 갱신하지 않을 수 있어, 보이지 않게만 둔다 */
+video{position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none;z-index:-1}
+/* 아이패드·넓은 화면: 폭을 넓히고 위·아래 안전 영역을 비운다 */
+@media (min-width:700px){.app,.nav{max-width:640px}.scr{padding:22px 28px 0}#cardPrev{width:46%}}
+.bar{padding-top:env(safe-area-inset-top);height:calc(56px + env(safe-area-inset-top))}
+input[type=number]{font-size:16px}
+/* 폰을 가로로 눕혔을 때: 사진이 화면 높이를 넘지 않게 줄인다 */
+@media (orientation:landscape) and (max-height:560px){.stage{width:fit-content;max-width:100%;margin:0 auto}.stage canvas#cBase,#cRep,#cLive{max-height:72vh;width:auto;max-width:100%;margin:0 auto}.hero .demo canvas{max-height:50vh}}
+footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
+/* ================= 디자인 2판: 앱처럼 보이게 ================= */
+:root{--bg:#f2f4f6;--card:#fff;--ink:#191f28;--sub:#6b7684;--mute:#b0b8c1;--line:#e5e8eb;--soft:#f2f4f6;--track:#e5e8eb;--pri:#2f6bff;--pri-ink:#fff;--pri-soft:#e8f0ff;--pri-text:#1b55e2;--yel:#ffc928;--yel-soft:#fff5cc;--nav-bg:rgba(255,255,255,.96);--outer:#e5e8eb;--off:#d1d6db;--r:22px;--nav:64px}
+[data-theme=dark]{--bg:#17171c;--card:#202027;--ink:#ececef;--sub:#9e9ea8;--mute:#5d5d68;--line:#2e2e38;--soft:#2a2a33;--track:#2a2a33;--pri:#4d8dff;--pri-ink:#fff;--pri-soft:#1e2c4d;--pri-text:#9cc0ff;--yel:#ffd43b;--yel-soft:#3a3413;--nav-bg:rgba(32,32,39,.96);--outer:#0c0c10;--off:#44444f;--knob:#fff}
+html,body{font-size:15px;letter-spacing:-.01em;line-height:1.6}
+button{transition:transform .08s ease,background-color .15s ease}
+button:active{transform:scale(.97)}
+.nav button:active,.switch:active{transform:none}
+button:focus-visible,label:focus-within,input:focus-visible,select:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.scr{padding:18px 18px 0}
+h2{font-size:26px;font-weight:800;letter-spacing:-.9px;line-height:1.28;margin:4px 0 8px}
+h3{font-size:18px;font-weight:700;letter-spacing:-.4px;margin:30px 0 10px}
+.lead{font-size:15px;color:var(--sub);margin:0 0 14px}
+.note{font-size:13px;line-height:1.55}
+/* 위 막대, 아래 메뉴 */
+.bar{height:calc(56px + env(safe-area-inset-top));border-bottom:0;padding:env(safe-area-inset-top) 14px 0 18px}
+.bar b{font-size:19px;font-weight:800;letter-spacing:-.6px}
+.logo{border-radius:10px}
+.who,.tbtn{border:0;background:var(--soft);font-weight:600;color:var(--ink);padding:7px 12px}
+.nav{border-top:1px solid var(--line)}
+.nav button{color:var(--mute);font-size:11px;font-weight:600;gap:4px}
+.nav button svg{width:24px;height:24px}
+.nav button[aria-current=page]{color:var(--ink);font-weight:700}
+.nav button[aria-current=page]:after{display:none}
+.nav button[aria-current=page] svg{stroke-width:2.4}
+/* 카드 */
+.card{border:0;border-radius:22px;padding:20px;margin-top:12px}
+.card h3{font-size:18px}
+.feat.card{border:0;padding:16px 20px;margin-top:12px}
+.feat.cur{box-shadow:inset 0 0 0 2px var(--pri)}
+.feat{padding:13px 0}
+.feat>i{width:44px;height:44px;border-radius:50%}
+.feat b{font-size:15.5px}
+.feat span{font-size:13.5px;line-height:1.45}
+.feat:after{color:var(--mute)}
+.k{border:0;border-radius:22px;padding:20px}
+.why{background:var(--card);border-radius:18px;padding:16px;font-size:14.5px;line-height:1.65}
+.card .why,.mbox .why,.card .measure{background:var(--soft)}
+.q{border-radius:18px;padding:16px;font-size:14.5px;line-height:1.6}
+.q b{font-size:16px;margin-bottom:4px}
+details{border:0;border-radius:18px;padding:16px;background:var(--card);font-size:14px;line-height:1.6}
+.card details{background:var(--soft)}
+details summary{font-size:15px}
+.cmp{border:0;border-radius:18px;padding:14px 16px}
+.verdict{border-radius:18px;padding:16px;font-size:15.5px;line-height:1.55}
+.stageLine{border-radius:14px;padding:12px 14px;line-height:1.55}
+.badge{border-radius:999px;padding:2px 8px;font-size:11.5px}
+/* 홈 맨 위 */
+.hero{background:linear-gradient(135deg,#2f6bff 0%,#6557ff 100%);border-radius:24px;padding:22px}
+[data-theme=dark] .hero{background:linear-gradient(135deg,#2b56d6 0%,#4b3fc7 100%)}
+.hero h2{color:#fff;font-size:22px;letter-spacing:-.7px}
+.hero p{color:rgba(255,255,255,.86);font-size:14.5px}
+.demo{border:0;border-radius:16px;box-shadow:0 0 0 3px rgba(255,255,255,.92)}
+.num{font-size:16px}
+.feat>i.num{background:var(--soft);color:var(--sub)}
+/* 입력, 버튼 */
+label.f{font-size:15.5px;margin:22px 0 8px}
+input[type=text],select{border:0;background-color:var(--soft);border-radius:14px;padding:14px 16px}
+.calc input{border:0;border-radius:12px}
+.seg button{border:0;background:var(--soft);border-radius:14px;min-height:52px;font-size:15px;font-weight:600}
+.seg button[aria-pressed=true]{background:var(--pri-soft);color:var(--pri-text);box-shadow:inset 0 0 0 1.5px var(--pri)}
+.seg button small{font-size:12px;opacity:.75}
+button.primary{min-height:54px;border-radius:16px;font-size:16.5px}
+button.ghost{border:0;background:var(--card);border-radius:16px;min-height:50px;font-size:15px;font-weight:600}
+.card button.ghost,.mbox button.ghost{background:var(--soft)}
+.drop{border:2px dashed var(--off);border-radius:20px;padding:26px 16px}
+.drop b{font-size:16.5px}
+.drop span{font-size:13px}
+/* 고르는 단추: 가로로 이어진 조절 막대 모양 */
+.chips{background:var(--track);padding:4px;border-radius:14px;gap:4px;margin:14px 0}
+.chips button{background:none;border-radius:10px;min-height:40px;font-weight:600}
+.chips button[aria-pressed=true]{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.chips.wrap{background:none;padding:0;gap:8px}
+.chips.wrap button{background:var(--card);border-radius:999px;min-height:42px;color:var(--ink);font-size:14px}
+.chips.wrap button[aria-pressed=true]{background:var(--pri);color:var(--pri-ink);box-shadow:none}
+/* 사진, 효과 */
+.stage,#cRep{border-radius:20px}
+.tag{font-size:12.5px;padding:5px 12px}
+.hint{font-size:13px}
+#fx,#fxOld{background:var(--card);border-radius:22px;padding:4px 16px}
+.fx{padding:14px 0}
+.fx>i{border-radius:50%;width:44px;height:44px}
+.fx{grid-template-columns:44px 1fr auto auto}
+.fx .t{font-size:13.5px;line-height:1.45}
+.fx .t b{font-size:15.5px}
+.fx .info{border:0;background:var(--soft);font-weight:600}
+.fx .more{font-size:14px;line-height:1.6;border-radius:14px;padding:12px 14px}
+.ev{font-size:12.5px;padding:10px 2px}
+/* 우리 집 점검 */
+.spotMain>span b{font-size:15px}
+.spotMain em{font-size:13px;line-height:1.45}
+.spotMain u{border:0;background:var(--pri-soft);color:var(--pri-text);border-radius:999px;padding:7px 12px;font-size:13px}
+.spotMain img,.spotMain .ph{width:48px;height:48px;border-radius:14px}
+.prog{height:8px;border-radius:999px}
+.strip img,.strip i{border-radius:14px}
+.strip button{font-size:12px}
+/* 보고서 */
+.tiles{gap:8px;margin-top:14px}
+.tiles button{border:0;border-radius:18px;padding:16px 6px 12px}
+.tiles b{font-size:19px;letter-spacing:-.5px;line-height:1.25;margin-bottom:2px}
+ol.todo li{border:0;border-radius:18px;padding:16px 16px 16px 52px;font-size:15px;line-height:1.6;margin:10px 0}
+ol.todo li:before{left:16px;top:17px}
+.good3 div{border-radius:18px;padding:16px;font-size:14.5px;line-height:1.55}
+.good3 b{font-size:15.5px}
+ul.plain li{font-size:14.5px;line-height:1.6}
+.empty>i{border-radius:50%;background:var(--card)}
+.toast{border-radius:999px;padding:12px 18px}
+.mbox{border-radius:24px;padding:22px}
+footer{color:var(--mute);margin-top:30px}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="bar"><div class="logo" aria-hidden="true"></div><b>한 뼘 시선</b><button type="button" class="who" id="who" aria-label="아이 바꾸기·프로필 보기"></button><button type="button" class="tbtn" id="btnTheme" aria-label="밝은 화면·어두운 화면 바꾸기"></button></header>
+
+<!-- 홈 -->
+<section class="scr" id="scr-home">
+  <div class="hero">
+    <h2>잔디 위의 빨간 공,<br><span data-n="의">아이의</span> 눈에는<br>잔디와 비슷한 색일 수 있어요.</h2>
+    <p>집 사진 한 장으로 <span data-n="의">아이의</span> 눈에 비친 우리 집을 확인하고, 바꿔 주면 좋은 것을 찾아보세요.</p>
+    <div class="demo" aria-hidden="true"><canvas id="hA"></canvas><canvas id="hB"></canvas><u></u><span class="l">내 눈</span><span class="r">강아지 눈</span></div>
+  </div>
+
+  <div class="card">
+    <h3>이 순서로 써 보세요</h3>
+    <p class="lead" style="margin-bottom:4px">위에서부터 차례로 누르면 돼요. 끝낸 단계는 파랗게 표시돼요.</p>
+    <div id="steps"></div>
+  </div>
+
+  <div class="card" id="s-profile">
+    <h3>프로필</h3>
+    <div class="pfrow"><span id="pfAv"></span><label for="pfile">프로필 사진 넣기·바꾸기</label><input type="file" id="pfile" accept="image/*" class="hide"></div>
+    <label class="f" for="name">이름</label>
+    <input type="text" id="name" maxlength="12" placeholder="예: 모모" autocomplete="off">
+    <label class="f">종류</label>
+    <div class="seg" id="species"><button type="button" data-v="dog">강아지</button><button type="button" data-v="cat">고양이</button></div>
+    <div id="dogBox">
+      <label class="f" for="breed">견종 <span class="note">고르면 몸집·주둥이 길이가 채워지고, 노령기가 시작되는 나이가 견종에 맞게 계산돼요</span></label>
+      <select id="breed"></select>
+      <p class="note">목록에 없는 견종이라면 가장 비슷한 견종이나 ‘잘 모르겠어요’를 고른 뒤, 아래에서 몸집과 주둥이 길이를 직접 골라 주세요.</p>
+      <p class="note" id="breedLife"></p>
+      <label class="f">몸집 <span class="note">사진 찍을 눈높이 안내에 쓰여요</span></label>
+      <div class="seg" id="size"><button type="button" data-v="s">소형<small>10kg 미만</small></button><button type="button" data-v="m">중형<small>10~25kg</small></button><button type="button" data-v="l">대형<small>25kg 이상</small></button></div>
+      <label class="f">주둥이 길이 <span class="note">가장 또렷하게 보는 곳의 모양이 달라져요</span></label>
+      <div class="seg" id="snout"><button type="button" data-v="short"><i data-head="short"></i>짧은 편<small>머리의 절반 미만</small></button><button type="button" data-v="mid"><i data-head="mid"></i>중간<small>절반보다 김</small></button><button type="button" data-v="long"><i data-head="long"></i>긴 편<small>머리만큼 김</small></button></div>
+      <p class="stageLine" id="snoutGuide" style="font-weight:400"></p>
+      <details><summary>줄자로 재서 더 정확하게 고르기 (안 하셔도 돼요)</summary>
+      <div class="measure" style="background:none;padding:0">
+        <svg viewBox="0 0 200 92" aria-hidden="true"><path d="M44 22l8-18 16 12z" fill="currentColor" opacity=".5"/><circle cx="68" cy="42" r="30" fill="currentColor" opacity=".25"/><rect x="86" y="40" width="68" height="26" rx="13" fill="currentColor" opacity=".25"/><circle cx="152" cy="46" r="5" fill="currentColor"/><circle cx="84" cy="34" r="3.500" fill="currentColor"/><path d="M96 26v48" stroke="currentColor" stroke-width="1.500" stroke-dasharray="3 3"/><path d="M96 80H156M96 76v8M156 76v8" stroke="#2b59f0" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M38 80H94M38 76v8M94 76v8" stroke="#e08a00" stroke-width="3" stroke-linecap="round" fill="none"/><text x="126" y="91" font-size="9" fill="#2b59f0" text-anchor="middle" font-weight="700">① 주둥이</text><text x="66" y="91" font-size="9" fill="#e08a00" text-anchor="middle" font-weight="700">② 머리</text></svg>
+        <ol><li><b>① 주둥이</b>: 두 눈 사이 움푹한 곳(점선)에서 코끝까지</li><li><b>② 머리</b>: 같은 움푹한 곳에서 뒤통수의 튀어나온 뼈까지</li><li>줄자로 잰 두 숫자를 넣으면, ①을 ②로 나눈 값으로 자동으로 골라 줘요.</li></ol>
+        <div class="calc"><label for="mz">① 주둥이</label><input type="number" id="mz" inputmode="decimal" min="0" step="0.1" placeholder="cm"><label for="hd">② 머리</label><input type="number" id="hd" inputmode="decimal" min="0" step="0.1" placeholder="cm"></div>
+        <div class="stageLine hide" id="calcOut"></div>
+      </div></details>
+      <details><summary>기준 숫자와 근거</summary>
+        <p>①÷② 값(비율)으로 나눠요.</p>
+        <ul class="plain">
+          <li><b>짧은 편</b>: 비율 0.5 미만. 예: 머리 8cm에 주둥이 4cm 미만</li>
+          <li><b>중간</b>: 비율 0.5~0.9. 예: 머리 8cm에 주둥이 4~7.2cm</li>
+          <li><b>긴 편</b>: 비율 0.9 이상. 예: 머리 8cm에 주둥이 7.2cm 이상</li>
+        </ul>
+        <p class="note">재는 법과 0.5 기준은 단두종 연구(Packer 외, 2015, 개 700마리)를 따랐어요. 그 연구에서 단두종 호흡기 증후군이 있던 개는 모두 이 비율이 0.5 미만이었어요. 호흡기에 관한 기준이지 시각에 관한 기준은 아니에요. ‘주둥이가 짧은 개’를 가르는 선으로 빌려 쓴 거예요. 0.9 기준은 공인된 숫자가 없어 이 앱이 정했어요. 몸집마다 머리 크기가 달라서 cm 하나로 자르지 않고 비율로 봐요.</p>
+        <p class="note">이 앱이 연구를 그대로 옮기지 못한 점이 두 가지 있어요.<br>① 망막 연구(McGreevy 외, 2004)가 잰 것은 주둥이÷머리 비율이 아니라 두개골 전체 길이와 두개지수(머리 너비÷길이)예요. 집에서 재기 쉬운 주둥이÷머리 비율로 바꿔 쓴 것은 이 앱의 선택이에요.<br>② 그 연구는 “두개골이 길수록 띠 모양에 가깝다”는 이어진 경향을 보여 줬을 뿐, 어디부터 짧고 어디부터 긴지 선을 긋지 않았어요. 세 단계로 자른 것도 이 앱의 선택이에요.</p>
+      </details>
+    </div>
+    <p class="note hide" id="catNote"><b>고양이는 품종을 묻지 않아요.</b> 품종에 따라 시력이나 색 구분이 다르다는 연구를 찾지 못했고, 고양이 나이대 지침(AAHA·AAFP 2021)도 품종 구분 없이 나이로만 나눠요. 골라도 결과가 달라지지 않는 칸이라 넣지 않았어요.</p>
+    <label class="f" for="birth">태어난 해</label>
+    <select id="birth"></select>
+    <div class="stageLine hide" id="stageLine"></div>
+    <div id="stageBox">
+      <label class="f">나이대 <span class="note">(태어난 해를 모르면 골라 주세요)</span></label>
+      <div class="seg" id="life"></div>
+    </div>
+    <p class="note">나이대 가운데 사진 필터가 달라지는 것은 노령기뿐이에요(더 흐리게, 예시). 다른 나이대는 필터가 같고 조언만 달라져요. 나이대마다 시력이 얼마나 다른지 잰 연구가 없기 때문이에요.</p>
+    <details><summary>나이대는 어떤 기준인가요?</summary>
+      <div id="stageHelp"></div>
+    </details>
+    <button type="button" class="primary" id="btnSavePf">저장</button>
+    <p class="note" style="text-align:center">고칠 때마다 자동으로 저장돼요. 이 버튼은 저장됐는지 확인하는 용도예요.</p>
+  </div>
+
+  <div class="card" id="s-photo">
+    <h3>집 사진 넣기</h3>
+    <p class="lead" id="photoLead"></p>
+    <button type="button" class="stageLine hide" id="pendMsg" style="width:100%;border:0;text-align:left;margin:0 0 10px;cursor:pointer"></button>
+    <label class="drop" for="file"><i data-ic="image"></i><b>사진 고르기 · 찍기</b><span class="pc">사진 파일을 여기로 끌어다 놓거나, 사진을 복사(Ctrl+C)한 뒤 이 화면에서 Ctrl+V를 눌러도 돼요</span><span class="mo">갤러리에서 고르거나 바로 찍을 수 있어요</span></label>
+    <input type="file" id="file" accept="image/*" class="hide">
+    <button type="button" class="ghost" id="btnPaste">복사해 둔 사진 붙여 넣기</button>
+    <button type="button" class="ghost" id="btnSample">예시 사진으로 먼저 해 보기</button>
+    <p class="note" id="camMsg" role="status" aria-live="polite"></p>
+    <p class="privacy"><i data-ic="lock"></i>사진은 이 기기 안에서만 계산돼요. 어디에도 전송하지 않아요. ‘우리 집 점검’에 남긴 사진만 이 기기에 저장돼요.</p>
+  </div>
+
+  <div class="card">
+    <h3>우리 집 점검 <span class="note" id="spotCount"></span></h3>
+    <p class="lead"><span data-n="가">아이가</span> 매일 쓰는 네 곳을 한 장씩 점검해요. 자리마다 사진을 넣으면 결과가 기록되고, 어디부터 손보면 좋은지 알려 드려요.</p>
+    <p class="note"><b>하는 법</b>: ① 아래에서 자리 하나를 누르기 → ② 그 자리를 찍거나 사진 고르기 → ③ 결과 확인 후 홈으로 돌아와 다음 자리. 순서는 상관없지만 위에서부터 하면 편해요.</p>
+    <div class="prog"><i id="spotBar" style="width:0"></i></div>
+    <div class="why hide" id="spotSum" style="margin:8px 0"></div>
+    <div id="spotList"></div>
+  </div>
+
+  <button type="button" class="feat card" data-go="know"><i data-ic="book"></i><span><b>논문 7편과 수의 지침 2건을 근거로 계산해요</b>어떤 연구인지, 근거가 얼마나 탄탄한지 그림으로 보기</span></button>
+
+  <footer>수의대생이 시각 단원을 공부하다 만들었어요 · 한 뼘 시선</footer>
+</section>
+
+<!-- 실시간으로 보기 -->
+<section class="scr hide" id="scr-live">
+  <h2>실시간으로 <span data-n="의">아이의</span> 눈 되어 보기</h2>
+  <p class="lead" id="liveLead"></p>
+  <div class="liveBox"><canvas id="cLive"></canvas><span class="liveTag" id="liveTag">● 실시간</span>
+    <div class="liveOff" id="liveOff"><i data-ic="camera"></i><b>카메라를 켜 주세요</b><p class="note" id="liveMsg">폰을 <span data-n="의">아이의</span> 눈높이까지 낮추면 더 실감 나요.</p><button type="button" class="primary" id="btnLiveOn">카메라 켜기</button></div>
+  </div>
+  <div class="chips" id="liveMode"><button type="button" data-m="now">지금 눈</button><button type="button" data-m="old">나이 들면</button><button type="button" data-m="ill">백내장</button></div>
+  <div class="chips wrap hide" id="liveCat"><button type="button" data-v="1" style="flex:1 1 28%">초기</button><button type="button" data-v="2" style="flex:1 1 28%">미숙</button><button type="button" data-v="3" style="flex:1 1 28%">성숙</button></div>
+  <div class="row"><button type="button" class="ghost" id="btnLiveSnap">이 장면 남기기</button><button type="button" class="ghost" id="btnLiveStop">카메라 끄기</button></div>
+  <div class="why" id="liveWhy" style="margin-top:12px"></div>
+  <p class="note">‘이 장면 남기기’를 누르면 그 장면이 사진처럼 저장돼서 눈 비교·색 점검·보고서에서 쓸 수 있어요. 카메라 영상은 이 기기 안에서만 계산되고 어디에도 보내지 않아요.</p>
+</section>
+
+<!-- 눈 비교 -->
+<section class="scr hide" id="scr-see">
+  <div class="empty"><i data-ic="eye"></i><b>먼저 집 사진을 넣어 주세요</b><p>사진을 넣으면 내 눈과 <span data-n="의">아이의</span> 눈을 나란히 비교할 수 있어요.</p><button type="button" class="primary" data-go="home">사진 넣으러 가기</button></div>
+  <div class="has">
+    <h2>눈 비교</h2>
+    <p class="lead" id="seeLead"></p>
+    <div class="strip"></div>
+    <div class="chips" id="seeMode"><button type="button" data-m="now"><i data-ic="eye"></i>지금 눈으로</button><button type="button" data-m="old"><i data-ic="clock"></i>나이 들면</button><button type="button" data-m="ill"><i data-ic="focus"></i>눈 질환</button></div>
+    <div class="slot">
+      <div id="viewer" data-tab="see">
+        <div class="stage" id="stage">
+          <canvas id="cBase"></canvas><canvas id="cOver" class="over"></canvas>
+          <div class="divider" id="divider"></div>
+          <span class="tag l" id="tagL"></span><span class="tag r" id="tagR"></span>
+        </div>
+        <input type="range" id="split" min="0" max="100" value="50" aria-label="비교선 위치">
+        <p class="hint" id="hint"></p>
+      </div>
+    </div>
+    <button type="button" class="primary hide" id="btnFreeze">이 장면 남기기</button>
+    <button type="button" class="ev" data-go="know" id="evSee"></button>
+    <div id="p-now">
+      <h3>오른쪽 사진에 적용한 차이</h3>
+      <p class="lead" id="fxLead"></p>
+      <div id="fx"></div>
+    </div>
+    <div id="p-ill" class="hide"></div>
+    <div id="p-old" class="hide">
+      <div class="why" id="oldMsg"></div>
+      <div id="fxOld"></div>
+      <div id="illWrap"><div class="why" id="illMsg"></div><div id="catBox">
+        <h3>백내장 단계 <span class="badge ex">예시</span></h3>
+        <p class="lead">단계를 누르면 오른쪽 사진이 그 단계의 예시로 바뀌어요. 수의안과에서 쓰는 단계 구분이에요.</p>
+        <div class="chips wrap" id="catSeg"></div>
+        <div class="why" id="catMsg"></div>
+        <p class="note">이 앱은 진단하지 않아요. 백내장인지, 어느 단계인지는 병원 검사로만 알 수 있어요. 흐려진 범위의 숫자는 자료마다 10% 또는 15%로 조금씩 달라요. 화면의 흐림과 뿌연 정도는 이해를 돕는 예시예요. 출처: Merck 수의학 매뉴얼 ‘동물의 수정체’(단계 구분, 고양이 백내장의 원인), 수의안과 전문의 안내(MSPCA Angell), Vet Times 백내장 분류, JAAHA 41권 4호. 단계별 범위와 수술 결과 연구는 개를 대상으로 한 자료예요.</p>
+      </div>
+      <h3>녹내장은 필터로 보여 드리지 않아요</h3>
+      <div class="verdict bad" style="font-weight:400;margin-top:0"><b>급성 녹내장은 응급이에요.</b> 눈 속 압력이 40~60mmHg 넘게 오르면서 몇 시간 안에 시력을 잃을 수 있어요. 서서히 흐려지는 병이 아니라서 필터로 만들지 않았어요.<br><br><b>이 중 하나라도 갑자기 보이면 그날 바로 병원에 가세요.</b><br>· 눈 흰자가 빨개요<br>· 눈이 뿌옇거나 푸르스름해요<br>· 한쪽 동공이 커져 있어요<br>· 눈을 찡그리거나 비벼요, 기운이 없어요<br>· 물건에 부딪혀요<br><br>빨리 치료하면 시력을 되찾는 경우가 있어요.</div>
+      <p class="note">출처: Merck 수의학 매뉴얼(소동물의 급성 녹내장), 수의안과 병원 안내.</p></div>
+      <h3>나이 든 아이를 위한 집</h3>
+      <ul class="plain">
+        <li>가구와 밥그릇·물그릇·잠자리 자리를 바꾸지 않기</li>
+        <li>복도와 계단 근처에 밤에도 은은한 조명 켜 두기</li>
+        <li>위험한 계단이나 턱은 안전문으로 막기</li>
+        <li>눈을 찡그리거나 비비고, 눈곱이 늘거나 갑자기 뿌옇게 보이면 미루지 말고 병원에 가기</li>
+      </ul>
+      <p class="note">출처: 미국수의안과학회(ACVO) 보호자 안내, 수의 응급·전문 병원 OVRS 안내. 이 앱은 진단하지 않아요.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 색 점검 -->
+<section class="scr hide" id="scr-color">
+  <div class="empty"><i data-ic="drop"></i><b>먼저 집 사진을 넣어 주세요</b><p>밥그릇이나 장난감이 <span data-n="의">아이의</span> 눈에 잘 띄는 색인지 확인해 드려요.</p><button type="button" class="primary" data-go="home">사진 넣으러 가기</button></div>
+  <div class="has">
+    <h2>색 점검</h2>
+    <p class="lead">밥그릇·장난감·방석이 <span data-n="의">아이의</span> 눈에 바닥과 구분되는 색인지 확인해요.</p>
+    <div class="strip"></div>
+    <div class="chips" id="colorMode"><button type="button" data-m="auto"><i data-ic="scan"></i>전체 검사</button><button type="button" data-m="pick"><i data-ic="tap"></i>두 곳 비교</button><button type="button" data-m="shop"><i data-ic="doc"></i>살 물건</button></div>
+    <div class="q" id="colorQ"></div>
+    <div class="slot"></div>
+    <div id="p-auto">
+      <div class="why" id="lostMsg"></div>
+      <p class="note" id="lostNote"></p>
+      <div id="lostExBox" class="hide"><h3>표시되면 이렇게 보여요</h3><canvas id="lostEx"></canvas><p class="note">예시 그림이에요. 초록 러그 위의 빨간 공, 화분의 빨간 화분과 초록 잎처럼 <b>빨강·주황·초록이 비슷한 밝기로 맞닿은 곳</b>에 노란 테두리가 생겨요. 내 사진에 표시가 없다면 그런 곳이 없다는 뜻이에요. 파랑·노랑·흰색·검정 물건은 표시되지 않아요.</p></div>
+    </div>
+    <button type="button" class="ev" data-go="know">근거: <b>색 계산 Viénot 외 1999 · 색 차이 CIE 1976 Lab</b> · 자세히 ›</button>
+    <div id="p-shop" class="hide">
+      <div class="cmp" style="margin-top:0"><div class="sw2"><span id="shFloor"></span></div><div class="w"><span id="shFloorL">지금 넣어 둔 집 사진의 바닥 (자동)</span><b id="shFloorT"></b></div></div>
+      <button type="button" class="ghost" id="btnFloor">바닥 색이 다르게 잡혔나요? 직접 고르기</button>
+      <div class="hide" id="floorBox"><p class="note" style="margin-top:8px">아래 집 사진에서 물건을 놓을 <b>바닥(또는 매트·러그)</b>을 한 번 눌러 주세요.</p><div class="stage" id="floorStage" style="cursor:crosshair"><canvas id="cFloor"></canvas></div></div>
+      <label class="drop" for="shopFile" style="margin-top:10px"><i data-ic="image"></i><b>살 물건 사진 넣기</b><span>쇼핑몰 화면을 캡처한 사진도 돼요</span><span class="pc">캡처를 복사(Ctrl+C)한 뒤 이 화면에서 Ctrl+V를 눌러도 돼요</span></label>
+      <input type="file" id="shopFile" accept="image/*" class="hide">
+      <div class="stage hide" id="shopStage" style="margin-top:10px;cursor:crosshair"><canvas id="cShop"></canvas></div>
+      <div class="why" id="shopMsg">물건 사진을 넣은 뒤, 사진에서 <b>물건의 대표 색</b>을 한 번 눌러 주세요. 바닥과 비교해 사도 좋을지 알려 드려요.</div>
+      <div class="hide" id="shopOut">
+        <div class="cmp"><div class="sw2"><span id="sh1"></span><span id="sh2"></span></div><div class="w">내 눈에는 (바닥·물건)<b id="shH"></b></div><div class="num" id="shNH"></div></div>
+        <div class="cmp"><div class="sw2"><span id="sh3"></span><span id="sh4"></span></div><div class="w"><span data-n="의">아이의</span> 눈에는<b id="shP"></b></div><div class="num" id="shNP"></div></div>
+        <div class="verdict" id="shopV"></div>
+      </div>
+      <p class="note">바닥 색은 집 사진 아래쪽 40%의 평균이에요. 쇼핑몰 사진은 조명과 화면에 따라 실제 색과 다를 수 있어서, 참고용으로만 봐 주세요. 무늬가 있는 물건은 가장 넓은 색을 눌러 주세요. 판정 기준(색 차이 25 이상이면 잘 구분)은 이 앱이 정했어요.</p>
+    </div>
+    <div id="p-pick" class="hide">
+      <div class="why" id="pickMsg"></div>
+      <div id="pickOut" class="hide">
+        <div class="cmp"><div class="sw2"><span id="h1"></span><span id="h2"></span></div><div class="w">내 눈에는<b id="lvH"></b></div><div class="num" id="nH"></div></div>
+        <div class="cmp"><div class="sw2"><span id="d1"></span><span id="d2"></span></div><div class="w"><span data-n="의">아이의</span> 눈에는<b id="lvP"></b></div><div class="num" id="nP"></div></div>
+        <div class="scale"><div class="box"><div class="track"><span class="pin" id="pinH">나</span><span class="pin pet" id="pinP"></span></div></div>
+          <div class="zones"><span style="left:6%">거의 같음</span><span style="left:18.5%">약함</span><span style="left:35%">보통</span><span style="left:72%">뚜렷</span></div></div>
+        <div class="verdict" id="verdict"></div>
+        <details><summary>이 숫자는 무엇인가요?</summary>
+          <p>두 색이 얼마나 다른지를 숫자로 나타낸 <b>색 차이(ΔE)</b>예요. 국제조명위원회(CIE)의 1976년 Lab 색공간에서 두 색 사이의 거리를 쟀어요. 0이면 완전히 같은 색이고, 숫자가 클수록 다른 색이에요.</p>
+          <ul class="plain"><li>0~12 거의 같음 · 12~25 약함 · 25~45 보통 · 45 이상 뚜렷</li><li>사람은 보통 2~3 정도의 차이부터 알아챌 수 있다고 알려져 있어요.</li></ul>
+          <p class="note">구간 이름과 경계 숫자는 이 앱이 정했어요. <span data-n="의">아이의</span> 눈 쪽 숫자는 사람의 적록색맹 계산법으로 바꾼 색을 사람용 색공간에서 잰 근삿값이에요. 개·고양이를 직접 잰 값이 아니에요.</p>
+        </details>
+      </div>
+      <button type="button" class="ghost hide" id="pickReset">다시 고르기</button>
+    </div>
+  </div>
+</section>
+
+<!-- 보고서 -->
+<section class="scr hide" id="scr-report">
+  <div class="empty"><i data-ic="doc"></i><b>먼저 집 사진을 넣어 주세요</b><p>사진을 넣으면 바꿔 주면 좋은 것을 정리해 드려요.</p><button type="button" class="primary" data-go="home">사진 넣으러 가기</button></div>
+  <div class="has">
+    <div class="repHead" id="repHead"></div>
+    <p class="lead hide" id="sumTxt"></p>
+
+    <h3><span class="sn">1</span><span data-n="의">아이의</span> 눈으로 본 우리 집</h3>
+    <div class="strip" id="repStrip"></div>
+    <canvas id="cRep"></canvas>
+    <p class="hint" id="repHint"></p>
+    <div class="tiles" id="tiles"></div>
+    <div class="why hide" id="tileMore"></div>
+    <div class="q" style="margin-top:12px"><b id="spotQ"></b><span class="s" id="spotQs"></span><div class="chips wrap" id="spotAsk"></div></div>
+
+    <h3><span class="sn">2</span>이렇게 바꿔 보세요</h3>
+    <ol class="todo" id="todo"></ol>
+
+    <h3><span class="sn">3</span>우리 집 점검 결과</h3>
+    <div class="card" style="margin-top:0" id="repSpots"></div>
+
+    <h3><span class="sn">4</span><span data-n="가">아이가</span> 나보다 잘 보는 것</h3>
+    <div class="good3" id="good3"></div>
+    <button type="button" class="ghost" data-go="know"><i data-ic="book"></i>그림으로 자세히 보기</button>
+
+    <h3><span class="sn">5</span>이럴 땐 바로 병원에</h3>
+    <div class="vet" id="repVet"></div>
+
+    <div class="shareBox">
+      <h3 style="margin-top:0">보고서 한 장으로 자랑하기</h3>
+      <p class="lead">위 내용을 예쁜 사진 한 장으로 만들어요. 카카오톡·인스타그램에 올리거나 가족에게 보내 보세요.</p>
+      <img id="cardPrev" alt="공유할 보고서 미리보기">
+      <div class="row"><button type="button" class="primary" id="btnShare"><i data-ic="share"></i>보내기</button><button type="button" class="ghost" id="btnSave" style="margin-top:12px"><i data-ic="download"></i>저장</button></div>
+      <p class="note" id="shareNote"></p>
+    </div>
+    <p class="note" style="text-align:center;margin-top:16px">논문 7편과 수의 지침 2건을 근거로 계산했어요. 일부는 예시이고, 진단이 아니에요.</p>
+    <canvas id="cCard" class="hide"></canvas>
+  </div>
+</section>
+
+<!-- 마이 -->
+<section class="scr hide" id="scr-my">
+  <h2>마이</h2>
+  <p class="lead">반려동물마다 프로필을 따로 만들어 두고 바꿔 가며 볼 수 있어요. 집 점검 기록도 반려동물마다 따로 저장돼요.</p>
+  <h3>우리 반려동물</h3>
+  <div id="petList"></div>
+  <button type="button" class="ghost" id="btnAddPet">+ 반려동물 추가하기</button>
+  <div id="mySlotP"></div>
+  <button type="button" class="ghost hide" id="btnDelPet">이 반려동물 프로필 지우기</button>
+  <div class="card"><h3>화면</h3>
+    <label class="f" style="margin-top:0">밝기</label><div class="seg" id="themeSeg"><button type="button" data-v="light">밝게</button><button type="button" data-v="dark">어둡게</button></div>
+    <label class="f">글자 크기</label><div class="seg" id="zoomSeg"><button type="button" data-v="1">보통</button><button type="button" data-v="1.15" style="font-size:16.5px">크게</button><button type="button" data-v="1.3" style="font-size:18.5px">아주 크게</button></div>
+  </div>
+  <div class="card"><h3>‘한 뼘 시선’이란</h3>
+    <p style="font-size:14.5px">한 뼘은 손을 폈을 때 엄지 끝에서 새끼손가락 끝까지, 약 20cm예요. 고양이와 작은 개의 눈이 바닥에서 딱 그만큼 높이에 있어요. <b>바닥에서 한 뼘 높이로 내려가 아이의 눈으로 집을 다시 본다</b>는 뜻으로 지었어요.</p>
+    <p style="font-size:14.5px;display:flex;gap:10px;align-items:center"><span class="logo" aria-hidden="true"></span><span>로고는 눈이에요. 가운데 검은 원이 눈동자이고, 파랑과 노랑은 개와 고양이가 가장 잘 구분하는 두 색이에요.</span></p>
+  </div>
+  <button type="button" class="feat card" data-go="know"><i data-ic="book"></i><span><b>눈 지식</b>근거가 된 연구와 계산 방법 보기</span></button>
+  <footer>수의대생이 시각 단원을 공부하다 만들었어요 · 한 뼘 시선</footer>
+</section>
+
+<!-- 눈 지식 -->
+<section class="scr hide" id="scr-know">
+  <h2>눈 지식</h2>
+  <p class="lead">이 앱이 무엇을 근거로 계산했는지, 근거가 얼마나 탄탄한지 그대로 적었어요.</p>
+  <p class="note"><span class="badge ok">탄탄</span> 여러 연구가 같은 결론<br><span class="badge mid">보통·전문가 설명</span> 측정한 수가 적거나 전문가의 설명<br><span class="badge ex">추정·예시</span> 근거가 약해요. 이해를 돕는 그림으로만 보세요</p>
+  <div id="kCards"></div>
+  <h3>한눈에 보는 근거 표</h3>
+  <details><summary>강아지</summary><table>
+    <tr><th>효과</th><th>근거</th><th>수준</th></tr>
+    <tr><td>색</td><td>색을 느끼는 세포가 두 종류(정점 약 429·555nm). 사람은 세 종류. 빨강·초록 구분이 어렵다는 연구가 주류지만 일부 구분한다는 연구도 있음</td><td><span class="badge ok">탄탄</span></td></tr>
+    <tr><td>선명도</td><td>보통 20/75로 추정. 측정된 개는 비글·시바 등 몇 마리(20/45~20/85)</td><td><span class="badge mid">보통</span></td></tr>
+    <tr><td>또렷한 곳</td><td>주둥이가 긴 개는 망막의 선명한 영역이 가로 띠, 짧은 개는 가운데에 모임(22마리, 두개골 길이와 r=−0.795, 두개지수와 r=0.687). 실제로 그렇게 보이는지는 확인되지 않음</td><td><span class="badge ex">예시</span></td></tr>
+    <tr><td>밤</td><td>망막 뒤 반사판이 539마리 중 70.3%에서 온전히 있음. 얼마나 밝게 보이는지는 정해진 숫자가 없음</td><td><span class="badge ex">예시</span></td></tr>
+    <tr><td>나이</td><td>나이가 들수록 근시 쪽으로 간다는 연구(비글 9마리). 개체차가 큼</td><td><span class="badge ex">예시</span></td></tr>
+    <tr><td>깜빡임</td><td>행동 실험에서 70~80Hz까지 깜빡임을 느낌. 사람은 약 60Hz</td><td><span class="badge mid">보통</span></td></tr>
+  </table></details>
+  <details><summary>고양이</summary><table>
+    <tr><th>효과</th><th>근거</th><th>수준</th></tr>
+    <tr><td>색</td><td>주로 파랑과 노랑. 빨강·초록 장난감은 비슷한 회색으로 보일 수 있음</td><td><span class="badge mid">전문가 설명</span></td></tr>
+    <tr><td>선명도</td><td>예전 연구 20/100~20/200, 최근 행동 실험 20/30. 결과가 크게 갈림. 이 앱은 20/100으로 계산</td><td><span class="badge ex">추정</span></td></tr>
+    <tr><td>밤</td><td>어두운 곳에서 사람보다 약 5.5~7배 잘 본다는 추정</td><td><span class="badge ex">추정</span></td></tr>
+    <tr><td>가까운 곳</td><td>약 25cm보다 가까우면 초점이 흐려짐</td><td><span class="badge mid">전문가 설명</span></td></tr>
+    <tr><td>나이</td><td>나이가 들면 원시 쪽으로 갈 가능성이 높다는 전문가 의견</td><td><span class="badge ex">예시</span></td></tr>
+  </table></details>
+  <details><summary>계산 방법과 한계</summary>
+    <ul class="plain">
+      <li>색은 사람의 적록색맹을 모의하는 공개 계산법(Viénot 외, 1999)을 썼어요. 개·고양이 전용 계산법은 아니에요.</li>
+      <li>선명도는 "사람이 이 사진에서 보는 세밀함"을 기준으로 그만큼 덜 세밀하게 만든 상대 비교예요.</li>
+      <li>견종·몸집·나이에 따라 선명도 숫자를 다르게 주지 않았어요. 그렇게 나눌 만큼 측정된 연구가 없기 때문이에요. 몸집과 나이는 눈높이 안내, 나이대 구분, 집 정리 조언에만 써요.</li>
+      <li>넓은 시야는 사진 한 장으로 재현할 수 없어 그림과 설명으로만 넣었어요.</li>
+      <li>같은 종이라도 개체마다 달라요. 이 앱은 진단 도구가 아니에요.</li>
+    </ul>
+  </details>
+  <details><summary>출처</summary>
+    <ul class="plain">
+      <li>Byosiere 외 (2018) What do dogs (Canis familiaris) see? Psychonomic Bulletin &amp; Review 25:1798–1813</li>
+      <li>McGreevy, Grassi, Harman (2004) A strong correlation exists between the distribution of retinal ganglion cells and nose length in the dog. Brain, Behavior and Evolution 63:13–22</li>
+      <li>Hernandez 외 (2016) Aging dogs manifest myopia as measured by autorefractor. PLOS ONE 11(2):e0148436</li>
+      <li>Francis 외 (2024) 개의 핵경화와 굴절 이상 연구(PMC10842750)</li>
+      <li>Packer 외 (2015) Impact of facial conformation on canine health: brachycephalic obstructive airway syndrome. PLOS ONE 10(10):e0137496</li>
+      <li>McMillan 외 (2024) Longevity of companion dog breeds: those at risk from early death. Scientific Reports 14:531 (영국 584,734마리, 견종별 수명 중앙값은 부록 표 3)</li>
+      <li>미국동물병원협회(AAHA) (2019) Canine Life Stage Guidelines</li>
+      <li>AAHA·미국고양이수의사회(AAFP) (2021) Feline Life Stage Guidelines. Journal of Feline Medicine and Surgery 23:211–233</li>
+      <li>PetMD, How Do Cats See the World? (수의안과 전문의 Paul Miller 인터뷰)</li>
+      <li>Viénot, Brettel, Mollon (1999) Color Research &amp; Application 24:243–252</li>
+      <li>ACVO, Tips on Adjusting to Your Pet's Blindness</li>
+      <li>Coster M (수의안과 전문의), MSPCA Angell 백내장 안내 · Vet Times, Canine cataracts: classification, aetiology and complications (백내장 단계)</li>
+      <li>Outcomes of Dogs Presented for Cataract Evaluation: A Retrospective Study. Journal of the American Animal Hospital Association 41(4)</li>
+      <li>Merck Veterinary Manual, Acute Glaucoma in Small Animals · The Lens in Animals</li>
+      <li>KB경영연구소, 한국 반려동물보고서(견종 목록 참고)</li>
+    </ul>
+  </details>
+  <footer>수의대생이 시각 단원을 공부하다 만들었어요 · 한 뼘 시선</footer>
+</section>
+
+<nav class="nav" id="nav" aria-label="메뉴">
+  <button type="button" data-s="home"><i data-ic="home"></i><span>홈</span></button>
+  <button type="button" data-s="see"><i data-ic="eye"></i><span>눈 비교</span></button>
+  <button type="button" data-s="color"><i data-ic="drop"></i><span>색 점검</span></button>
+  <button type="button" data-s="report"><i data-ic="doc"></i><span>보고서</span></button>
+  <button type="button" data-s="my"><i data-ic="user"></i><span>마이</span></button>
+</nav>
+</div>
+<div class="modal hide" id="crop" role="dialog" aria-label="프로필 사진 자르기"><div class="mbox"><b>프로필에 보일 부분 고르기</b><p class="note">사진을 끌어서 옮기고, 아래 막대로 크기를 조절해 주세요. 동그라미 안이 프로필에 보여요.</p><div class="cropv"><canvas id="cropC" width="300" height="300"></canvas></div><input type="range" id="cropZ" min="0" max="100" value="0" aria-label="사진 크기"><div class="row"><button type="button" class="ghost" id="cropFill">원에 꽉 채우기</button><button type="button" class="ghost" id="cropFit">사진 전체 보이기</button></div><div class="row"><button type="button" class="ghost" id="cropNo" style="margin-top:12px">취소</button><button type="button" class="primary" id="cropOk">확인</button></div></div></div>
+<video id="video" playsinline webkit-playsinline muted autoplay></video>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+/* 맥(맥북·아이맥)에서는 Ctrl 대신 ⌘(Command) 키로 안내한다 */
+const IS_MAC=/Mac|iPhone|iPad|iPod/.test((navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||navigator.userAgent),KEY=IS_MAC?"⌘":"Ctrl";
+if(IS_MAC)document.querySelectorAll(".pc").forEach(e=>{e.textContent=e.textContent.replace(/Ctrl/g,"⌘")});
+const S={name:"",species:"dog",breed:"maltese",size:"s",snout:"mid",birth:"",stage:"young",scr:"home",mode:{see:"now",color:"auto"},tab:"see",fx:{color:true,blur:true,zone:true,night:false},open:{},src:null,pet:null,split:50,userSplit:50,picks:[],lost:null,cam:null,spots:{},spotNow:null,spotPending:null,demoed:false,sweeping:false,photo:"",mz:"",hd:"",pets:[],cur:0,delArm:false,seen:{},stay:null,spotDel:null,recent:[],rIdx:-1};
+const PF=["name","species","breed","size","snout","birth","stage","photo","mz","hd","spots"];
+const newPet=()=>({name:"",species:"dog",breed:"maltese",size:"s",snout:"mid",birth:"",stage:"young",photo:"",mz:"",hd:"",spots:{}});
+
+/* ---------- 기준 자료 ---------- */
+/* 견종: [id, 이름, 몸집, 주둥이]. 몸집·주둥이는 일반적인 생김새로 넣은 기본값이고 사용자가 바꿀 수 있다 */
+/* 5·6번째 값: 수명 중앙값(년)과 조사한 마릿수. McMillan 외 2024(영국 584,734마리) 부록 표 3에서 옮김. 없는 견종은 0 */
+const BREEDS=[["maltese","말티즈","s","mid",13.1,2021],["poodle","푸들(토이·미니어처)","s","mid",14.0,6427],["pome","포메라니안","s","mid",12.2,2941],["shihtzu","시츄","s","short",12.8,12007],["chihuahua","치와와","s","short",11.8,10788],["bichon","비숑 프리제","s","mid",12.5,5902],["yorkie","요크셔테리어","s","mid",13.3,14579],["dachs","닥스훈트(미니어처)","s","long",14.0,7342],["pug","퍼그","s","short",11.6,10026],["peke","페키니즈","s","short",13.3,695],["boston","보스턴테리어","s","short",11.8,1984],["spitz","스피츠","s","mid",13.0,336],["schnauzer","미니어처 슈나우저","s","mid",13.3,7693],["frenchie","프렌치 불독","m","short",9.8,11821],["corgi","웰시코기","m","mid",13.2,643],["shiba","시바견","m","mid",14.6,423],["beagle","비글","m","mid",12.5,4678],["cocker","코커스패니얼","m","mid",13.3,26303],["jindo","진돗개","m","mid",0,0],["collie","보더콜리","m","mid",13.1,12917],["golden","골든 리트리버","l","mid",13.2,11506],["labrador","래브라도 리트리버","l","mid",13.1,43428],["mix","믹스견","s","mid",12.0,111053],["etc","잘 모르겠어요 · 그 밖의 견종","s","mid",0,0]];
+const breedRow=()=>BREEDS.find(b=>b[0]===S.breed)||BREEDS[BREEDS.length-1];
+const SPOT_TIP={bowl:"밥그릇·물그릇 밑에 바닥과 밝기가 다른 매트를 깔면 그릇 자리를 찾기 쉬워요.",bed:"잠자리에는 바닥과 밝기가 다른 담요를 덮어 주세요. 가장자리가 잘 보여요.",toy:"장난감은 밝기 차이가 먼저예요. 어두운 바닥에는 밝은 것, 밝은 바닥에는 진한 것을 두세요.",path:"문턱이나 계단 끝에 바닥과 밝기가 다른 테이프나 매트를 붙이면 턱이 잘 보여요."};
+const ADV_HOW=" 바닥이 밝으면 남색·검정처럼 어두운 것, 바닥이 어두우면 흰색·밝은 노랑처럼 밝은 것이 잘 보여요.";
+const SPOT_ADV={bowl:"그릇 밑에 매트를 깔거나 그릇을 바꿔 보세요."+ADV_HOW,bed:"방석이나 담요를 바꿔 보세요."+ADV_HOW,toy:"장난감을 바꿔 보세요."+ADV_HOW,path:"문턱이나 계단 끝에 매트나 테이프를 붙여 보세요."+ADV_HOW};
+/* 몸집: 눈높이는 어깨 높이로 어림한 추정, 노령 시작은 AAHA 2019 "예상 수명의 마지막 25%"에 가정 수명을 넣어 계산 */
+const SIZE={s:{n:"소형",eye:"20~30cm",life:14,sen:10.5},m:{n:"중형",eye:"35~55cm",life:13,sen:9.75},l:{n:"대형",eye:"55~65cm",life:11,sen:8.25}};
+const SNOUT={short:"짧은 편",mid:"중간",long:"긴 편"};
+const SPOTS=[["bowl","밥그릇·물그릇 자리","밥·물그릇"],["bed","잠자리","잠자리"],["toy","장난감 두는 곳","장난감"],["path","자주 다니는 길·계단","길·계단"]];
+const savedSpots=()=>SPOTS.filter(s=>S.spots[s[0]]&&S.spots[s[0]].img);
+const YEAR=new Date().getFullYear();
+
+/* ---------- 아이콘 ---------- */
+const IC={
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  drop:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  doc:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/>',
+  book:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.500A2.500 2.500 0 0 0 4 20.500z"/><path d="M4 20.500A2.500 2.500 0 0 0 6.500 23H20v-5"/><path d="M9 8h7"/>',
+  camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  image:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M3 16l5-5 4 4 3-3 6 6"/>',
+  moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.500 1.500M17.500 17.500L19 19M5 19l1.500-1.500M17.500 6.500L19 5"/>',
+  focus:'<circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+  glasses:'<circle cx="6.5" cy="14" r="3.5"/><circle cx="17.5" cy="14" r="3.5"/><path d="M10 14h4M3 14l2-8M21 14l-2-8"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  scan:'<path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M8 12h8"/>',
+  tap:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/>',
+  download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+  share:'<path d="M12 15V4M8 8l4-4 4 4M5 12v8h14v-8"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
+};
+const ic=n=>'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>';
+$$("[data-ic]").forEach(e=>e.innerHTML=ic(e.dataset.ic));
+/* 옆얼굴 그림: 파란 선이 주둥이 길이 */
+function headSvg(t){const L={short:7,mid:15,long:25}[t],x0=31,x1=x0+L;
+  return `<svg viewBox="0 0 64 40" aria-hidden="true"><path d="M12 12l3-9 7 6z" fill="currentColor" opacity=".55"/><circle cx="21" cy="20" r="12" fill="currentColor" opacity=".3"/><rect x="${x0-4}" y="19" width="${L+6}" height="11" rx="5.500" fill="currentColor" opacity=".3"/><circle cx="${x1+1}" cy="22" r="2.200" fill="currentColor"/><circle cx="26" cy="17" r="1.600" fill="currentColor"/><path d="M${x0} 35H${x1}M${x0} 32.500v5M${x1} 32.500v5" stroke="#2b59f0" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`}
+$$("[data-head]").forEach(e=>e.outerHTML=headSvg(e.dataset.head));
+
+/* ---------- 이름, 조사, 프로필 ---------- */
+function josa(word,pair){const c=word.charCodeAt(word.length-1);let has=false;if(c>=0xAC00&&c<=0xD7A3)has=((c-0xAC00)%28)!==0;const m={"이":["이","가"],"가":["이","가"],"은":["은","는"],"는":["은","는"],"을":["을","를"],"를":["을","를"]}[pair];return m?(has?m[0]:m[1]):pair}
+function N(p){const n=S.name.trim()||"아이";return p==="의"?n+"의":p?n+josa(n,p):n}
+const isDog=()=>S.species==="dog";
+function breedName(p){p=p||S;if(p.breed==="etc")return"강아지";const b=BREEDS.find(b=>b[0]===p.breed);return b?b[1].replace(/\(.*\)/,""):"강아지"}
+function avatar(p,cls){const n=(p.name||"").trim();return p.photo?`<img class="av ${cls||""}" src="${p.photo}" alt="">`:`<i class="av ${cls||""}">${n?n[0]:(p.species==="cat"?"냥":"멍")}</i>`}
+function ageYears(){return S.birth?Math.max(0,YEAR-(+S.birth)):null}
+/* 노령기 시작: 견종 수명 중앙값의 75% 지점(AAHA 2019 "예상 수명의 마지막 25%"). 자료가 없는 견종은 몸집별 가정 수명으로 */
+function lifeYears(){const b=breedRow();return b[4]||SIZE[S.size].life}
+function senStart(){return isDog()?lifeYears()*.75:10.01}
+function stageKey(){const a=ageYears();if(a===null)return S.stage;if(!isDog())return a<1?"puppy":a<=6?"young":a<=10?"mature":"senior";return a<1?"puppy":a<4?"young":a<senStart()?"mature":"senior"}
+function stageDefs(){if(!isDog())return[["puppy","새끼 고양이","1살 미만"],["young","청년기","1~6살"],["mature","중장년기","7~10살"],["senior","노령기","10살 초과"]];const s=Math.round(senStart());return[["puppy","강아지기","약 9개월까지"],["young","청년기","약 4살까지"],["mature","중장년기","약 "+s+"살 전까지"],["senior","노령기","약 "+s+"살부터"]]}
+function lifeTxt(long){const b=breedRow(),s=senStart().toFixed(1);if(b[4])return `<b>${b[0]==="mix"?"믹스견":breedName()}</b>: 수명 중앙값 ${b[4].toFixed(1)}년(${b[5].toLocaleString()}마리 조사${b[5]<1000?", 표본이 작아 오차가 커요":""}) × 0.75 = <b>약 ${s}살부터 노령기</b>`+(long?"로 계산했어요.":"");
+  return `이 견종은 수명 자료를 찾지 못해, ${SIZE[S.size].n}견 가정 수명 ${SIZE[S.size].life}년(이 앱이 넣은 어림값) × 0.75 = <b>약 ${s}살부터 노령기</b>`+(long?"로 계산했어요.":"")}
+function stageName(){const d=stageDefs().find(d=>d[0]===stageKey());return d?d[1]:""}
+const isSenior=()=>stageKey()==="senior";
+function ageTxt(){const a=ageYears();return a===null?stageName():(a<1?"1살 미만":a+"살쯤")+"("+stageName()+")"}
+/* 다른 아이의 프로필 한 줄: 잠깐 그 아이 값으로 바꿔 계산하고 되돌린다 */
+function lineOf(p){const bak={},d=newPet();PF.forEach(k=>{bak[k]=S[k];S[k]=p[k]===undefined?d[k]:p[k]});const t=profileLine();PF.forEach(k=>S[k]=bak[k]);return t}
+/* 글자 크기를 키워도 사진 위 좌표가 어긋나지 않게 계산 */
+function rel(e,el){const r=el.getBoundingClientRect(),z=S.zoom||1,old=z!==1&&el.offsetWidth&&Math.abs(r.width/el.offsetWidth-1)<0.02,cx=old?e.clientX/z:e.clientX,cy=old?e.clientY/z:e.clientY;return{ok:r.width>0&&r.height>0,x:(cx-r.left)/r.width,y:(cy-r.top)/r.height}}
+function setZoom(z,keep){S.zoom=z;document.documentElement.style.setProperty("--z",z);$$("#zoomSeg button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.v===z)));if(keep)try{localStorage.setItem("hb-zoom",z)}catch(e){}}
+function profileLine(){return isDog()?breedName()+" · "+SIZE[S.size].n+" · 주둥이 "+SNOUT[S.snout]+" · "+ageTxt():"고양이 · "+ageTxt()}
+function paintNames(){$$("[data-n]").forEach(e=>e.textContent=N(e.dataset.n));$("#who").innerHTML=avatar(S)+"<span>"+N()+(S.pets.length>1?" 외 "+(S.pets.length-1):"")+"</span>";tags()}
+function tags(){const t=S.tab;
+  $("#tagL").textContent=t==="old"?N()+" · 성년일 때":t==="ill"?N()+" · 지금 눈":"내가 보는 장면";
+  $("#tagR").textContent=t==="old"?N()+" · 노령일 때(예시)":t==="ill"?N()+" · 백내장 "+["","초기","미숙","성숙"][S.cat||2]+"(예시)":t==="lost"?N("의")+" 눈으로 본 장면":N("가")+" 보는 장면"}
+
+/* ---------- 저장 ---------- */
+/* 아이마다 프로필을 따로 둔다. 지금 보는 아이의 값은 S에 풀어 놓고 쓰고, 저장할 때 S.pets에 되돌려 넣는다 */
+function save(){const p={};PF.forEach(k=>p[k]=S[k]);S.pets[S.cur]=p;try{localStorage.setItem("hb-pets",JSON.stringify({pets:S.pets,cur:S.cur}));return true}catch(e){return false}}
+function usePet(i){S.cur=i;const p=Object.assign(newPet(),S.pets[i]);PF.forEach(k=>S[k]=p[k]);S.spotNow=null;S.spotPending=null;S.delArm=false;S.spotDel=null;S.recent.forEach(r=>r.spot=null)}
+function load(){let d=null;try{d=JSON.parse(localStorage.getItem("hb-pets")||"null");
+    if(!d){const p=JSON.parse(localStorage.getItem("hb-profile")||"null");if(p){if(p.age&&!p.stage)p.stage=p.age==="senior"?"senior":"young";delete p.age;const s=JSON.parse(localStorage.getItem("hb-spots")||"null");d={pets:[Object.assign(newPet(),p,{spots:s||{}})],cur:0}}}}catch(e){}
+  if(!d||!d.pets||!d.pets.length)d={pets:[newPet()],cur:0};S.pets=d.pets;usePet(Math.min(d.cur||0,d.pets.length-1))}
+function switchPet(i){save();usePet(i);save();segUI();ui();draw()}
+
+/* ---------- 밝은 화면·어두운 화면 ---------- */
+function setTheme(t,keep){document.documentElement.dataset.theme=t;$("#btnTheme").innerHTML=ic(t==="dark"?"sun":"moon")+(t==="dark"?"밝게":"어둡게");$$("#themeSeg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===t)));const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==="dark"?"#202027":"#ffffff";if(keep)try{localStorage.setItem("hb-theme",t)}catch(e){}}
+{let t=null;try{t=localStorage.getItem("hb-theme")}catch(e){}if(!t)t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";setTheme(t)}
+
+/* ---------- 색 계산 ---------- */
+const LUT=new Float32Array(256);for(let i=0;i<256;i++){const c=i/255;LUT[i]=c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4)}
+function enc(v){v=v<0?0:v>1?1:v;return Math.round((v<=0.0031308?v*12.92:1.055*Math.pow(v,1/2.4)-0.055)*255)}
+const ENC=new Uint8Array(4097);for(let i=0;i<=4096;i++)ENC[i]=enc(i/4096);
+/* Viénot 1999 적록(녹색) 색맹 모의, 선형 RGB. DaltonLens 공개 코드와 대조함 */
+function dich(r,g,b){const R=LUT[r],G=LUT[g],B=LUT[b];const y=0.29275*R+0.70725*G;let z=-0.02234*R+0.02234*G+B;if(z<0)z=0;if(z>1)z=1;const e=ENC[(y*4096)|0];return[e,e,ENC[(z*4096)|0]]}
+function applyColor(ctx,w,h){const im=ctx.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){const R=LUT[d[i]],G=LUT[d[i+1]],B=LUT[d[i+2]];const y=0.29275*R+0.70725*G;let z=-0.02234*R+0.02234*G+B;if(z<0)z=0;else if(z>1)z=1;const e=ENC[(y*4096)|0];d[i]=e;d[i+1]=e;d[i+2]=ENC[(z*4096)|0]}ctx.putImageData(im,0,0)}
+function lab(r,g,b){const R=LUT[r],G=LUT[g],B=LUT[b];let x=(0.4124*R+0.3576*G+0.1805*B)/0.95047,y=0.2126*R+0.7152*G+0.0722*B,z=(0.0193*R+0.1192*G+0.9505*B)/1.08883;const f=t=>t>0.008856?Math.cbrt(t):7.787*t+16/116;x=f(x);y=f(y);z=f(z);return[116*y-16,500*(x-y),200*(y-z)]}
+function dE(a,b){return Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])}
+
+/* ---------- 캔버스 도구 ---------- */
+function mk(w,h){const c=document.createElement("canvas");c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));return c}
+/* 다 쓴 임시 캔버스는 바로 비운다. 아이폰·아이패드 사파리는 캔버스 메모리 한도가 작아서, 실시간 보기처럼 계속 만들면 화면이 멈출 수 있다 */
+function free(...a){a.forEach(z=>{if(z&&z.width){z.width=0;z.height=0}})}
+function blurred(src,f){ /* 줄였다 늘려 세밀함을 1/f로 */
+  if(f<=1.01)return src;let cur=src,w=src.width,h=src.height;const tw=Math.max(8,w/f),th=Math.max(8,h/f);
+  while(w/2>tw){w/=2;h/=2;const c=mk(w,h),x=c.getContext("2d");x.imageSmoothingQuality="high";x.drawImage(cur,0,0,c.width,c.height);if(cur!==src)free(cur);cur=c}
+  const s=mk(tw,th),sx=s.getContext("2d");sx.imageSmoothingQuality="high";sx.drawImage(cur,0,0,s.width,s.height);if(cur!==src)free(cur);
+  const o=mk(src.width,src.height),ox=o.getContext("2d");ox.imageSmoothingQuality="high";ox.drawImage(s,0,0,o.width,o.height);free(s);return o}
+function ratio(){return isDog()?3.75:5}
+function seniorMul(){return 1.6}
+const zoneOn=()=>isDog()&&S.snout!=="mid";
+
+/* ---------- 아이가 보는 장면 만들기 ---------- */
+function renderPet(src,o){
+  const w=src.width,h=src.height;let c=mk(w,h),x=c.getContext("2d");x.drawImage(src,0,0);
+  if(o.night){x.globalCompositeOperation="multiply";x.fillStyle="rgb(110,120,150)";x.fillRect(0,0,w,h);x.globalCompositeOperation="source-over"}
+  if(o.color)applyColor(x,w,h);
+  const c0=c;
+  if(o.blur){let f=ratio();
+    if(o.zone&&zoneOn()){
+      const far=blurred(c,f*1.9),near=blurred(c,f*0.8),m=mk(w,h),mx=m.getContext("2d");let g;
+      if(S.snout==="long"){g=mx.createLinearGradient(0,0,0,h);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(.38,"rgba(0,0,0,1)");g.addColorStop(.62,"rgba(0,0,0,1)");g.addColorStop(1,"rgba(0,0,0,0)")}
+      else{const R=Math.min(w,h)*.5;g=mx.createRadialGradient(w/2,h/2,R*.25,w/2,h/2,R);g.addColorStop(0,"rgba(0,0,0,1)");g.addColorStop(1,"rgba(0,0,0,0)")}
+      mx.fillStyle=g;mx.fillRect(0,0,w,h);mx.globalCompositeOperation="source-in";mx.drawImage(near,0,0);
+      const out=mk(w,h),ox=out.getContext("2d");ox.drawImage(far,0,0);ox.drawImage(m,0,0);c=out;free(m);if(far!==c0)free(far);if(near!==c0)free(near)}
+    else c=blurred(c,f)}
+  const put=n=>{if(c!==c0&&c!==n)free(c);c=n};
+  /* 노령(예시): 사진만으로는 거리를 알 수 없어, 사진 위쪽이 먼 곳이라고 가정한다. 개는 먼 곳(위), 고양이는 가까운 곳(아래)을 더 흐리게 */
+  if(o.senior&&o.blur){const e=blurred(c0,ratio()*2.5),m=mk(w,h),mx=m.getContext("2d"),g=mx.createLinearGradient(0,0,0,h),dog=isDog();
+    g.addColorStop(0,"rgba(0,0,0,"+(dog?1:.15)+")");g.addColorStop(1,"rgba(0,0,0,"+(dog?.15:1)+")");mx.fillStyle=g;mx.fillRect(0,0,w,h);mx.globalCompositeOperation="source-in";mx.drawImage(e,0,0);
+    const out=mk(w,h),ox=out.getContext("2d");ox.drawImage(c,0,0);ox.drawImage(m,0,0);put(out);free(m,e)}
+  /* 백내장(예시): 초기(1)는 변화 없음, 미숙(2)은 더 흐리고 뿌옇게, 성숙(3)은 밝고 어두움만 남게 */
+  if(o.cat>=2){const out=mk(w,h),ox=out.getContext("2d"),b=blurred(c0,o.cat===2?ratio()*4:60);ox.drawImage(b,0,0);ox.fillStyle="rgba(232,232,222,"+(o.cat===2?.35:.7)+")";ox.fillRect(0,0,w,h);put(out);free(b)}
+  if(c!==c0)free(c0);
+  return c}
+function renderHuman(src,o){if(!o.night)return src;const c=mk(src.width,src.height),x=c.getContext("2d");x.drawImage(src,0,0);x.globalCompositeOperation="multiply";x.fillStyle="rgb(38,42,60)";x.fillRect(0,0,c.width,c.height);return c}
+/* 또렷한 곳을 점선으로 표시(설명을 펼쳤을 때만) */
+function drawZone(x,w,h){x.save();x.strokeStyle="#fff";x.lineWidth=Math.max(2,w/300);x.setLineDash([w/50,w/70]);x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=4;x.beginPath();let ly;
+  if(S.snout==="long"){x.moveTo(0,h*.36);x.lineTo(w,h*.36);x.moveTo(0,h*.64);x.lineTo(w,h*.64);ly=h*.5}
+  else{const R=Math.min(w,h)*.5*.62;x.arc(w/2,h/2,R,0,7);ly=h/2}
+  x.stroke();x.setLineDash([]);x.fillStyle="#fff";x.font="bold "+Math.round(w/30)+"px sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText("점선 안이 가장 또렷해요",w*.72,ly);x.restore()}
+
+/* ---------- 잘 안 보이는 곳 ---------- */
+/* 아이 눈 기준 색 차이가 이 값 미만이면 '묻힌다'고 본다. 25는 이 앱의 '약함' 구간 위쪽 끝. 가짜 사진 14장으로 헛경보가 없는지 확인함 */
+var LP=25;
+function findLost(src){
+  const W=240,H=Math.round(src.height*W/src.width),cs=8,cols=Math.floor(W/cs),rows=Math.floor(H/cs);
+  const c=mk(W,H),x=c.getContext("2d");x.drawImage(src,0,0,W,H);const d=x.getImageData(0,0,W,H).data;
+  const hu=[],pe=[];
+  for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){let R=0,G=0,B=0,n=0;for(let yy=0;yy<cs;yy++)for(let xx=0;xx<cs;xx++){const i=((r*cs+yy)*W+q*cs+xx)*4;R+=d[i];G+=d[i+1];B+=d[i+2];n++}
+    R=Math.round(R/n);G=Math.round(G/n);B=Math.round(B/n);hu.push(lab(R,G,B));const p=dich(R,G,B);pe.push(lab(p[0],p[1],p[2]))}
+  const flag=new Uint8Array(cols*rows);
+  const test=(a,b)=>{const h=dE(hu[a],hu[b]),p=dE(pe[a],pe[b]);if(h>=22&&p<=h*0.4&&p<LP){flag[a]=1;flag[b]=1}};
+  for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){const i=r*cols+q;if(q+1<cols)test(i,i+1);if(r+1<rows)test(i,i+cols);if(q+2<cols)test(i,i+2);if(r+2<rows)test(i,i+2*cols)}
+  /* 외톨이 칸 제거 */
+  const keep=new Uint8Array(cols*rows);let cnt=0,red=0,green=0;
+  for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){const i=r*cols+q;if(!flag[i])continue;let nb=0;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){if(!a&&!b)continue;const rr=r+a,qq=q+b;if(rr>=0&&rr<rows&&qq>=0&&qq<cols&&flag[rr*cols+qq])nb++}if(nb>=1){keep[i]=1;cnt++;const a=hu[i][1];if(a>15)red++;else if(a<-10)green++}}
+  return{cols,rows,keep,cnt,red,green,share:cnt/(cols*rows)}}
+/* 사진 아래쪽 40%를 바닥으로 보고 평균 밝기와 색을 잰다 */
+function analyze(src){const W=48,H=Math.max(8,Math.round(src.height*W/src.width)),c=mk(W,H),x=c.getContext("2d");x.drawImage(src,0,0,W,H);const d=x.getImageData(0,0,W,H).data,y0=Math.floor(H*.6);let n=0,L=0,A=0,B=0,all=0,sr=0,sg=0,sb=0;
+  for(let y=0;y<H;y++)for(let q=0;q<W;q++){const i=(y*W+q)*4,l=lab(d[i],d[i+1],d[i+2]);all+=l[0];if(y>=y0){L+=l[0];A+=l[1];B+=l[2];sr+=d[i];sg+=d[i+1];sb+=d[i+2];n++}}return{L:L/n,a:A/n,b:B/n,all:all/(W*H),rgb:[Math.round(sr/n),Math.round(sg/n),Math.round(sb/n)]}}
+function an(){if(S.anSrc!==S.src){S.an=analyze(S.src);S.anSrc=S.src}return S.an}
+/* 이 바닥 위에서 잘 띄는 색 추천. 경계 숫자(밝기 60·40, 색 −12·25)는 이 앱이 정했다 */
+function rec(){const f=an(),k=f.L>=60?"d":f.L<=40?"l":"m",D=[["#1b2a6b","남색"],["#222222","검정"],["#5a3a22","진한 갈색"]],Lt=[["#ffffff","흰색"],["#ffe066","밝은 노랑"],["#cfe8ff","연한 하늘색"]],
+    list=k==="d"?D:k==="l"?Lt:[Lt[0],Lt[1],D[0],D[1]];
+  return{k,L:Math.round(f.L),all:f.all,tone:k==="d"?"밝은 편":k==="l"?"어두운 편":"중간 밝기",name:k==="d"?"어두운 색":k==="l"?"밝은 색":"아주 밝거나 어두운 색",why:k==="d"?"바닥이 밝아서 어두운 물건이":k==="l"?"바닥이 어두워서 밝은 물건이":"바닥 밝기가 중간이라, 흰색에 가깝게 밝거나 검정에 가깝게 어두운 물건이",
+    full:list.map(c=>`<i class="dot" style="background:${c[0]}"></i>${c[1]}`).join(" · ")}}
+/* 자리별 조언: 사진 속 바닥에 맞춘 색 예시를 넣어 말한다 */
+function spotTip(id){const r=rec(),ex=r.full;return{bowl:`그릇을 새로 사지 않아도 돼요. 그릇 밑에 ${ex} 같은 ${r.name}의 매트를 깔면 밥 자리를 찾기 쉬워요.`,bed:`잠자리에는 ${ex} 같은 ${r.name}의 담요나 방석을 써 보세요. 가장자리가 바닥에서 도드라져요.`,toy:`장난감은 ${ex} 같은 ${r.name}으로 고르면 이 바닥에서 잘 보여요.`,path:`문턱이나 계단 끝에 ${ex} 같은 ${r.name}의 테이프나 매트를 붙이면 턱이 잘 보여요.`}[id]}
+function drawLost(ctx,w,h,L){
+  ctx.save();ctx.fillStyle="rgba(10,15,25,.45)";ctx.fillRect(0,0,w,h);
+  const cw=w/L.cols,ch=h/L.rows;ctx.globalCompositeOperation="destination-out";
+  for(let r=0;r<L.rows;r++)for(let q=0;q<L.cols;q++)if(L.keep[r*L.cols+q]){ctx.fillStyle="rgba(0,0,0,1)";ctx.fillRect(q*cw-1,r*ch-1,cw+2,ch+2)}
+  ctx.restore();ctx.save();ctx.strokeStyle="#ffd21f";ctx.lineWidth=Math.max(2,w/260);ctx.beginPath();
+  const K=(r,q)=>r>=0&&r<L.rows&&q>=0&&q<L.cols&&L.keep[r*L.cols+q];
+  for(let r=0;r<L.rows;r++)for(let q=0;q<L.cols;q++)if(K(r,q)){const x=q*cw,y=r*ch;
+    if(!K(r-1,q)){ctx.moveTo(x,y);ctx.lineTo(x+cw,y)}if(!K(r+1,q)){ctx.moveTo(x,y+ch);ctx.lineTo(x+cw,y+ch)}
+    if(!K(r,q-1)){ctx.moveTo(x,y);ctx.lineTo(x,y+ch)}if(!K(r,q+1)){ctx.moveTo(x+cw,y);ctx.lineTo(x+cw,y+ch)}}
+  ctx.stroke();ctx.restore()}
+const lostPct=()=>S.lost?S.lost.share*100:0;
+const pctTxt=p=>p.toFixed(p<10?1:0);
+
+/* ---------- 화면 그리기 ---------- */
+const cBase=$("#cBase"),cOver=$("#cOver");
+function tabOf(){return S.scr==="color"?(S.mode.color==="auto"?"lost":S.mode.color==="pick"?"pick":"shop"):S.scr==="see"&&S.mode.see==="old"?"old":S.scr==="see"&&S.mode.see==="ill"?"ill":"see"}
+function seeOpts(){return{...S.fx,senior:isSenior()}}
+function opts(){const t=S.tab;if(t==="see")return seeOpts();if(t==="old")return{color:true,blur:true,zone:true,night:S.fx.night,senior:true};if(t==="ill")return{color:true,blur:true,zone:true,night:false,senior:isSenior(),cat:S.cat||2};return{color:true,blur:false,zone:false,night:false,senior:false}}
+function draw(){
+  if(!S.src){texts();return}
+  if(S.scr!=="see"&&S.scr!=="color"){texts();if(S.scr==="report")drawRep();return}
+  const o=opts(),w=S.src.width,h=S.src.height;
+  cBase.width=cOver.width=w;cBase.height=cOver.height=h;
+  const bx=cBase.getContext("2d"),ox=cOver.getContext("2d");
+  let left=renderHuman(S.src,o);
+  if(S.tab==="old"){left=renderPet(S.src,{color:true,blur:true,zone:true,night:S.fx.night,senior:false})}
+  if(S.tab==="ill")left=renderPet(S.src,{...o,cat:0});
+  bx.drawImage(left,0,0);S.pet=renderPet(S.src,o);ox.drawImage(S.pet,0,0);
+  if(S.tab==="see"&&S.open.zone&&o.blur&&o.zone&&zoneOn())drawZone(ox,w,h);
+  if(S.tab==="lost"){if(!S.lost)S.lost=findLost(S.src);if(lostPct()>=1)drawLost(ox,w,h,S.lost)}
+  if(S.tab==="pick")S.picks.forEach((p,i)=>{[bx,ox].forEach(c=>{c.save();c.lineWidth=Math.max(3,w/200);c.strokeStyle="#fff";c.beginPath();c.arc(p.x,p.y,w/28,0,7);c.stroke();c.strokeStyle="#111";c.lineWidth=Math.max(1.5,w/400);c.beginPath();c.arc(p.x,p.y,w/28+c.lineWidth*1.5,0,7);c.stroke();c.fillStyle="#fff";c.font="bold "+Math.round(w/22)+"px sans-serif";c.textAlign="center";c.textBaseline="middle";c.shadowColor="#000";c.shadowBlur=4;c.fillText(String(i+1),p.x,p.y);c.restore()})});
+  setSplit(S.split);texts()}
+function setSplit(v){S.split=v;cOver.style.clipPath="inset(0 0 0 "+v+"%)";$("#divider").style.left="calc("+v+"% - 1.5px)";$("#tagL").style.opacity=v<18?0:1;$("#tagR").style.opacity=v>82?0:1}
+function applySplit(){const v=S.tab==="lost"?0:S.tab==="pick"?100:S.userSplit;setSplit(v);$("#split").value=v}
+/* 처음 한 번, 비교선이 좌우로 움직이는 것을 보여 준다 */
+function sweep(){if(S.demoed||S.scr!=="see")return;S.demoed=true;S.sweeping=true;const t0=performance.now();
+  const f=t=>{const k=(t-t0)/1900;if(!S.sweeping||k>=1||S.tab!=="see"){S.sweeping=false;if(S.tab==="see"||S.tab==="old"||S.tab==="ill")applySplit();return}const v=50-26*Math.sin(k*Math.PI*2);setSplit(v);$("#split").value=v;requestAnimationFrame(f)};requestAnimationFrame(f)}
+
+/* 사람 장면과 아이 장면을 반반 붙여 그리기(보고서용) */
+function rr(x,X,Y,W,H,R){x.beginPath();if(x.roundRect)x.roundRect(X,Y,W,H,R);else x.rect(X,Y,W,H)}
+function pill(x,text,px,py,right,fs){x.save();x.font="bold "+fs+"px sans-serif";x.textBaseline="middle";const tw=x.measureText(text).width,pw=tw+fs*1.4,ph=fs*1.9,X=right?px-pw:px;x.fillStyle="rgba(0,0,0,.62)";rr(x,X,py,pw,ph,ph/2);x.fill();x.fillStyle="#fff";x.textAlign="left";x.fillText(text,X+fs*.7,py+ph/2+1);x.restore()}
+function composite(x,px,py,w,h,rad){const o=seeOpts(),L=renderHuman(S.src,o),R=renderPet(S.src,o);
+  x.save();rr(x,px,py,w,h,rad);x.clip();x.drawImage(L,px,py,w,h);x.save();x.beginPath();x.rect(px+w/2,py,w/2,h);x.clip();x.drawImage(R,px,py,w,h);x.restore();
+  x.fillStyle="#fff";x.fillRect(px+w/2-w/360,py,w/180,h);const fs=Math.max(12,w/34);pill(x,"내가 보는 장면",px+fs,py+fs,false,fs);pill(x,N("가")+" 보는 장면",px+w-fs,py+fs,true,fs);x.restore()}
+let prevT=0;function drawRep(){if(!S.src)return;const c=$("#cRep"),w=S.src.width,h=S.src.height;c.width=w;c.height=h;composite(c.getContext("2d"),0,0,w,h,0);
+  clearTimeout(prevT);prevT=setTimeout(async()=>{let av=null;if(S.photo)av=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=S.photo});makeCard(av);$("#cardPrev").src=$("#cCard").toDataURL("image/jpeg",.7)},250)}
+
+/* ---------- 설명 문구 ---------- */
+function texts(){
+  const dog=isDog(),n=N();
+  /* 프로필 쪽 */
+  const a=ageYears();$("#stageLine").classList.toggle("hide",a===null);$("#stageBox").classList.toggle("hide",a!==null);
+  if(a!==null)$("#stageLine").textContent=S.birth+"년생 · 올해 "+(a<1?"1살 미만":a+"살쯤")+" · "+stageName();
+  $("#life").innerHTML=stageDefs().map(d=>`<button type="button" data-v="${d[0]}" aria-pressed="${d[0]===S.stage}">${d[1]}<small>${d[2]}</small></button>`).join("");
+  $("#stageHelp").innerHTML=dog?`<table><tr><th>나이대</th><th>기준</th></tr><tr><td>강아지기</td><td>태어나서 빠른 성장이 멈출 때까지(약 6~9개월)</td></tr><tr><td>청년기</td><td>몸과 사회성이 다 자랄 때까지(약 3~4살)</td></tr><tr><td>중장년기</td><td>청년기 뒤부터 노령기 전까지</td></tr><tr><td>노령기</td><td>예상 수명의 마지막 25%</td></tr></table><p>나이대 구분은 미국동물병원협회(AAHA)의 2019년 지침이에요. 노령기는 “예상 수명의 마지막 25%”라서 견종마다 달라요.</p><p>${lifeTxt(true)}</p><p class="note">수명 자료는 영국 개 584,734마리를 조사한 연구(McMillan 외, 2024, Scientific Reports)의 견종별 중앙값이에요. ‘중앙값 × 0.75’라는 식은 논문에 있는 것이 아니라, 지침의 “마지막 25%”를 이 앱이 중앙값에 적용한 거예요. 영국 자료라 한국의 개와는 다를 수 있고, 건강한 개는 이 나이에도 노령이 아닐 수 있어요. 나이대가 맞지 않다고 느끼면 태어난 해를 ‘모름’으로 두고 직접 골라 주세요. 태어난 해만 받기 때문에 나이는 한 살쯤 차이 날 수 있어요.</p>`:`<table><tr><th>나이대</th><th>기준</th></tr><tr><td>새끼 고양이</td><td>1살 미만</td></tr><tr><td>청년기</td><td>1~6살</td></tr><tr><td>중장년기</td><td>7~10살</td></tr><tr><td>노령기</td><td>10살 초과</td></tr></table><p>미국동물병원협회(AAHA)와 미국고양이수의사회(AAFP)의 2021년 지침이에요.</p><p class="note">태어난 해만 받기 때문에 나이는 한 살쯤 차이 날 수 있어요.</p>`;
+  $("#photoLead").textContent=N("의")+" 눈높이까지 낮춰 찍으면 더 실감 나요. "+(dog?SIZE[S.size].n+"견은 서 있을 때 눈이 바닥에서 "+SIZE[S.size].eye+"쯤이에요(추정).":"고양이는 서 있을 때 눈이 바닥에서 20~25cm쯤, 한 뼘 정도예요(추정).");
+  spotsUI();
+  if(dog){const b=breedRow();$("#breedLife").innerHTML=lifeTxt()+(b[4]?" · 영국 연구(McMillan 외 2024)":"");const auto=S.breed!=="mix"&&S.breed!=="etc";
+    $("#snoutGuide").innerHTML=!auto?"믹스견이나 그 밖의 견종은 자동으로 골라 드리지 못해요. 옆얼굴이 위 그림 셋 중 어느 것과 가장 비슷한지 눌러 주세요.":S.snout===b[3]?`${breedName()}의 흔한 생김새인 <b>‘${SNOUT[b[3]]}’</b>으로 이미 골라 두었어요. <b>대부분은 그대로 두시면 돼요.</b> ${N("의")} 얼굴이 그림과 다르다고 느낄 때만 다른 그림을 눌러 주세요.`:`${breedName()}의 흔한 생김새는 ‘${SNOUT[b[3]]}’인데, <b>‘${SNOUT[S.snout]}’</b>${S.mz&&S.hd?"(재신 값으로 계산)":""}으로 바꿔 두셨어요. 이 값으로 계산할게요.`}
+  {const named=!!S.name.trim(),st=[["my","아이 정보 넣기",named?n+" · "+profileLine():"이름·견종·나이를 넣으면 그에 맞춰 계산해요",named||!!S.seen.my],
+      ["photo","집 사진으로, 또는 실시간으로","둘 중 편한 것부터 골라 주세요",!!S.src],
+      ["see","눈 비교","같은 장면을 내 눈과 "+N("의")+" 눈으로 나란히 봐요",!!S.src&&!!S.seen.see],
+      ["color","색 점검","밥그릇·장난감이 "+N("의")+" 눈에 잘 띄는 색인지 확인해요",!!S.src&&!!S.seen.color],
+      ["report","보고서","이 사진에 맞춘 조언을 보고, 어느 자리 사진인지 기록해요",!!S.src&&!!S.seen.report],
+      ["spots","우리 집 점검 채우기",(()=>{const d=SPOTS.filter(s=>S.spots[s[0]]).length;return d===SPOTS.length?"네 곳을 모두 점검했어요":"밥그릇·잠자리·장난감·다니는 길을 한 곳씩 찍어요 · "+d+" / "+SPOTS.length+"곳 기록"})(),SPOTS.every(s=>S.spots[s[0]])]],nx=st.findIndex(s=>!s[3]);
+    const head=(s,i)=>`<i class="num${s[3]?" done":""}">${s[3]?"✓":i+1}</i><span><b>${s[1]}${i===nx?' <span class="badge mid">다음 할 일</span>':""}</b>${s[2]}`;
+    $("#steps").innerHTML=st.map((s,i)=>s[0]==="photo"
+      ?`<div class="feat stepPick">${head(s,i)}<div class="pick2"><button type="button" id="pickPhoto"><i>${ic("image")}</i><b>집 사진으로</b><span>비교·색 점검·보고서까지</span></button><button type="button" data-go="live"><i>${ic("camera")}</i><b>실시간으로</b><span>카메라로 영상처럼 둘러보기</span></button></div></span></div>`
+      :`<button type="button" class="feat" data-step="${s[0]}">${head(s,i)}</span></button>`).join("")}
+  $("#pfAv").innerHTML=avatar(S,"xl");
+  $("#petList").innerHTML=S.pets.map((p,i)=>{const q=i===S.cur?S:p,nm=(q.name||"").trim()||"이름 없는 아이";return `<button type="button" class="feat card${i===S.cur?" cur":""}" data-pet="${i}" style="margin-top:8px">${avatar(q,"big")}<span><b>${nm}${i===S.cur?' <span class="badge ok">보는 중</span>':""}</b>${i===S.cur?profileLine():lineOf(p)}</span></button>`}).join("");
+  $("#btnDelPet").classList.toggle("hide",S.pets.length<2);$("#btnDelPet").textContent=S.delArm?"정말 지울까요? 한 번 더 누르면 지워져요":"이 반려동물 프로필 지우기";
+  const pm=$("#pendMsg");pm.classList.toggle("hide",!S.spotPending);if(S.spotPending)pm.textContent="지금 넣는 사진은 ‘"+SPOTS.find(s=>s[0]===S.spotPending)[1]+"’ 점검으로 기록돼요. 취소하려면 여기를 누르세요.";
+  const co=$("#calcOut"),mz=parseFloat(S.mz),hd=parseFloat(S.hd);co.classList.toggle("hide",!(mz>0&&hd>0));if(mz>0&&hd>0)co.textContent="주둥이 "+mz+"cm ÷ 머리 "+hd+"cm = 비율 "+(mz/hd).toFixed(2)+" → "+SNOUT[S.snout];
+  $("#evSee").innerHTML=dog?"근거: <b>개의 시각 총설(Byosiere 외 2018) · 망막 연구 22마리(McGreevy 외 2004)</b> · 자세히 ›":"근거: <b>수의안과 전문의 설명(PetMD) · 색 계산 Viénot 외 1999</b> · 자세히 ›";
+  /* 눈 비교 */
+  const short={color:dog?"빨강과 초록이 서로 비슷하게 보여요":"주로 파랑과 노랑으로 보여요",
+    blur:dog?"사람보다 흐릿해요 · 시력 약 0.27":"사람보다 흐릿해요 · 시력 0.2로 계산",
+    zone:!S.fx.blur?"‘선명도’를 켜야 쓸 수 있어요":S.snout==="mid"?"해당 없음: 주둥이 길이가 ‘중간’이라 적용할 것이 없어요. ‘짧은 편’이나 ‘긴 편’일 때만 켜져요":S.snout==="long"?"가로로 긴 띠 부분이 가장 또렷해요":"가운데가 가장 또렷하고 가장자리는 더 흐려요",
+    night:"어두운 곳에서는 "+N("가")+" 나보다 잘 봐요"};
+  const title={color:"색",blur:"선명도",zone:"또렷한 곳",night:"밤이라면"},icon={color:"drop",blur:"glasses",zone:"focus",night:"moon"};
+  const W={color:dog?`${N("는")} 색을 느끼는 세포가 두 종류예요. 파랑과 노랑은 잘 구분하지만 빨강과 초록은 서로 비슷하게 보여요. <span class="badge ok">근거 탄탄</span>`:`${N("는")} 주로 파랑과 노랑으로 세상을 봐요. 빨강·초록 장난감은 비슷한 회색빛으로 보일 수 있어요. <span class="badge mid">전문가 설명</span>`,
+    blur:dog?`보통 개의 시력은 20/75로 추정돼요. 우리 시력표로는 약 0.27이에요. 사람이 23m에서 알아보는 걸 6m까지 다가와야 알아봐요. 견종이나 나이에 따라 이 숫자를 바꾸지는 않았어요. 그렇게 나눌 만한 측정 연구가 없어요. <span class="badge mid">보통</span>`:`고양이 시력은 연구마다 20/30에서 20/200까지(우리 시력표로 0.7~0.1) 크게 갈려요. 여기서는 20/100(0.2)으로 계산했어요. <span class="badge ex">추정</span>`,
+    zone:S.snout==="mid"?`주둥이 길이가 중간이면 화면 전체를 고르게 처리해요.`:(S.snout==="long"?`주둥이가 긴 개는 망막에서 세포가 빽빽한 부분이 가로 띠 모양이에요. 좌우로 넓게 살피는 데 유리해요.`:`주둥이가 짧은 개는 세포가 빽빽한 부분이 가운데에 모여 있어요. 정면의 얼굴을 보는 데 유리해요.`)+` 사진 위 점선 안쪽이 그 부분이에요. 개 22마리의 망막을 조사한 연구가 근거이고, 실제로 이렇게 보이는지는 확인되지 않았어요. <span class="badge ex">예시</span>`,
+    night:dog?`망막 뒤 반사판이 빛을 한 번 더 되돌려 줘요. 어두울수록 ${N("가")} 나보다 잘 봐요. 화면의 밝기 차이는 예시예요. <span class="badge ex">예시</span>`:`고양이는 어두운 곳에서 사람보다 5.5~7배쯤 잘 본다고 추정돼요. 화면의 밝기 차이는 예시예요. <span class="badge ex">추정</span>`};
+  const fxRow=k=>{const dis=k==="zone"&&(!S.fx.blur||S.snout==="mid"),on=S.fx[k]&&!dis;
+    return `<div class="fx${on?" on":""}" data-k="${k}"><i>${ic(icon[k])}</i><div class="t"><b>${title[k]}</b>${short[k]}</div><button type="button" class="info" aria-expanded="${!!S.open[k]}">${S.open[k]?"접기":"근거"}</button><button type="button" class="switch" role="switch" aria-checked="${on}" aria-label="${title[k]}"${dis?" disabled":""}></button>${S.open[k]?`<div class="more">${W[k]}</div>`:""}</div>`};
+  $("#fx").innerHTML=Object.keys(S.fx).filter(k=>dog||k!=="zone").map(fxRow).join("");
+  $("#fxOld").innerHTML=fxRow("night");
+  $("#illMsg").innerHTML=dog?`왼쪽은 지금 ${N("의")} 눈, 오른쪽은 <b>백내장이 있을 때</b>의 예시예요. 아래에서 단계를 눌러 보세요. 나이 든 개의 눈이 푸르스름하게 뿌옇다고 모두 백내장은 아니에요. 수정체가 나이 들며 단단해지는 핵경화일 수 있고, 겉으로는 구분하기 어려워서 병원에서 확인해야 해요.`:`왼쪽은 지금 ${N("의")} 눈, 오른쪽은 <b>백내장이 있을 때</b>의 예시예요. 아래에서 단계를 눌러 보세요. 고양이의 백내장은 개보다 드물고, 대부분 눈 속 염증(포도막염) 뒤에 생겨요. 당뇨 때문에 생기는 백내장도 개보다 드물어요. 그래서 고양이 눈이 뿌옇게 보이면 염증 같은 다른 원인이 있는지 병원에서 함께 확인해야 해요.`;
+  $("#catSeg").innerHTML=[["1","초기"],["2","미숙"],["3","성숙"]].map(c=>`<button type="button" data-v="${c[0]}" aria-pressed="${(S.cat||2)===+c[0]}" style="flex:1 1 28%">${c[1]}</button>`).join("");
+  $("#catMsg").innerHTML=["","<b>초기: 수정체의 약 10~15% 미만이 흐려진 단계예요.</b> 눈에 띄는 시력 저하가 없어서 오른쪽 화면도 왼쪽과 같아요. 보호자가 알아채기 어려운 단계라 정기 검진에서 발견되는 경우가 많아요.","<b>미숙: 수정체의 약 15%부터 거의 전체까지 흐려진 단계예요.</b> 아직 보이지만 흐리고 뿌옇게 보여요. 범위가 넓어서 실제로는 개체마다 크게 달라요. 이 단계라면 수술이 가능한지 병원에서 상담해 보세요.","<b>성숙: 수정체 전체가 흐려진 단계예요.</b> 빛이 밝은지 어두운지만 느끼는 수준이에요. 그 뒤 과숙 단계로 가면 수정체가 녹고 쪼그라들며 눈 속 염증이 늘어요. "+(dog?"미숙·성숙 단계에서 수술한 경우가 과숙 단계보다 결과가 좋았다는 연구가 있어요.":"개를 대상으로 한 연구에서는 미숙·성숙 단계에서 수술한 경우가 과숙 단계보다 결과가 좋았어요.")][S.cat||2];
+  $("#fxLead").innerHTML=`<b>‘${dog?"색·선명도·또렷한 곳":"색·선명도"}’을 모두 켠 상태가 이 앱이 계산한 ${N("의")} 낮 시야예요.</b> ‘밤이라면’은 어두운 곳에서 어떻게 다른지 볼 때만 켜 보세요. 하나씩 끄면 그 항목이 얼마나 영향을 주는지 알 수 있고, 전부 끄면 오른쪽도 내 눈과 같아져요.`;
+  $("#seeLead").textContent=S.tab==="ill"?"양쪽 모두 "+N("의")+" 눈이에요. 왼쪽은 지금, 오른쪽은 눈 질환이 있을 때의 예시예요.":S.tab==="old"?"양쪽 모두 "+N("의")+" 눈이에요. 왼쪽은 "+N("가")+" 성년일 때, 오른쪽은 노령일 때 보는 장면의 예시예요. 사람의 눈은 여기 없어요.":"같은 장면을 왼쪽은 내 눈, 오른쪽은 "+N("의")+" 눈으로 보여 줘요.";
+  /* 색 점검 */
+  if(S.src){const fr=floorRgb(),man=S.floorPick&&S.floorSrc===S.src,L=Math.round(lab(...fr)[0]);$("#shFloor").style.background="rgb("+fr.join(",")+")";$("#shFloorL").textContent=man?"내가 직접 고른 바닥":"지금 넣어 둔 집 사진의 바닥 (자동)";$("#shFloorT").textContent=(L>=60?"밝은 편":L<=40?"어두운 편":"중간 밝기")+" · 밝기 "+L+" (0 검정~100 흰색)"}
+  $("#colorQ").innerHTML=S.mode.color==="shop"?`<b>“이 물건, 우리 집 바닥에서 ${n} 눈에 보일까?”</b>사고 싶은 물건의 사진이나 쇼핑몰 캡처를 넣으면, 지금 넣어 둔 집 사진의 바닥과 비교해서 사도 좋을지 알려 드려요.`:S.mode.color==="auto"?`<b>“이 사진에서 ${n} 눈에 색이 묻히는 곳은 어디일까?”</b>사진 전체를 훑어서, 사람 눈에는 주변과 색이 뚜렷이 다른데 ${N("의")} 눈에는 주변과 거의 같은 색이 되는 곳을 찾아요.`:`<b>“이 장난감, 이 바닥 위에서 ${n} 눈에 보일까?”</b>사진에서 물건과 바닥처럼 두 곳을 누르면, 두 색이 ${N("의")} 눈에도 구분되는지 숫자로 알려 줘요.`;
+  if(S.lost){const p=lostPct();
+    $("#lostMsg").innerHTML=p>=1?`<b>색에 묻히는 곳(노란 테두리)이 사진의 약 ${pctTxt(p)}%예요.</b> 그 안의 물건이 밥그릇이나 장난감이라면 ${N("가")} 찾기 어려울 수 있어요. 무엇으로 바꾸면 좋은지는 ‘보고서’에 이 사진의 바닥에 맞춰 적어 두었어요.`:`<b>이 사진에는 색 때문에 묻히는 곳이 거의 없어요.</b> 그래서 표시한 곳이 없어요. 밥그릇 자리나 장난감 두는 곳 사진으로도 확인해 보세요.`;
+    $("#lostExBox").classList.toggle("hide",p>=1);if(p<1)lostExample();
+    $("#lostNote").textContent=p>=1?"표시된 곳이 눈에 잘 띄도록 나머지 부분은 조금 어둡게 했어요. 테두리 안은 내가 보는 색 그대로이고, 바깥은 "+N("의")+" 눈으로 본 색이에요. 그 물건이 무엇인지는 사진만으로 알 수 없어요.":"지금 사진은 "+N("의")+" 눈으로 본 색이에요."}
+  $("#oldMsg").innerHTML=dog?`개는 나이가 들수록 먼 곳이 흐려지는 쪽으로 간다는 연구가 있어요(비글 9마리). 사진 한 장으로는 어디가 먼 곳인지 알 수 없어서, <b>사진 위쪽이 먼 곳이라고 가정하고 위로 갈수록 더 흐리게</b> 했어요. 바닥에서 찍은 사진일수록 잘 맞아요. 얼마나 흐려지는지는 개체마다 달라서 흐림 정도는 예시예요. <span class="badge ex">예시</span>`:`고양이는 나이가 들면 가까운 곳이 더 흐려질 가능성이 높다고 해요. 사진 한 장으로는 거리를 알 수 없어서, <b>사진 아래쪽이 가까운 곳이라고 가정하고 아래로 갈수록 더 흐리게</b> 했어요. 연구가 적어서 이 화면은 예시예요. <span class="badge ex">예시</span>`;
+  /* 보고서 */
+  $("#good3").innerHTML=dog?`<div><b>어두운 곳</b>눈 속 반사판 덕분에 약한 빛에서도 길을 찾아요.</div><div><b>넓은 시야</b>한 번에 약 240도를 봐요. 사람은 약 180도예요.</div><div><b>빠른 깜빡임</b>1초에 70~80번 깜빡이는 빛도 느껴요. 사람은 60번쯤부터 이어진 빛으로 봐요.</div>`:`<div><b>어두운 곳</b>어두운 곳에서 사람보다 5.5~7배쯤 잘 본다고 추정돼요.</div><div><b>넓은 시야</b>한 번에 약 200도를 봐요. 사람은 약 180도예요.</div><div><b>알아 두면 좋은 것</b>코앞 25cm 안쪽은 초점이 흐려요. 간식은 조금 떨어뜨려 보여 주세요.</div>`;
+  $("#todo").innerHTML=S.src?todo().map(t=>"<li>"+t+"</li>").join(""):"";
+  {const ts=S.src?tiles():[];$("#tiles").innerHTML=ts.map((t,i)=>`<button type="button" data-t="${i}" aria-expanded="${S.tileOpen===i}"><b>${t[0]}</b>${t[1]}<small>${S.tileOpen===i?"접기":"계산 근거 ›"}</small></button>`).join("");
+    const tm=$("#tileMore"),o=ts[S.tileOpen];tm.classList.toggle("hide",!o);if(o)tm.innerHTML=o[2]}
+  $("#sumTxt").textContent=profileLine()+" 기준으로 계산했어요.";
+  {const a=ageYears(),yr=a===null?"태어난 해를 넣으면 노령기까지 남은 해를 알려 드려요":isSenior()?"노령기예요 · 검진 때 눈도 봐 달라고 하세요":"노령기까지 약 "+Math.max(1,Math.round(senStart()-a))+"년";
+    $("#repHead").innerHTML=avatar(S,"xl")+`<div><small>한 뼘 시선 · 눈 보고서</small><b>${N("의")} 눈 보고서</b><p>${profileLine()}</p><em>${yr}</em></div>`;
+    const did=SPOTS.filter(s=>S.spots[s[0]]).length;
+    $("#repSpots").innerHTML=SPOTS.map(s=>{const r=S.spots[s[0]];return `<div class="rs">${r&&r.img?`<img src="${r.img}" alt="">`:`<i>${r?"✓":"+"}</i>`}<span>${s[1]}<small>${r?(r.p>=1?"색에 묻히는 곳 약 "+pctTxt(r.p)+"%":"색에 묻히는 곳 거의 없음")+" · "+r.d:"아직 점검하지 않았어요"}</small></span><em class="st ${!r?"no":r.p>=1?"fix":"ok"}">${!r?"아직":r.p>=1?"손볼 곳":"괜찮아요"}</em></div>`}).join("")
+      +(did<SPOTS.length?`<button type="button" class="ghost" id="repGoSpots">남은 ${SPOTS.length-did}곳 점검하러 가기</button>`:`<p class="note" style="margin:10px 0 0">네 곳을 모두 점검했어요.</p>`);
+    $("#repVet").innerHTML=`<b>이 중 하나라도 갑자기 보이면 그날 바로 병원에 가세요.</b><ul><li>눈 흰자가 빨개요</li><li>눈이 뿌옇거나 푸르스름해요</li><li>한쪽 동공이 커져 있어요</li><li>눈을 찡그리거나 비벼요</li><li>물건에 부딪혀요</li></ul><p style="margin:8px 0 0">급성 녹내장은 몇 시간 안에 시력을 잃을 수 있는 응급이에요.${isSenior()?(dog?" 노령견의 눈이 서서히 푸르스름해지는 것은 핵경화일 수 있지만, 백내장과 겉으로 구분하기 어려워 검진 때 확인해 보세요.":" 고양이 눈이 뿌옇다면 백내장보다 눈 속 염증이 원인인 경우가 많아 꼭 확인해 보세요."):""}</p>`}
+  $("#spotAsk").innerHTML=SPOTS.map(s=>`<button type="button" data-v="${s[0]}" aria-pressed="${S.spotNow===s[0]}">${s[1]}</button>`).join("");
+  {const now=S.spotNow&&SPOTS.find(s=>s[0]===S.spotNow),sv=savedSpots();
+    $("#spotQ").textContent=now?"‘"+now[1]+"’ 사진으로 기록했어요":"이 사진은 어느 자리인가요?";
+    $("#spotQs").textContent=now?"잘못 골랐다면 다른 자리를 눌러 옮기거나, 같은 자리를 한 번 더 눌러 기록을 지워 주세요.":"자리를 누르면 홈의 ‘우리 집 점검’에 이 사진과 결과가 기록돼요.";
+    const it=stripItems(),sh=it.map(s=>`<button type="button" data-open="${s.k}" aria-pressed="${s.on}"><img src="${s.img}" alt="">${s.label}</button>`).join("")+`<button type="button" data-open="new"><i>+</i>새 사진</button>`;
+    $$(".strip").forEach(e=>e.innerHTML=sh);
+    $("#repHint").textContent=it.length>1?"사진을 좌우로 밀거나 위의 작은 사진을 눌러 바꿔 볼 수 있어요.":"‘+ 새 사진’으로 사진을 더 넣으면 여기서 넘겨 가며 볼 수 있어요."}
+  paintNames()}
+function tiles(){const p=lostPct(),r=rec(),dog=isDog(),L=S.lost||{cols:0,rows:0,cnt:0};return[
+  [p>=1?"약 "+pctTxt(p)+"%":"거의 없음","색에 묻히는 곳",`<b>색에 묻히는 곳은 이렇게 셌어요.</b><br>① 사진을 가로 ${L.cols}칸 × 세로 ${L.rows}칸(모두 ${L.cols*L.rows}칸)으로 나눠요.<br>② 이웃한 칸끼리 색 차이(ΔE)를 사람 눈 기준과 ${N("의")} 눈 기준으로 각각 재요.<br>③ 사람 눈에는 22 이상 다른데 ${N("의")} 눈에는 25 미만(‘약함’ 이하)이고 원래의 40% 이하로 줄어든 칸을 세요.<br>④ 이 사진은 ${L.cols*L.rows}칸 중 ${L.cnt}칸 = <b>${pctTxt(p)}%</b>예요.<br><span class="note">색 바꾸기는 Viénot 외(1999), 색 차이는 CIE 1976 Lab 공식이에요. 22·25·40%라는 기준은 이 앱이 정했어요. 예: 빨간 공과 초록 잔디는 사람 눈에 88, 개 눈에 21로 76% 줄어요.</span>`],
+  [dog?"약 0.27":"0.2","시력(추정)",dog?`<b>시력 0.27은 이렇게 나왔어요.</b><br>개의 시력은 보통 20/75로 추정돼요. 우리 시력표 숫자로 바꾸면 20 ÷ 75 = <b>0.27</b>이에요. 사람이 75피트(약 23m)에서 알아보는 것을 20피트(약 6m)까지 다가와야 알아본다는 뜻이에요.<br><span class="note">출처: Byosiere 외(2018) 총설. 실제로 잰 개는 비글 3마리(20/45~20/85), 시바 3마리(20/60~20/85)처럼 수가 적어서 ‘추정’이라고 적었어요. 견종별 시력 숫자는 없어요.</span>`:`<b>시력 0.2는 이렇게 나왔어요.</b><br>고양이 시력은 연구마다 20/30에서 20/200까지 크게 갈려요. 이 앱은 그 사이의 20/100을 골랐고, 우리 시력표 숫자로 바꾸면 20 ÷ 100 = <b>0.2</b>예요.<br><span class="note">출처: 수의안과 전문의 설명(PetMD). 연구 사이의 차이가 커서 ‘추정’이라고 적었어요.</span>`],
+  [r.name,"이 바닥에 추천",`<b>추천은 이 사진의 바닥 밝기를 보고 골랐어요.</b><br>① 사진 아래쪽 40%를 바닥으로 보고 평균 밝기를 쟀어요: <b>${r.L}</b> (0 검정 ~ 100 흰색, ${r.tone}).<br>② ${dog?"개":"고양이"}는 빨강~초록의 색 차이는 잘 못 느끼지만 <b>밝기 차이는 느껴요</b>. 그래서 물건 색의 이름보다 바닥과 밝기가 얼마나 다른지가 먼저예요. ‘밝기가 다르다’는 것은 흑백 사진으로 찍어도 바닥과 물건이 구분된다는 뜻이에요.<br>③ ${r.why} 잘 보여요. 예: ${r.full}.<br>④ 바닥과 밝기가 비슷한 물건을 써야 한다면 파랑이나 노랑 계열이어야 구분돼요${dog?"(개가 구분하는 색, Byosiere 외 2018)":"(수의안과 전문의 설명)"}.<br><span class="note">밝기 60 이상을 밝은 바닥, 40 이하를 어두운 바닥으로 본 것은 이 앱이 정한 기준이에요. 개·고양이가 어떤 색을 ‘좋아하는지’를 잰 연구는 확인하지 못했어요. 여기서 추천하는 것은 좋아하는 색이 아니라 잘 구분하는 색이에요.</span>`]]}
+function todo(){const a=[],dog=isDog(),r=rec(),L=S.lost||{cnt:0,red:0,green:0},p=lostPct();
+  if(p>=1){const rs=L.red/L.cnt,gs=L.green/L.cnt,what=rs>.25&&gs>.25?"빨강·주황 계열과 초록 계열이 맞닿은 곳":rs>=gs&&rs>.25?"빨강·주황 계열이 있는 곳":gs>.25?"초록 계열과 그 위에 놓인 것이 있는 곳":"빨강~초록 사이의 색이 섞인 곳";
+    a.push(`<b>색에 묻히는 곳이 사진의 약 ${pctTxt(p)}%예요.</b> 주로 ${what}이에요. ‘색 점검’에서 노란 테두리로 위치를 확인해 보세요. 거기 있는 것이 ${N("의")} 물건이라면 ${N("가")} 찾기 어려울 수 있어요.`)}
+  else a.push(`<b>이 사진에는 색 때문에 묻히는 곳이 거의 없어요.</b> 지금 보이는 물건들은 색을 바꾸지 않아도 돼요.`);
+  a.push(`<b>이 바닥에는 ${r.name}의 물건이 잘 보여요.</b> 사진 속 바닥이 ${r.tone}(밝기 ${r.L})이에요. 예: ${r.full}. 꼭 이 색이 아니어도, 흑백 사진으로 찍었을 때 바닥에서 도드라지는 물건이면 돼요. 빨강·주황·초록 물건도 바닥보다 훨씬 ${r.k==="d"?"어두우면":r.k==="l"?"밝으면":"밝거나 어두우면"} 괜찮아요.`);
+  a.push(`<b>지금 쓰는 물건이 괜찮은지 바로 확인하기</b>: ‘색 점검 → 두 곳 비교’에서 물건과 바닥을 차례로 누르면, ${N("의")} 눈에 구분되는지 숫자로 알려 드려요. 새로 사기 전에 먼저 확인해 보세요.`);
+  if(r.all<30)a.push(`<b>사진이 어두워요.</b> 어두운 사진은 색 계산이 부정확할 수 있어요. 불을 켜거나 낮에 다시 찍어 보세요.`);
+  if(S.spotNow&&SPOT_ADV[S.spotNow])a.push(`<b>${SPOTS.find(s=>s[0]===S.spotNow)[1]}</b>: ${spotTip(S.spotNow)}`);
+  if(isSenior())a.push(`가구와 그릇 자리를 그대로 두고, 복도와 계단 근처에 밤 조명을 켜 두세요. 눈을 찡그리거나 갑자기 뿌옇게 보이면 병원에 가세요.`);
+  else a.push(dog?`사진을 ${N("의")} 눈높이(바닥에서 ${SIZE[S.size].eye}쯤)까지 낮춰 다시 찍어 보세요. 가구 아래와 문턱이 ${N("의")} 풍경이에요.`:`간식이나 장난감은 코앞보다 한 뼘 넘게 떨어뜨려 보여 주세요. 아주 가까운 곳은 흐려요.`);
+  return a}
+function spotsUI(){const did=SPOTS.filter(s=>S.spots[s[0]]),done=did.length;$("#spotCount").textContent=done+" / "+SPOTS.length;$("#spotBar").style.width=(done/SPOTS.length*100)+"%";
+  $("#spotList").innerHTML=SPOTS.map(s=>{const r=S.spots[s[0]];return `<div class="spot${r?" done":""}" data-spot="${s[0]}"><button type="button" class="spotMain">${r&&r.img?`<img src="${r.img}" alt="">`:`<i class="ph">${r?"✓":"+"}</i>`}<span><b>${s[1]}</b><em>${r?(r.p>=1?"색에 묻히는 곳 약 "+pctTxt(r.p)+"%":"색에 묻히는 곳 거의 없음")+" · "+r.d:`아직 안 했어요<span class="pc">사진을 이 줄로 끌어다 놓아도 돼요</span>`}</em>${r&&r.p>=1?`<em class="adv">${SPOT_ADV[s[0]]}</em>`:""}</span><u>${r?(r.img?"다시 보기":"사진 다시 넣기"):"사진 넣기"}</u></button>${r?`<button type="button" class="spotDel" data-del="${s[0]}">지우기</button>`:""}</div>`}).join("");
+  const sum=$("#spotSum");sum.classList.toggle("hide",!done);if(done){const worst=did.slice().sort((a,b)=>S.spots[b[0]].p-S.spots[a[0]].p)[0],wp=S.spots[worst[0]].p;
+    sum.innerHTML=(wp>=1?`<b>가장 먼저 손볼 곳: ${worst[1]}</b> 색에 묻히는 곳이 약 ${pctTxt(wp)}%로 가장 많아요.`:`<b>점검한 ${done}곳 모두 색 때문에 묻히는 곳이 거의 없어요.</b>`)+(done===SPOTS.length?" 네 곳을 모두 점검했어요.":" 남은 "+(SPOTS.length-done)+"곳도 점검해 보세요.")}}
+function recordSpot(id){if(!S.src)return;const d=new Date();let img="";try{const s=Math.min(1,480/Math.max(S.src.width,S.src.height)),c=mk(S.src.width*s,S.src.height*s);c.getContext("2d").drawImage(S.src,0,0,c.width,c.height);img=c.toDataURL("image/jpeg",.7)}catch(e){}
+  S.spots[id]={p:+lostPct().toFixed(1),d:(d.getMonth()+1)+"/"+d.getDate(),img};S.spotNow=id;S.recent.forEach(r=>{if(r.spot===id)r.spot=null});if(S.recent[S.rIdx])S.recent[S.rIdx].spot=id;if(!save()){S.spots[id].img="";save()}
+  const n=SPOTS.filter(s=>S.spots[s[0]]).length;toast(n===SPOTS.length?"네 곳을 모두 점검했어요. 수고했어요!":"‘"+SPOTS.find(s=>s[0]===id)[1]+"’ 점검을 기록했어요. ("+n+"/"+SPOTS.length+")")}
+function openSpot(id,stay){const r=S.spots[id];if(!r||!r.img)return;const ri=S.recent.findIndex(x=>x.spot===id);if(ri>=0){openRecent(ri,stay);return}stopCam();const im=new Image();im.onload=()=>{S.stay=stay||null;S.spotPending=null;const m=S.mode.see;setSource(im,im.naturalWidth,im.naturalHeight);S.mode.see=m;S.recent[S.rIdx].spot=id;S.spotNow=id;ui();draw();texts();if(S.scr==="report")drawRep();toast("‘"+SPOTS.find(s=>s[0]===id)[1]+"’ 사진으로 바꿨어요.")};im.src=r.img}
+/* 보고서에서 저장한 자리 사진을 앞뒤로 넘기기 */
+function stepSpot(d){const a=stripItems();if(a.length<2)return;let i=a.findIndex(x=>x.on);i=i<0?0:(i+d+a.length)%a.length;openItem(a[i].k,"report")}
+let lostExDone=false;function lostExample(){if(lostExDone)return;lostExDone=true;const s=sampleScene(),w=480,h=360,c=$("#lostEx"),t=mk(w,h),tx=t.getContext("2d",{willReadFrequently:true});c.width=w;c.height=h;tx.drawImage(s,0,0,w,h);const L=findLost(t),x=c.getContext("2d");x.drawImage(t,0,0);const o=mk(w,h),ox=o.getContext("2d",{willReadFrequently:true});ox.drawImage(t,0,0);applyColor(ox,w,h);drawLost(ox,w,h,L);x.drawImage(o,0,0)}
+
+/* ---------- 눈 지식 ---------- */
+function fan(cx,cy,r,deg,fill){const a0=(-90-deg/2)*Math.PI/180,a1=(-90+deg/2)*Math.PI/180,x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);return `<path d="M${cx} ${cy}L${x0.toFixed(1)} ${y0.toFixed(1)}A${r} ${r} 0 ${deg>180?1:0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}Z" fill="${fill}"/><circle cx="${cx}" cy="${cy}" r="4" fill="currentColor"/>`}
+function knowledge(){const dog=isDog(),me=dog?"개":"고양이",deg=dog?240:200;
+  const fov=`<svg class="fov" viewBox="0 0 300 120" role="img" aria-label="사람 약 180도, ${me} 약 ${deg}도"><g>${fan(75,66,52,180,"#9aa1ad")}</g><g>${fan(225,66,52,deg,"#2b59f0")}</g><g fill="currentColor" font-size="13" text-anchor="middle"><text x="75" y="112">사람 약 180°</text><text x="225" y="112">${me} 약 ${deg}°</text></g></svg>`;
+  const cards=[
+    ["색: 무지개가 이렇게 보여요",`<canvas id="kRain" width="600" height="110"></canvas><p class="cap">위는 사람이 보는 무지개, 아래는 같은 색을 이 앱의 계산으로 바꾼 것이에요. 빨강~초록이 비슷한 누런색으로 뭉치고, 파랑과 노랑은 남아요.</p><p>${dog?"개는 색을 느끼는 세포(원뿔세포)가 두 종류예요. 사람은 세 종류예요. 그래서 빨강과 초록을 서로 구분하기 어려워요.":"고양이는 주로 파랑과 노랑으로 세상을 본다고 해요."}</p>`,dog?`Byosiere 외 2018(개의 시각 연구를 모은 총설) <span class="badge ok">탄탄</span>`:`PetMD의 수의안과 전문의 인터뷰 <span class="badge mid">전문가 설명</span>`],
+    ["선명도: 같은 글자가 이렇게 보여요",`<canvas id="kAcu" width="600" height="150"></canvas><p class="cap">왼쪽은 사람, 오른쪽은 ${me}의 선명도로 바꾼 글자예요.</p><p>${dog?"개의 시력은 보통 20/75, 우리 시력표로 약 0.27로 추정해요. 실제로 측정된 개는 비글 3마리(20/45~20/85), 시바 3마리(20/60~20/85)처럼 수가 적어요.":"고양이 시력은 예전 연구에서 20/100~20/200, 최근 행동 실험에서 20/30으로 크게 갈려요. 이 앱은 20/100(0.2)으로 계산해요."}</p>`,dog?`Byosiere 외 2018 <span class="badge mid">보통</span>`:`PetMD <span class="badge ex">추정</span>`],
+    ["시야: 한 번에 보는 범위",fov+`<p>${dog?"개는 눈이 얼굴 옆쪽에 더 가깝게 달려 있어서 한 번에 약 240도를 봐요. 대신 두 눈으로 함께 보는 범위는 30~60도로, 사람(약 140도)보다 좁아요.":"고양이는 한 번에 약 200도를 봐요."} 사진 한 장으로는 재현할 수 없어서 필터에는 넣지 않았어요.</p>`,`PetMD(시야 범위)${dog?", Byosiere 외 2018(두 눈 겹침)":""} <span class="badge mid">전문가 설명</span>`]
+  ];
+  if(dog){cards.push(["깜빡임: 형광등이 깜빡여 보일 수 있어요",`<div class="hz"><span>사람</span><i class="h" style="width:75%"></i><span>약 60Hz</span><span>개</span><i style="width:100%"></i><span>70~80Hz</span></div><p>1초에 몇 번 깜빡이는 빛까지 깜빡임으로 느끼는지를 잰 값이에요. 사람에게는 이어진 빛으로 보이는 화면이나 조명이 개에게는 깜빡여 보일 수 있어요.</p>`,`Byosiere 외 2018(행동 실험) <span class="badge mid">보통</span>`]);
+    cards.push(["주둥이 길이와 또렷하게 보는 곳",`<p>개 22마리의 망막을 조사했더니, 주둥이가 긴 개일수록 세포가 빽빽한 부분이 가로 띠 모양이고, 짧은 개일수록 가운데 한 점에 모여 있었어요. 두개골 길이와의 상관계수는 −0.795였어요. 퍼그 한 마리는 띠가 거의 없고 가운데만 뚜렷했어요.</p><p>이 앱의 ‘또렷한 곳’ 효과는 이 연구를 그림으로 옮긴 예시예요. 세포 분포가 다르다는 것까지만 확인됐고, 실제로 그렇게 보이는지는 확인되지 않았어요.</p>`,`McGreevy, Grassi, Harman 2004 <span class="badge ex">예시</span>`]);
+    cards.push(["어두운 곳: 눈 속의 반사판",`<p>망막 뒤에 빛을 한 번 더 되돌려 보내는 반사판이 있어요. 밤에 눈이 빛나 보이는 이유예요. 539마리를 조사한 연구에서 70.3%가 온전한 반사판을 가지고 있었고, 1.9%는 없었어요. 얼마나 더 밝게 보이는지는 정해진 숫자가 없어서 화면의 밝기는 예시예요.</p>`,`Byosiere 외 2018 <span class="badge ex">예시</span>`]);
+    cards.push(["나이: 먼 곳이 흐려지는 쪽으로",`<p>비글 9마리를 나이에 따라 잰 연구에서, 나이가 들수록 근시(먼 곳이 흐림) 쪽으로 옮겨 갔어요. 수정체가 뿌옇게 보이는 핵경화는 근시와 약하게만 관련이 있었어요. 개체차가 커서 이 앱의 ‘나이 들면’ 화면은 예시예요.</p>`,`Hernandez 외 2016, Francis 외 2024 <span class="badge ex">예시</span>`])}
+  else{cards.push(["어두운 곳과 가까운 곳",`<p>고양이는 어두운 곳에서 사람보다 5.5~7배쯤 잘 본다고 추정돼요. 대신 코앞 약 25cm 안쪽은 초점이 흐려요. 낮에 움직임을 알아채는 능력은 사람이 더 낫다는 설명도 있어요.</p>`,`PetMD <span class="badge ex">추정</span>`])}
+  $("#kCards").innerHTML=cards.map(c=>`<div class="k"><h3>${c[0]}</h3>${c[1]}<div class="src">근거: ${c[2]}</div></div>`).join("");
+  /* 무지개 */
+  const r=$("#kRain"),rx=r.getContext("2d",{willReadFrequently:true}),g=rx.createLinearGradient(0,0,600,0);["#e11","#f80","#fd0","#3b3","#19c","#24d","#93c"].forEach((c,i,a)=>g.addColorStop(i/(a.length-1),c));
+  rx.fillStyle=g;rx.fillRect(0,0,600,50);const t=mk(600,50),tx=t.getContext("2d");tx.drawImage(r,0,0,600,50,0,0,600,50);applyColor(tx,600,50);rx.clearRect(0,50,600,60);rx.drawImage(t,0,60);
+  /* 글자 */
+  const k=$("#kAcu"),kx=k.getContext("2d"),s=mk(300,150),sx=s.getContext("2d");sx.fillStyle="#fff";sx.fillRect(0,0,300,150);sx.fillStyle="#111";sx.textAlign="center";sx.textBaseline="middle";
+  [[46,"밥그릇",34],[26,"장난감 공",86],[15,"가구 아래와 문턱",124]].forEach(l=>{sx.font="bold "+l[0]+"px sans-serif";sx.fillText(l[1],150,l[2])});
+  kx.drawImage(s,0,0);kx.drawImage(blurred(s,ratio()),300,0);kx.fillStyle="#2b59f0";kx.fillRect(299,0,2,150)}
+
+/* ---------- 색 두 곳 비교 ---------- */
+const PICK0="사진에서 비교하고 싶은 두 곳을 차례로 눌러 주세요. 예: 장난감과 바닥, 밥그릇과 매트.";
+function sample(x,y){const r=Math.max(3,Math.round(S.src.width/90)),c=S.src.getContext("2d"),d=c.getImageData(Math.max(0,x-r),Math.max(0,y-r),r*2,r*2).data;let R=0,G=0,B=0,n=0;for(let i=0;i<d.length;i+=4){R+=d[i];G+=d[i+1];B+=d[i+2];n++}return[Math.round(R/n),Math.round(G/n),Math.round(B/n)]}
+const lvTxt=d=>d<12?"거의 같은 색":d<25?"약하게 구분돼요":d<45?"구분돼요":"뚜렷이 구분돼요";
+function pickAt(x,y){if(S.picks.length>=2)S.picks=[];S.picks.push({x,y,rgb:sample(x,y)});
+  if(S.picks.length===2){const[a,b]=S.picks,pa=dich(...a.rgb),pb=dich(...b.rgb),h=dE(lab(...a.rgb),lab(...b.rgb)),p=dE(lab(...pa),lab(...pb));
+    const css=v=>"rgb("+v.join(",")+")";$("#h1").style.background=css(a.rgb);$("#h2").style.background=css(b.rgb);$("#d1").style.background=css(pa);$("#d2").style.background=css(pb);
+    $("#lvH").textContent=lvTxt(h);$("#lvP").textContent=lvTxt(p);$("#nH").textContent=h.toFixed(0);$("#nP").textContent=p.toFixed(0);
+    $("#pinH").style.left=Math.min(100,h)+"%";$("#pinP").style.left=Math.min(100,p)+"%";$("#pinP").textContent=N();
+    const v=$("#verdict");let t,k;const drop=h>0?Math.round((1-p/h)*100):0;
+    if(h<12){k="mid";t="두 곳은 사람 눈에도 비슷한 색이에요. 다른 두 곳을 골라 보세요."}
+    else if(p>=25&&p>=h*0.6){k="good";t=`${N("의")} 눈에도 잘 구분돼요. 지금 조합이면 찾기 쉬워요.`}
+    else if(p>=12){k="mid";t=`${N("의")} 눈에는 색 차이가 ${drop}% 줄어요. 둘의 밝기 차이를 더 주면 좋아요.`}
+    else{k="bad";t=`${N("의")} 눈에는 색 차이가 ${drop}% 줄어 거의 같은 색으로 보여요. 둘 중 하나를 파랑이나 노랑 계열로 바꾸거나 밝기 차이를 크게 주세요.`}
+    v.className="verdict "+k;v.textContent=t;$("#pickOut").classList.remove("hide");$("#pickMsg").textContent="숫자는 두 색이 얼마나 다른지를 나타내요. 클수록 잘 구분돼요."}
+  else{$("#pickOut").classList.add("hide");$("#pickMsg").textContent="좋아요. 비교할 다른 한 곳을 더 눌러 주세요."}
+  $("#pickReset").classList.remove("hide");draw()}
+function pickClear(){S.picks=[];$("#pickOut").classList.add("hide");$("#pickReset").classList.add("hide");$("#pickMsg").textContent=PICK0}
+
+/* ---------- 화면 전환 ---------- */
+function ui(){S.tab=tabOf();const has=!!S.src;
+  $$(".scr").forEach(e=>e.classList.toggle("hide",e.id!=="scr-"+S.scr));
+  $$("#nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.s===(S.scr==="know"?"my":S.scr==="live"?"home":S.scr)?"page":"false"));
+  $$(".empty").forEach(e=>e.classList.toggle("hide",has));$$(".has").forEach(e=>e.classList.toggle("hide",!has));
+  $$("#seeMode button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===S.mode.see)));
+  $$("#colorMode button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===S.mode.color)));
+  $("#p-now").classList.toggle("hide",S.mode.see!=="now");$("#p-old").classList.toggle("hide",S.mode.see!=="old");$("#p-ill").classList.toggle("hide",S.mode.see!=="ill");  $("#p-auto").classList.toggle("hide",S.mode.color!=="auto");$("#p-pick").classList.toggle("hide",S.mode.color!=="pick");$("#p-shop").classList.toggle("hide",S.mode.color!=="shop");
+  const v=$("#viewer"),slot=$("#scr-"+S.scr+" .slot");v.dataset.tab=S.tab;if(slot&&v.parentNode!==slot)slot.appendChild(v);
+  $("#hint").textContent=S.tab==="pick"||S.tab==="lost"?"":"가운데 ◀▶ 손잡이를 잡고 좌우로 끌어 보세요.";
+  if(S.scr==="live")liveUI();
+  const can=!!(navigator.canShare&&navigator.share);$("#btnShare").classList.toggle("hide",!can);
+  $("#btnPaste").classList.toggle("hide",!(navigator.clipboard&&navigator.clipboard.read));
+  $("#shareNote").textContent=can?"누르면 휴대폰의 공유 창이 열려요. 거기서 카카오톡을 누르고 받을 사람을 고르면 보고서 사진이 전송돼요.":"이 기기에서는 바로 보내기를 쓸 수 없어요. 저장한 사진 파일을 직접 보내 주세요.";
+  tags()}
+function go(s){if(S.cam&&s!=="live")stopCam();S.stay=null;S.spotDel=null;if(S.scr==="my"&&s!=="my")S.seen.my=true;if(S.src&&(s==="see"||s==="color"||s==="report"))S.seen[s]=true;S.scr=s;ui();applySplit();draw();if(s==="know")knowledge();window.scrollTo(0,0)}
+function segUI(){[["#species","species"],["#size","size"],["#snout","snout"]].forEach(([s,k])=>$$(s+" button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===S[k]))));
+  $("#dogBox").classList.toggle("hide",!isDog());$("#catNote").classList.toggle("hide",isDog());$("#name").value=S.name;$("#breed").value=S.breed;$("#birth").value=S.birth;$("#mz").value=S.mz;$("#hd").value=S.hd;paintNames()}
+
+/* ---------- 사진 넣기 ---------- */
+function msg(t,err){const m=$("#camMsg");m.textContent=t;m.classList.toggle("err",!!err)}
+let toastT=0;function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove("on"),2600)}
+function setSource(img,w,h){const M=960,s=Math.min(1,M/Math.max(w,h)),c=mk(w*s,h*s);c.getContext("2d",{willReadFrequently:true}).drawImage(img,0,0,c.width,c.height);addRecent(c);S.mode.see="now";useCanvas(c);sweep()}
+/* 이번에 넣은 사진을 6장까지 기억해 두고, 눈 비교·색 점검·보고서에서 넘겨 볼 수 있게 한다(앱을 닫으면 사라짐) */
+function addRecent(c){const t=mk(136,104),k=Math.max(136/c.width,104/c.height),w=c.width*k,h=c.height*k;t.getContext("2d").drawImage(c,(136-w)/2,(104-h)/2,w,h);S.recent.push({c,t:t.toDataURL("image/jpeg",.6),spot:null});if(S.recent.length>6)S.recent.shift();S.rIdx=S.recent.length-1}
+function useCanvas(c){S.src=c;S.spotNow=null;pickClear();S.lost=findLost(c);if(S.spotPending){const id=S.spotPending;S.spotPending=null;recordSpot(id)}const to=S.stay||"see";go(to)}
+function openRecent(i,stay){const r=S.recent[i];if(!r)return;stopCam();i=S.recent.indexOf(r);if(i<0)return;S.rIdx=i;S.stay=stay||null;S.spotPending=null;useCanvas(r.c);S.spotNow=r.spot&&S.spots[r.spot]?r.spot:null;texts();if(S.scr==="report")drawRep();toast("‘"+stripItems()[i].label+"’ 사진으로 바꿨어요.")}
+function stripItems(){const a=S.recent.map((r,i)=>{const sp=r.spot&&S.spots[r.spot]?SPOTS.find(s=>s[0]===r.spot):null;return{k:"#"+i,img:r.t,label:sp?sp[2]:(r.cam?"카메라 ":"사진 ")+(i+1),on:i===S.rIdx&&!S.cam}}),used=S.recent.map(r=>r.spot);
+  savedSpots().forEach(s=>{if(!used.includes(s[0]))a.push({k:s[0],img:S.spots[s[0]].img,label:s[2],on:false})});return a}
+function openItem(k,stay){if(k[0]==="#")openRecent(+k.slice(1),stay);else openSpot(k,stay)}
+/* 살 물건 확인: 물건 사진에서 누른 곳의 색을 집 사진의 바닥 색과 비교 */
+/* 사진 파일 열기: <img>로 여는 쪽이 아이폰 사진의 회전 정보(EXIF)를 가장 고르게 반영한다. 안 되면 createImageBitmap으로 */
+function loadImg(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.decoding="async";im.onload=()=>{URL.revokeObjectURL(u);ok(im)};im.onerror=()=>{URL.revokeObjectURL(u);(window.createImageBitmap?createImageBitmap(f).then(ok,no):no())};im.src=u})}
+async function shopFile(f){if(!f)return;let src=null;try{src=await loadImg(f)}catch(e){toast("이 사진은 열 수 없어요.");return}
+  const w=src.width||src.naturalWidth,h=src.height||src.naturalHeight,s=Math.min(1,720/Math.max(w,h)),c=mk(w*s,h*s);c.getContext("2d",{willReadFrequently:true}).drawImage(src,0,0,c.width,c.height);S.shop=c;shopDraw(null);$("#shopStage").classList.remove("hide");$("#shopOut").classList.add("hide");$("#shopMsg").innerHTML="좋아요. 이제 사진에서 <b>물건의 대표 색</b>을 한 번 눌러 주세요.";$("#shopStage").scrollIntoView({behavior:"smooth",block:"center"})}
+function shopDraw(p){const c=$("#cShop"),x=c.getContext("2d");c.width=S.shop.width;c.height=S.shop.height;x.drawImage(S.shop,0,0);if(p){const w=c.width;x.lineWidth=Math.max(3,w/160);x.strokeStyle="#fff";x.beginPath();x.arc(p.x,p.y,w/24,0,7);x.stroke();x.lineWidth=Math.max(1.5,w/320);x.strokeStyle="#111";x.beginPath();x.arc(p.x,p.y,w/24+x.lineWidth*2,0,7);x.stroke()}}
+function floorRgb(){return S.floorPick&&S.floorSrc===S.src?S.floorPick:an().rgb}
+function floorDraw(p){const c=$("#cFloor"),x=c.getContext("2d");c.width=S.src.width;c.height=S.src.height;x.drawImage(S.src,0,0);if(p){const w=c.width;x.lineWidth=Math.max(3,w/160);x.strokeStyle="#fff";x.beginPath();x.arc(p.x,p.y,w/24,0,7);x.stroke();x.lineWidth=Math.max(1.5,w/320);x.strokeStyle="#111";x.beginPath();x.arc(p.x,p.y,w/24+x.lineWidth*2,0,7);x.stroke()}}
+function shopPick(px,py){if(!S.shop||!S.src)return;S.shopPt={x:px,y:py};const r=Math.max(3,Math.round(S.shop.width/60)),d=S.shop.getContext("2d").getImageData(Math.max(0,px-r),Math.max(0,py-r),r*2,r*2).data;let R=0,G=0,B=0,n=0;for(let i=0;i<d.length;i+=4){R+=d[i];G+=d[i+1];B+=d[i+2];n++}
+  const pr=[Math.round(R/n),Math.round(G/n),Math.round(B/n)],fl=floorRgb(),pf=dich(...fl),pp=dich(...pr),h=dE(lab(...fl),lab(...pr)),p=dE(lab(...pf),lab(...pp)),css=v=>"rgb("+v.join(",")+")",rc=rec();
+  $("#sh1").style.background=css(fl);$("#sh2").style.background=css(pr);$("#sh3").style.background=css(pf);$("#sh4").style.background=css(pp);$("#shH").textContent=lvTxt(h);$("#shP").textContent=lvTxt(p);$("#shNH").textContent=h.toFixed(0);$("#shNP").textContent=p.toFixed(0);
+  let k,t;if(p>=45){k="good";t=`사셔도 좋아요. 이 바닥 위에서 ${N("의")} 눈에도 뚜렷이 구분돼요.`}
+  else if(p>=25){k="good";t=`사셔도 괜찮아요. 이 바닥 위에서 ${N("의")} 눈에도 구분돼요.`}
+  else if(p>=12){k="mid";t=`애매해요. ${N("의")} 눈에는 바닥과 약하게만 구분돼요. 같은 물건에 ${rc.name}이 있다면 그쪽을 권해요.`}
+  else{k="bad";t=`권하지 않아요. ${N("의")} 눈에는 이 바닥과 거의 같은 색으로 보여요. ${rc.name}으로 골라 보세요.`}
+  $("#shopV").className="verdict "+k;$("#shopV").textContent=t;$("#shopOut").classList.remove("hide");$("#shopMsg").textContent="숫자는 바닥과 물건의 색 차이예요. 클수록 잘 구분돼요. 다른 곳을 누르면 다시 계산해요.";shopDraw({x:px,y:py})}
+async function fromFile(f){if(!f)return;if(S.scr==="color"&&S.mode.color==="shop"&&S.src&&!S.stay){shopFile(f);return}stopCam();msg("사진을 여는 중이에요…");
+  const fail=()=>{msg("이 사진은 열 수 없어요. JPG나 PNG 사진으로 다시 해 주세요.",true);toast("이 파일은 열 수 없어요.");if(S.scr!=="home")go("home")};
+  try{const im=await loadImg(f);setSource(im,im.naturalWidth||im.width,im.naturalHeight||im.height);msg("")}catch(e){fail()}}
+function sampleScene(){const w=960,h=720,c=mk(w,h),x=c.getContext("2d",{willReadFrequently:true});
+  x.fillStyle="#e9e2d6";x.fillRect(0,0,w,h*.45);x.fillStyle="#b9b3ab";x.fillRect(0,h*.45,w,h*.55);
+  x.fillStyle="#8a6f55";x.fillRect(0,h*.43,w,14);
+  x.fillStyle="#5f8f4e";x.beginPath();x.ellipse(w*.63,h*.78,300,95,0,0,7);x.fill();/* 초록 러그 */
+  x.fillStyle="#c9342b";x.beginPath();x.arc(w*.58,h*.76,34,0,7);x.fill();/* 빨간 공 */
+  x.fillStyle="#2f6fd6";x.beginPath();x.arc(w*.76,h*.8,30,0,7);x.fill();/* 파란 공 */
+  x.fillStyle="#f2c230";x.beginPath();x.arc(w*.45,h*.86,26,0,7);x.fill();/* 노란 공 */
+  x.fillStyle="#a8a29a";x.beginPath();x.ellipse(w*.2,h*.74,92,30,0,0,7);x.fill();
+  x.fillStyle="#b7b0a7";x.beginPath();x.ellipse(w*.2,h*.72,74,22,0,0,7);x.fill();/* 회색 그릇 */
+  x.fillStyle="#6b4a3a";x.fillRect(w*.06,h*.2,w*.3,h*.25);x.fillStyle="#d7c4a8";x.fillRect(w*.08,h*.23,w*.26,h*.19);/* 소파 */
+  x.fillStyle="#c9342b";x.fillRect(w*.7,h*.3,70,h*.15);x.fillStyle="#3d7a3a";x.beginPath();x.arc(w*.735,h*.26,62,0,7);x.fill();/* 화분 */
+  x.fillStyle="#7a6a5b";x.fillRect(w*.88,h*.1,w*.12,h*.36);/* 문 */
+  /* 먼 곳(벽 쪽)에 책장: 세밀한 부분이 있어야 흐림 차이가 보인다. 색은 파랑·노랑·무채색만 쓴다 */
+  {const bx=w*.4,by=h*.13,bw=w*.25,bh=h*.3,cols=["#2f4f8f","#d9c36a","#8a8a8a","#f0ede6","#3a3a3a","#c9a86a","#5b78b8"];x.fillStyle="#6b4a3a";x.fillRect(bx,by,bw,bh);
+    for(let r=0;r<3;r++){const sy=by+8+r*(bh-8)/3,sh=(bh-8)/3-10;x.fillStyle="#3b2a20";x.fillRect(bx+8,sy,bw-16,sh);let px=bx+12,i=r*2;while(px<bx+bw-22){const bwid=9+((i*7)%3)*5,bhh=sh-((i*5)%4)*5;x.fillStyle=cols[i%cols.length];x.fillRect(px,sy+sh-bhh,bwid,bhh);px+=bwid+2;i++}}}
+  /* 바닥 마루 줄: 가까울수록 간격이 넓다 */
+  x.strokeStyle="rgba(60,50,40,.16)";x.lineWidth=2;for(let i=0,y=h*.47;y<h;i++,y+=10+i*6){x.beginPath();x.moveTo(0,y);x.lineTo(w,y);x.stroke()}
+  for(let i=0;i<9;i++){const tx=w*(.06+i*.115);x.beginPath();x.moveTo(w/2+(tx-w/2)*.55,h*.47);x.lineTo(w/2+(tx-w/2)*1.5,h);x.stroke()}
+  return c}
+/* 홈 맨 위의 움직이는 예시: 예시 그림의 아래쪽(러그와 공)을 잘라 쓴다 */
+function heroDemo(){const s=sampleScene(),A=$("#hA"),B=$("#hB"),w=640,h=300,sy=330,sh=360,sw=sh*w/h,sx=(960-sw)/2+70;
+  A.width=B.width=w;A.height=B.height=h;A.getContext("2d").drawImage(s,sx,sy,sw,sh,0,0,w,h);
+  const t=mk(w,h),tx=t.getContext("2d",{willReadFrequently:true});tx.drawImage(A,0,0);applyColor(tx,w,h);B.getContext("2d").drawImage(blurred(t,2.2),0,0)}
+
+/* ---------- 실시간 카메라 ---------- */
+/* 실시간으로 보기: 사람 눈은 빼고, 아이의 눈으로 본 장면만 화면 가득 보여 준다. 프로필(종·주둥이·나이)이 그대로 반영된다 */
+function liveMsg(t,err){const m=$("#liveMsg");m.textContent=t;m.classList.toggle("err",!!err)}
+function liveOpts(){const m=S.liveMode||"now",o={color:true,blur:true,zone:true,night:false,senior:isSenior()};if(m==="old")o.senior=true;if(m==="ill")o.cat=S.liveCat||2;return o}
+/* 어두운 곳 자동 보정: 화면 평균 밝기가 낮으면 아이 눈 쪽을 밝게 한다(예시). 밝은 곳에서는 아무것도 하지 않는다 */
+function frameLum(c){const t=mk(24,18),x=t.getContext("2d",{willReadFrequently:true});x.drawImage(c,0,0,24,18);const d=x.getImageData(0,0,24,18).data;let s=0;for(let i=0;i<d.length;i+=4)s+=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];return s/(d.length/4)}
+function brighten(c,g){if(g<=1.01)return c;const o=mk(c.width,c.height),x=o.getContext("2d");x.drawImage(c,0,0);x.globalCompositeOperation="lighter";let k=g-1;while(k>0){x.globalAlpha=Math.min(1,k);x.drawImage(c,0,0);k-=1}return o}
+function liveUI(){const on=!!S.cam,m=S.liveMode||"now";$("#liveOff").classList.toggle("hide",on);$("#liveTag").classList.toggle("hide",!on);$("#btnLiveSnap").disabled=!on;$("#btnLiveStop").disabled=!on;
+  $$("#liveMode button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===m)));$("#liveCat").classList.toggle("hide",m!=="ill");$$("#liveCat button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.v===(S.liveCat||2))));
+  $("#liveTag").textContent=on&&S.liveDark?"● 실시간 · 어두운 곳 보정 중":"● 실시간";
+  $("#liveLead").textContent=profileLine()+" 기준으로 계산해요. 프로필을 바꾸면 바로 반영돼요.";
+  const dog=isDog();$("#liveWhy").innerHTML={now:`<b>지금 ${N("의")} 눈</b>: 색(빨강·초록이 비슷해짐), 선명도(시력 약 ${dog?"0.27":"0.2"})${dog&&S.snout!=="mid"?", 또렷한 곳(주둥이 "+SNOUT[S.snout]+")":""}${isSenior()?", 노령의 흐림(예시)":""}을 모두 적용했어요.`,
+    old:`<b>나이 들면(예시)</b>: ${dog?"먼 곳(화면 위쪽)":"가까운 곳(화면 아래쪽)"}이 더 흐려져요. 흐림 정도는 예시예요.`,
+    ill:[``,`<b>백내장 초기(예시)</b>: 수정체의 약 10~15% 미만이 흐려진 단계라 시력 저하가 거의 없어요. 그래서 화면도 ‘지금 눈’과 같아요.`,`<b>백내장 미숙(예시)</b>: 수정체의 일부에서 거의 전체까지 흐려진 단계예요. 보이지만 흐리고 뿌옇게 보여요.`,`<b>백내장 성숙(예시)</b>: 수정체 전체가 흐려져 밝고 어두운 것만 느끼는 단계예요.`][S.liveCat||2]+` 단계별 자세한 설명은 ‘눈 비교 → 눈 질환’에 있어요. 진단이 아니에요.`}[m]
+    +(S.liveDark?` <br><b>어두운 곳이라 밝게 보정했어요.</b> ${dog?"개는 망막 뒤 반사판 덕분에":"고양이는 어두운 곳에서 사람보다 5.5~7배쯤"} 어두운 곳에서 나보다 잘 봐요. 밝기는 예시예요.`:` <br>어두운 곳에서 켜면 ${N("가")} 어둠 속에서 잘 보는 것처럼 화면이 자동으로 밝아져요.`)
+    +` <span class="note">성별은 시야에 영향을 준다는 연구가 없어 반영하지 않아요.</span>`}
+async function startCam(){if(!window.isSecureContext){liveMsg("카메라는 인터넷 주소(https)로 열었을 때만 쓸 수 있어요.",true);return}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){liveMsg("이 브라우저에서는 카메라를 쓸 수 없어요.",true);return}
+  const v=$("#video");try{const st=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:960}},audio:false});v.srcObject=st;await v.play();S.cam=st;liveUI();let last=0;
+    const cv=$("#cLive"),loop=t=>{if(!S.cam)return;if(t-last>90&&v.videoWidth){last=t;const s=Math.min(1,640/Math.max(v.videoWidth,v.videoHeight)),c=mk(v.videoWidth*s,v.videoHeight*s);c.getContext("2d",{willReadFrequently:true}).drawImage(v,0,0,c.width,c.height);free(S.liveFrame);S.liveFrame=c;
+      const lum=frameLum(c),dark=lum<70,g=dark?Math.min(2.5,90/Math.max(lum,12)):1;if(dark!==S.liveDark){S.liveDark=dark;liveUI()}
+      const bc=brighten(c,g),p=renderPet(bc,liveOpts());if(bc!==c)free(bc);if(cv.width!==c.width||cv.height!==c.height){cv.width=c.width;cv.height=c.height}cv.getContext("2d").drawImage(p,0,0);free(p)}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+  catch(e){liveMsg("카메라를 열지 못했어요. 주소창 옆 자물쇠에서 카메라 권한을 허용해 주세요.",true)}}
+function stopCam(){if(!S.cam)return;S.cam.getTracks().forEach(t=>t.stop());S.cam=null;liveUI()}
+
+/* ---------- 보고서 이미지 ---------- */
+const FF='"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+function wrapLines(x,text,maxW){const out=[];let line="";for(const w of text.split(" ")){const t=line?line+" "+w:w;if(x.measureText(t).width>maxW&&line){out.push(line);line=w}else line=t}if(line)out.push(line);return out}
+/* 공유용 한 장: 앱 디자인과 같은 파란 머리, 회색 바탕, 흰 카드 */
+function makeCard(av){if(!S.src)return;const W=1080,pad=56,c=$("#cCard"),cw=W-pad*2,in_=28,iw=cw-in_*2,ih=Math.round(iw*S.src.height/S.src.width);
+  /* 조언은 굵은 첫 문장만, 최대 3개 */
+  const adv=todo().filter(t=>t.indexOf("바로 확인하기")<0).slice(0,3).map(t=>{const m=t.match(/<b>(.*?)<\/b>/);return(m?m[1]:t).replace(/<[^>]+>/g,"").replace(/:$/,"")});
+  let x=c.getContext("2d");c.width=W;c.height=10;x.font="bold 36px "+FF;const wr=adv.map(l=>wrapLines(x,l,cw-in_*2-80));let th=0;wr.forEach(a=>{th+=a.length*50+34});
+  x.font="30px "+FF;const sub=wrapLines(x,profileLine(),cw-(av?170:0));
+  const hh=300+sub.length*42+100,cardY=hh-56,cardH=ih+in_*2,tY=cardY+cardH+28,tH=170,aY=tY+tH+28,aH=110+th,fY=aY+aH+44,H=fY+150;
+  c.height=H;x=c.getContext("2d");x.textBaseline="top";
+  x.fillStyle="#f2f4f6";x.fillRect(0,0,W,H);
+  {const g=x.createLinearGradient(0,0,W,hh);g.addColorStop(0,"#2f6bff");g.addColorStop(1,"#6557ff");x.fillStyle=g;x.fillRect(0,0,W,hh)}
+  /* 머리 */
+  x.fillStyle="rgba(255,255,255,.2)";rr(x,pad,64,236,52,26);x.fill();x.fillStyle="#fff";x.font="bold 26px "+FF;x.fillText("한 뼘 시선",pad+26,76);
+  x.font="bold 64px "+FF;x.fillText(N("의")+" 눈으로 본",pad,150);x.fillText("우리 집",pad,226);
+  x.fillStyle="rgba(255,255,255,.85)";x.font="30px "+FF;sub.forEach((l,i)=>x.fillText(l,pad,306+i*42));
+  if(av){const r=74,cx=W-pad-r,cy=150+r;x.save();x.beginPath();x.arc(cx,cy,r+6,0,7);x.fillStyle="#fff";x.fill();x.beginPath();x.arc(cx,cy,r,0,7);x.clip();x.drawImage(av,cx-r,cy-r,r*2,r*2);x.restore()}
+  /* 사진 카드 */
+  const card=(X,Y,w,h,r)=>{x.save();x.shadowColor="rgba(25,31,40,.08)";x.shadowBlur=24;x.shadowOffsetY=6;x.fillStyle="#fff";rr(x,X,Y,w,h,r);x.fill();x.restore()};
+  card(pad,cardY,cw,cardH,40);composite(x,pad+in_,cardY+in_,iw,ih,26);
+  /* 숫자 세 칸 */
+  const ts=tiles(),tw=(cw-32)/3;ts.forEach((t,i)=>{const X=pad+i*(tw+16);card(X,tY,tw,tH,30);x.textAlign="center";x.fillStyle="#191f28";let fs=46;x.font="bold 46px "+FF;while(x.measureText(t[0]).width>tw-28&&fs>24){fs-=2;x.font="bold "+fs+"px "+FF}x.fillText(t[0],X+tw/2,tY+42);x.fillStyle="#6b7684";x.font="26px "+FF;x.fillText(t[1],X+tw/2,tY+108);x.textAlign="left"});
+  /* 조언 카드 */
+  card(pad,aY,cw,aH,40);x.fillStyle="#191f28";x.font="bold 40px "+FF;x.fillText("이 사진에서 알게 된 것",pad+in_+8,aY+36);
+  let y=aY+106;wr.forEach((a,i)=>{x.fillStyle="#2f6bff";x.beginPath();x.arc(pad+in_+30,y+24,24,0,7);x.fill();x.fillStyle="#fff";x.font="bold 26px "+FF;x.textAlign="center";x.fillText(String(i+1),pad+in_+30,y+10);x.textAlign="left";x.fillStyle="#191f28";x.font="bold 36px "+FF;a.forEach((l,j)=>x.fillText(l,pad+in_+80,y+j*50));y+=a.length*50+34});
+  /* 꼬리 */
+  x.textAlign="center";x.fillStyle="#191f28";x.font="bold 30px "+FF;x.fillText("우리 아이 눈에는 우리 집이 어떻게 보일까?",W/2,fY);
+  x.fillStyle="#6b7684";x.font="24px "+FF;x.fillText("한 뼘 시선 · 논문 근거로 계산, 일부는 예시예요 · 진단이 아니에요",W/2,fY+52);x.textAlign="left"}
+async function cardBlob(){let av=null;if(S.photo)av=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=S.photo});makeCard(av);return new Promise(r=>$("#cCard").toBlob(r,"image/png"))}
+async function saveCard(){const b=await cardBlob();if(!b)return;const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="eye-report-"+Date.now()+".png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast("보고서 사진을 내려받았어요. 다운로드 폴더에서 볼 수 있어요.")}
+async function shareCard(){try{const b=await cardBlob(),f=new File([b],"report.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:N("의")+" 눈 보고서"});else saveCard()}catch(e){if(!e||e.name!=="AbortError"){toast("보내기가 안 돼서 사진으로 저장할게요.");saveCard()}}}
+
+/* ---------- 화면 연결 ---------- */
+$("#breed").innerHTML=BREEDS.map(b=>`<option value="${b[0]}">${b[1]}</option>`).join("");
+$("#birth").innerHTML=`<option value="">모름</option>`+Array.from({length:26},(_,i)=>YEAR-i).map(y=>`<option value="${y}">${y}년${y===YEAR?" (올해)":""}</option>`).join("");
+[["#species","species"],["#size","size"],["#snout","snout"],["#life","stage"]].forEach(([s,k])=>$(s).addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S[k]=b.dataset.v;save();segUI();ui();draw()}));
+$("#breed").addEventListener("change",e=>{S.breed=e.target.value;const b=BREEDS.find(b=>b[0]===S.breed);if(b&&S.breed!=="mix"&&S.breed!=="etc"){S.size=b[2];S.snout=b[3];S.mz="";S.hd=""}save();segUI();ui();draw()});
+$("#birth").addEventListener("change",e=>{S.birth=e.target.value;save();segUI();ui();draw()});
+$("#name").addEventListener("input",e=>{S.name=e.target.value.replace(/[<>&"']/g,"");save();texts()});
+$("#btnTheme").addEventListener("click",()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark",true));
+$("#themeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setTheme(b.dataset.v,true)});
+$("#zoomSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(b)setZoom(+b.dataset.v,true)});
+{let z=1;try{z=+localStorage.getItem("hb-zoom")||1}catch(e){}setZoom([1,1.15,1.3].includes(z)?z:1)}
+/* 주둥이·머리 길이를 재서 넣으면 비율로 단계를 고른다 */
+["#mz","#hd"].forEach(s=>$(s).addEventListener("input",()=>{S.mz=$("#mz").value;S.hd=$("#hd").value;const a=parseFloat(S.mz),b=parseFloat(S.hd);if(a>0&&b>0){const r=a/b;S.snout=r<0.5?"short":r<0.9?"mid":"long"}save();$$("#snout button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.v===S.snout)));draw()}));
+$("#snout").addEventListener("click",()=>{S.mz="";S.hd="";$("#mz").value="";$("#hd").value="";save();texts()});
+/* 아이 여러 마리 */
+$("#petList").addEventListener("click",e=>{const b=e.target.closest("[data-pet]");if(!b)return;const i=+b.dataset.pet;if(i===S.cur)return;switchPet(i);toast(N()+"의 프로필로 바꿨어요.")});
+$("#btnAddPet").addEventListener("click",()=>{save();S.pets.push(newPet());usePet(S.pets.length-1);save();segUI();ui();draw();$("#s-profile").scrollIntoView({behavior:"smooth"});toast("새 프로필을 만들었어요. 이름부터 넣어 주세요.")});
+$("#btnDelPet").addEventListener("click",()=>{if(S.pets.length<2)return;if(!S.delArm){S.delArm=true;texts();return}S.pets.splice(S.cur,1);usePet(Math.max(0,S.cur-1));save();segUI();ui();draw();toast("프로필을 지웠어요.")});
+$("#pfile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;try{const im=await loadImg(f),W0=im.naturalWidth||im.width,H0=im.naturalHeight||im.height,k=Math.min(1,1600/Math.max(W0,H0)),c=mk(W0*k,H0*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);openCrop(c)}
+  catch(_){/* 구형 사파리 대비 */const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);const c=mk(im.naturalWidth,im.naturalHeight);c.getContext("2d").drawImage(im,0,0);openCrop(c)};im.onerror=()=>{URL.revokeObjectURL(u);toast("이 사진은 열 수 없어요.")};im.src=u}});
+/* 우리 집 점검 */
+$("#spotList").addEventListener("click",e=>{const dl=e.target.closest("[data-del]");
+  if(dl){const id=dl.dataset.del;if(!confirm("‘"+SPOTS.find(s=>s[0]===id)[1]+"’ 기록을 지울까요?\n지우면 ‘사진 넣기’ 상태로 돌아가요."))return;delete S.spots[id];S.spotDel=null;if(S.spotNow===id)S.spotNow=null;save();texts();toast("‘"+SPOTS.find(s=>s[0]===id)[1]+"’ 기록을 지웠어요.");return}
+  const b=e.target.closest("[data-spot]");if(!b)return;const id=b.dataset.spot,r=S.spots[id];if(r&&r.img){openSpot(id);return}S.spotPending=id;texts();$("#s-photo").scrollIntoView({behavior:"smooth",block:"center"});toast("‘"+SPOTS.find(s=>s[0]===id)[1]+"’ 사진을 넣어 주세요.");$("#file").click()});
+$("#pendMsg").addEventListener("click",()=>{S.spotPending=null;texts()});
+$("#catSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.cat=+b.dataset.v;draw();tags()});
+$("#fxOld").addEventListener("click",e=>{const row=e.target.closest(".fx");if(!row)return;if(e.target.closest(".info")){S.open.night=!S.open.night;draw();return}if(e.target.closest(".switch")){S.fx.night=!S.fx.night;draw()}});
+$("#file").addEventListener("change",e=>{fromFile(e.target.files[0]);e.target.value=""});
+$("#btnSample").addEventListener("click",()=>{stopCam();const c=sampleScene();setSource(c,c.width,c.height)});
+document.addEventListener("click",e=>{if(e.target.closest("#repGoSpots")){go("home");setTimeout(()=>$("#spotList").closest(".card").scrollIntoView({behavior:"smooth",block:"start"}),60)}});
+$("#btnLiveOn").addEventListener("click",startCam);document.addEventListener("click",e=>{if(e.target.closest("#pickPhoto"))$("#s-photo").scrollIntoView({behavior:"smooth",block:"start"})});$("#btnLiveStop").addEventListener("click",stopCam);
+$("#liveMode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.liveMode=b.dataset.m;liveUI()});
+$("#liveCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.liveCat=+b.dataset.v;liveUI()});
+$("#btnLiveSnap").addEventListener("click",()=>{if(!S.liveFrame)return;const c=mk(S.liveFrame.width,S.liveFrame.height);c.getContext("2d",{willReadFrequently:true}).drawImage(S.liveFrame,0,0);addRecent(c);S.recent[S.recent.length-1].cam=true;S.src=c;S.lost=findLost(c);S.spotNow=null;pickClear();texts();toast("장면을 남겼어요. 눈 비교·색 점검·보고서의 사진 띠에서 볼 수 있어요.")});
+$("#btnFreeze").addEventListener("click",()=>{stopCam();toast("이 장면을 남겼어요. 위의 사진 띠에서 다시 볼 수 있어요.")});
+$("#who").addEventListener("click",()=>go("my"));
+$("#nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b)go(b.dataset.s)});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
+$("#seeMode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.sweeping=false;S.mode.see=b.dataset.m;ui();applySplit();draw()});
+$("#colorMode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.mode.color=b.dataset.m;ui();applySplit();draw()});
+$("#fx").addEventListener("click",e=>{const row=e.target.closest(".fx");if(!row)return;const k=row.dataset.k;if(e.target.closest(".info")){S.open[k]=!S.open[k];draw();return}const sw=e.target.closest(".switch");if(!sw||sw.disabled)return;S.fx[k]=!S.fx[k];draw()});
+$("#spotAsk").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!S.src)return;const id=b.dataset.v;
+  const nm=SPOTS.find(s=>s[0]===id)[1];
+  if(S.spotNow===id){delete S.spots[id];S.spotNow=null;save();toast("이 사진의 기록을 지웠어요.")}
+  else{if(S.spots[id]&&!confirm("‘"+nm+"’에는 이미 기록한 사진이 있어요.\n지금 사진으로 바꿀까요? 예전 기록은 사라져요."))return;if(S.spotNow)delete S.spots[S.spotNow];recordSpot(id)}texts()});
+$("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(!b)return;const s=b.dataset.step;if(s==="photo")$("#s-photo").scrollIntoView({behavior:"smooth",block:"center"});else if(s==="spots")$("#spotList").closest(".card").scrollIntoView({behavior:"smooth",block:"start"});else go(s)});
+document.addEventListener("click",e=>{const b=e.target.closest(".strip [data-open]");if(!b)return;const scr=S.scr;if(b.dataset.open==="new"){S.stay=scr;$("#file").click()}else if(b.getAttribute("aria-pressed")!=="true")openItem(b.dataset.open,scr)});
+$("#tiles").addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;const i=+b.dataset.t;S.tileOpen=S.tileOpen===i?null:i;texts()});
+$("#btnSavePf").addEventListener("click",e=>{const ok=save(),b=e.currentTarget;if(ok){b.textContent="저장됐어요 ✓";toast(N()+" 프로필을 저장했어요.");setTimeout(()=>b.textContent="저장",2200)}else toast("이 브라우저에서는 저장이 막혀 있어요. 창을 닫으면 사라져요.")});
+/* 프로필 사진: 보일 부분을 끌어서 고른다 */
+{const C={bm:null,s:1,x:0,y:0,min:1,max:4},cv=$("#cropC"),V=300,cx=cv.getContext("2d");
+  const fit=()=>V/Math.max(C.bm.width,C.bm.height),fill=()=>V/Math.min(C.bm.width,C.bm.height);
+  const clamp=()=>{const mx=Math.max(C.bm.width*C.s,V)/2,my=Math.max(C.bm.height*C.s,V)/2;C.x=Math.max(-mx,Math.min(mx,C.x));C.y=Math.max(-my,Math.min(my,C.y))};
+  const paint=(c,size)=>{const k=size/V,w=C.bm.width*C.s*k,h=C.bm.height*C.s*k;c.clearRect(0,0,size,size);c.imageSmoothingQuality="high";c.drawImage(C.bm,size/2-w/2+C.x*k,size/2-h/2+C.y*k,w,h)};
+  const setS=s=>{C.s=Math.max(C.min,Math.min(C.max,s));clamp();$("#cropZ").value=Math.round(Math.log(C.s/C.min)/Math.log(C.max/C.min)*100);paint(cx,V)};
+  /* 사진 가장자리의 투명하거나 한 가지 색인 여백을 빼고, 실제 그림이 있는 범위를 찾는다 */
+  const bbox=bm=>{const k=Math.min(1,160/Math.max(bm.width,bm.height)),w=Math.max(1,Math.round(bm.width*k)),h=Math.max(1,Math.round(bm.height*k)),t=mk(w,h),x=t.getContext("2d",{willReadFrequently:true});x.drawImage(bm,0,0,w,h);const d=x.getImageData(0,0,w,h).data,bg=[d[0],d[1],d[2],d[3]];let x0=w,y0=h,x1=-1,y1=-1;
+    for(let y=0;y<h;y++)for(let q=0;q<w;q++){const i=(y*w+q)*4,a=d[i+3],on=bg[3]<20?a>40:(a>40&&Math.abs(d[i]-bg[0])+Math.abs(d[i+1]-bg[1])+Math.abs(d[i+2]-bg[2])>36);if(on){if(q<x0)x0=q;if(q>x1)x1=q;if(y<y0)y0=y;if(y>y1)y1=y}}
+    if(x1<0||(x1-x0)<w*.2||(y1-y0)<h*.2)return{x:0,y:0,w:bm.width,h:bm.height};return{x:x0/k,y:y0/k,w:(x1-x0+1)/k,h:(y1-y0+1)/k}};
+  const fillB=()=>{const b=C.bb;C.s=Math.max(C.min,Math.min(C.max,V/Math.min(b.w,b.h)));C.x=(C.bm.width/2-(b.x+b.w/2))*C.s;C.y=(C.bm.height/2-(b.y+b.h/2))*C.s;setS(C.s)};
+  window.openCrop=bm=>{C.bm=bm;C.bb=bbox(bm);C.min=fit()*.6;C.max=Math.max(fill(),V/Math.min(C.bb.w,C.bb.h))*4;C.x=C.y=0;$("#crop").classList.remove("hide");fillB()};
+  const close=()=>{$("#crop").classList.add("hide");C.bm=null};
+  $("#cropZ").addEventListener("input",e=>{C.s=C.min*Math.pow(C.max/C.min,e.target.value/100);clamp();paint(cx,V)});
+  $("#cropFill").addEventListener("click",fillB);$("#cropFit").addEventListener("click",()=>{C.x=C.y=0;setS(fit())});
+  $("#cropNo").addEventListener("click",close);
+  $("#cropOk").addEventListener("click",()=>{const o=mk(200,200);paint(o.getContext("2d"),200);let u=o.toDataURL("image/webp",.85);if(u.indexOf("data:image/webp")!==0)u=o.toDataURL("image/png");S.photo=u;if(!save())toast("이 브라우저에서는 저장이 막혀 있어, 창을 닫으면 사진이 사라져요.");else toast("프로필 사진을 바꿨어요.");close();texts()});
+  let p0=null;cv.addEventListener("pointerdown",e=>{p0={x:e.clientX,y:e.clientY};try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+  cv.addEventListener("pointermove",e=>{if(!p0||!C.bm)return;const k=V/(cv.getBoundingClientRect().width||V);C.x+=(e.clientX-p0.x)*k;C.y+=(e.clientY-p0.y)*k;p0={x:e.clientX,y:e.clientY};clamp();paint(cx,V)});
+  ["pointerup","pointercancel"].forEach(t=>cv.addEventListener(t,()=>{p0=null}));
+  cv.addEventListener("wheel",e=>{if(!C.bm)return;e.preventDefault();setS(C.s*(e.deltaY<0?1.08:1/1.08))},{passive:false})}
+{const c=$("#cRep");let x0=null;c.addEventListener("pointerdown",e=>{x0=e.clientX});c.addEventListener("pointerup",e=>{if(x0===null)return;const dx=e.clientX-x0;x0=null;if(Math.abs(dx)>40)stepSpot(dx<0?1:-1)});c.addEventListener("pointercancel",()=>{x0=null})}
+$("#btnPaste").addEventListener("click",async()=>{try{const items=await navigator.clipboard.read();for(const it of items){const t=it.types.find(t=>t.startsWith("image/"));if(t){const bl=await it.getType(t);toast("붙여 넣은 사진을 여는 중이에요…");fromFile(new File([bl],"paste",{type:t}));return}}toast("복사해 둔 사진이 없어요. 사진을 먼저 복사해 주세요.")}catch(_){toast("붙여 넣기가 허용되지 않았어요. 사진 고르기를 이용해 주세요.")}});
+$("#split").addEventListener("input",e=>{S.sweeping=false;S.userSplit=+e.target.value;setSplit(S.userSplit)});
+$("#stage").addEventListener("click",e=>{if(S.tab!=="pick"||!S.src)return;const p=rel(e,cBase);if(!p.ok)return;pickAt(Math.round(Math.max(0,Math.min(1,p.x))*S.src.width),Math.round(Math.max(0,Math.min(1,p.y))*S.src.height))});
+$("#pickReset").addEventListener("click",()=>{pickClear();draw()});
+$("#btnFloor").addEventListener("click",()=>{if(!S.src)return;const b=$("#floorBox"),open=b.classList.toggle("hide");if(!open){floorDraw(S.floorSrc===S.src?S.floorPt:null)}});
+$("#floorStage").addEventListener("click",e=>{if(!S.src)return;const p=rel(e,$("#cFloor"));if(!p.ok)return;const x=Math.round(Math.max(0,Math.min(1,p.x))*S.src.width),y=Math.round(Math.max(0,Math.min(1,p.y))*S.src.height);S.floorPick=sample(x,y);S.floorSrc=S.src;S.floorPt={x,y};floorDraw(S.floorPt);texts();if(S.shop&&S.shopPt)shopPick(S.shopPt.x,S.shopPt.y);toast("바닥 색을 직접 고른 색으로 바꿨어요.")});
+$("#shopFile").addEventListener("change",e=>{shopFile(e.target.files[0]);e.target.value=""});
+$("#shopStage").addEventListener("click",e=>{if(!S.shop)return;const p=rel(e,$("#cShop"));if(!p.ok)return;shopPick(Math.round(Math.max(0,Math.min(1,p.x))*S.shop.width),Math.round(Math.max(0,Math.min(1,p.y))*S.shop.height))});
+$("#btnSave").addEventListener("click",saveCard);$("#btnShare").addEventListener("click",shareCard);
+/* 사진 위에서 비교선 끌기: 가로로 6px 넘게 움직였을 때만 시작해 세로 스크롤을 방해하지 않는다 */
+{const st=$("#stage");let sx=null,drag=false;const mv=e=>{const p=rel(e,st);if(!p.ok)return;const v=Math.max(0,Math.min(100,p.x*100));S.userSplit=v;setSplit(v);$("#split").value=v};
+  st.addEventListener("pointerdown",e=>{if((S.tab!=="see"&&S.tab!=="old"&&S.tab!=="ill")||!S.src)return;S.sweeping=false;sx=e.clientX;drag=false});
+  st.addEventListener("pointermove",e=>{if(sx===null)return;if(!drag&&Math.abs(e.clientX-sx)>6){drag=true;try{st.setPointerCapture(e.pointerId)}catch(_){}}if(drag)mv(e)});
+  ["pointerup","pointercancel","pointerleave"].forEach(t=>st.addEventListener(t,()=>{sx=null;drag=false}))}
+/* PC: 사진 파일 끌어다 놓기, 복사한 사진 붙여 넣기 */
+{const hasFile=e=>e.dataTransfer&&[...e.dataTransfer.types].includes("Files");
+  const pickImg=list=>{const fs=[...list].filter(i=>i.kind==="file").map(i=>i.getAsFile()).filter(Boolean);return fs.find(x=>x.type.startsWith("image/"))||fs[0]};
+  const hot=el=>$$(".spot.hot").forEach(x=>{if(x!==el)x.classList.remove("hot")});
+  ["dragenter","dragover"].forEach(t=>window.addEventListener(t,e=>{if(!hasFile(e))return;e.preventDefault();e.dataTransfer.dropEffect="copy";document.body.classList.add("dropping");const sp=e.target.closest&&e.target.closest("[data-spot]");hot(sp);if(sp)sp.classList.add("hot")}));
+  window.addEventListener("dragleave",e=>{if(!e.relatedTarget){document.body.classList.remove("dropping");hot(null)}});
+  window.addEventListener("drop",e=>{if(!hasFile(e))return;e.preventDefault();document.body.classList.remove("dropping");hot(null);
+    const sp=e.target.closest&&e.target.closest("[data-spot]");if(sp){const id=sp.dataset.spot;if(S.spots[id]&&!confirm("‘"+SPOTS.find(s=>s[0]===id)[1]+"’에는 이미 기록한 사진이 있어요.\n새 사진으로 바꿀까요? 예전 기록은 사라져요."))return;S.spotPending=id}
+    const fs=[...e.dataTransfer.files],f=fs.find(x=>x.type.startsWith("image/"))||fs[0]||(e.dataTransfer.items&&pickImg(e.dataTransfer.items));
+    if(!f){go("home");msg("끌어온 것에서 사진 파일을 찾지 못했어요. 사진을 복사해서 "+KEY+"+V로 붙여 넣거나, 폴더에 저장한 파일을 끌어다 놓아 주세요.",true);toast("사진 파일을 찾지 못했어요.");return}
+    toast("사진을 여는 중이에요…");fromFile(f)});
+  window.addEventListener("paste",e=>{const cd=e.clipboardData;if(!cd)return;const f=pickImg(cd.items||[]);
+    if(f&&f.type.startsWith("image/")){e.preventDefault();toast("붙여 넣은 사진을 여는 중이에요…");fromFile(f);return}
+    const t=e.target;if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"))return;
+    toast("붙여 넣을 사진이 없어요. 사진을 먼저 복사해 주세요.")})}
+$("#mySlotP").appendChild($("#s-profile"));$("#p-ill").appendChild($("#illWrap"));
+load();setTheme(document.documentElement.dataset.theme);$("#pickMsg").textContent=PICK0;heroDemo();segUI();ui();texts();
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+window.__S=S;
+</script>
+</body>
+</html>

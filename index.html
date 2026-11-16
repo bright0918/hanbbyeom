@@ -1174,7 +1174,7 @@ function findLost(src){
   /* 외톨이 칸 제거 */
   const keep=new Uint8Array(cols*rows);let cnt=0,red=0,green=0;
   for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){const i=r*cols+q;if(!flag[i])continue;let nb=0;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){if(!a&&!b)continue;const rr=r+a,qq=q+b;if(rr>=0&&rr<rows&&qq>=0&&qq<cols&&flag[rr*cols+qq])nb++}if(nb>=1){keep[i]=1;cnt++;const a=hu[i][1];if(a>15)red++;else if(a<-10)green++}}
-  return{cols,rows,keep,cnt,red,green,share:cnt/(cols*rows)}}
+  return{cols,rows,keep,cnt,red,green,share:cols*rows?cnt/(cols*rows):0}}/* 아주 가늘고 긴 사진은 칸이 0개라 0으로 나누지 않게 */
 /* 사진 아래쪽 40%를 바닥으로 보고 평균 밝기와 색을 잰다 */
 function analyze(src){const W=48,H=Math.max(8,Math.round(src.height*W/src.width)),c=mk(W,H),x=c.getContext("2d");x.drawImage(src,0,0,W,H);const d=x.getImageData(0,0,W,H).data,y0=Math.floor(H*.6);let n=0,L=0,A=0,B=0,all=0,sr=0,sg=0,sb=0;
   for(let y=0;y<H;y++)for(let q=0;q<W;q++){const i=(y*W+q)*4,l=lab(d[i],d[i+1],d[i+2]);all+=l[0];if(y>=y0){L+=l[0];A+=l[1];B+=l[2];sr+=d[i];sg+=d[i+1];sb+=d[i+2];n++}}return{L:L/n,a:A/n,b:B/n,all:all/(W*H),rgb:[Math.round(sr/n),Math.round(sg/n),Math.round(sb/n)]}}
@@ -1196,7 +1196,8 @@ function colorRank(){const k=S.src?(S.floorPick&&S.floorSrc===S.src?S.floorPick.
   S.crK=k;S.cr={fl,need,all,best:all.slice(0,3),worst:all.slice(-3).reverse(),trap:trap.slice(0,3),good:all.filter(c=>c.p>=need)};return S.cr}
 const dotC=(c,big)=>`<i class="dot" style="background:${c.hex}${big?";width:16px;height:16px":""}"></i>${c.name}`;
 /* 이 사진 안에서 사람 눈에는 다른데 아이 눈에는 비슷해지는 두 색을 찾는다(공유할 거리) */
-function confusePair(){if(S.cpSrc===S.src)return S.cp;const W=24,H=Math.max(6,Math.round(S.src.height*W/S.src.width)),c=mk(W,H),x=c.getContext("2d",{willReadFrequently:true});x.drawImage(S.src,0,0,W,H);const d=x.getImageData(0,0,W,H).data;free(c);
+/* 점 수를 약 600개로 맞춘다. 긴 화면 캡처처럼 세로로 아주 긴 사진에서 두 점씩 다 비교하다 몇 초씩 멈추던 문제 */
+function confusePair(){if(S.cpSrc===S.src)return S.cp;const k=Math.sqrt(600/(S.src.width*S.src.height)),W=Math.max(1,Math.round(S.src.width*k)),H=Math.max(1,Math.round(S.src.height*k)),c=mk(W,H),x=c.getContext("2d",{willReadFrequently:true});x.drawImage(S.src,0,0,W,H);const d=x.getImageData(0,0,W,H).data;free(c);
   const px=[];for(let i=0;i<d.length;i+=4){const rgb=[d[i],d[i+1],d[i+2]];px.push({rgb,h:lab(...rgb),p:lab(...dich(...rgb)),pr:dich(...rgb),i:i/4})}
   let best=null,bs=0;for(let a=0;a<px.length;a++)for(let b=a+1;b<px.length;b++){const h=dE(px[a].h,px[b].h);if(h<30)continue;const p=dE(px[a].p,px[b].p);if(p>=25||p>h*.4)continue;const s=h-p*1.5;if(s>bs){bs=s;best=[px[a],px[b],Math.round(h),Math.round(p)]}}
   if(best){best.pos=[best[0],best[1]].map(p=>({x:(p.i%W+.5)/W,y:(Math.floor(p.i/W)+.5)/H}))}
@@ -1352,6 +1353,7 @@ function todo(){const a=[],dog=isDog(),r=rec(),L=S.lost||{cnt:0,red:0,green:0},p
   if(cr.trap.length)a.push(`<b>사람 눈엔 잘 보이지만 ${N("의")} 눈엔 묻히는 색: ${cr.trap.map(c=>dotC(c)).join(" · ")}</b>. 이 바닥에서 사람이 고르기 쉬운 함정 색이에요. 장난감을 살 때 조심하세요.`);
   if(cp)a.push(`<b>이 사진 속 두 색이 ${N("의")} 눈엔 거의 같아 보여요.</b> 사람 눈엔 색 차이 ${cp[2]}인데 ${N("의")} 눈엔 ${cp[3]}이에요. 1부의 ‘헷갈리는 두 색’에서 볼 수 있어요.`);
   if(r.all<30)a.push(`<b>사진이 어두워요.</b> 어두운 사진은 색 계산이 부정확할 수 있어요. 불을 켜거나 낮에 다시 찍어 보세요.`);
+  else if(r.all>96&&r.L>96)a.push(`<b>사진이 하얗게 날아갔어요.</b> 너무 밝은 사진은 색이 지워져 계산이 부정확할 수 있어요. 창 쪽을 등지고 다시 찍어 보세요.`);
   if(S.spotNow&&SPOT_ADV[S.spotNow])a.push(`<b>${SPOTS.find(s=>s[0]===S.spotNow)[1]}</b>: ${spotTip(S.spotNow)}`);
   return a}
 /* 사진이 아니라 프로필(종·나이·몸집·주둥이)에 따라 달라지는 팁 */
@@ -1443,7 +1445,9 @@ function segUI(){[["#species","species"],["#size","size"],["#snout","snout"]].fo
 /* ---------- 사진 넣기 ---------- */
 function msg(t,err){const m=$("#camMsg");m.textContent=t;m.classList.toggle("err",!!err)}
 let toastT=0;function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove("on"),2600)}
-function setSource(img,w,h){const M=960,s=Math.min(1,M/Math.max(w,h)),c=mk(w*s,h*s);c.getContext("2d",{willReadFrequently:true}).drawImage(img,0,0,c.width,c.height);addRecent(c);S.mode.see="now";useCanvas(c);sweep()}
+/* 투명한 PNG(배경 없는 물건 사진)는 흰 바탕에 올린다. 그대로 두면 투명한 곳이 검정으로 계산된다 */
+function onWhite(c){const x=c.getContext("2d",{willReadFrequently:true});x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);return x}
+function setSource(img,w,h){const M=960,s=Math.min(1,M/Math.max(w,h)),c=mk(w*s,h*s);onWhite(c).drawImage(img,0,0,c.width,c.height);addRecent(c);S.mode.see="now";useCanvas(c);sweep()}
 /* 이번에 넣은 사진을 6장까지 기억해 두고, 눈 비교·색 점검·보고서에서 넘겨 볼 수 있게 한다(앱을 닫으면 사라짐) */
 /* 넣은 사진(최대 6장)과 진행 단계를 이 기기에 저장한다. 사진은 용량이 커서 localStorage 대신 IndexedDB에 둔다. 서버로는 보내지 않는다 */
 const IDB={p:null,db(){if(!this.p)this.p=new Promise(r=>{try{const q=indexedDB.open("hb",1);q.onupgradeneeded=()=>q.result.createObjectStore("kv");q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}});return this.p},
@@ -1467,7 +1471,7 @@ function openItem(k,stay){if(k[0]==="#")openRecent(+k.slice(1),stay);else openSp
 /* 사진 파일 열기: <img>로 여는 쪽이 아이폰 사진의 회전 정보(EXIF)를 가장 고르게 반영한다. 안 되면 createImageBitmap으로 */
 function loadImg(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.decoding="async";im.onload=()=>{URL.revokeObjectURL(u);ok(im)};im.onerror=()=>{URL.revokeObjectURL(u);(window.createImageBitmap?createImageBitmap(f).then(ok,no):no())};im.src=u})}
 async function shopFile(f){if(!f)return;let src=null;try{src=await loadImg(f)}catch(e){toast("이 사진은 열 수 없어요.");return}
-  const w=src.width||src.naturalWidth,h=src.height||src.naturalHeight,s=Math.min(1,720/Math.max(w,h)),c=mk(w*s,h*s);c.getContext("2d",{willReadFrequently:true}).drawImage(src,0,0,c.width,c.height);S.shop=c;shopDraw(null);$("#shopStage").classList.remove("hide");$("#shopOut").classList.add("hide");$("#shopMsg").innerHTML="좋아요. 이제 사진에서 <b>물건의 대표 색</b>을 한 번 눌러 주세요.";$("#shopStage").scrollIntoView({behavior:"smooth",block:"center"})}
+  const w=src.width||src.naturalWidth,h=src.height||src.naturalHeight,s=Math.min(1,720/Math.max(w,h)),c=mk(w*s,h*s);onWhite(c).drawImage(src,0,0,c.width,c.height);S.shop=c;shopDraw(null);$("#shopStage").classList.remove("hide");$("#shopOut").classList.add("hide");$("#shopMsg").innerHTML="좋아요. 이제 사진에서 <b>물건의 대표 색</b>을 한 번 눌러 주세요.";$("#shopStage").scrollIntoView({behavior:"smooth",block:"center"})}
 function shopDraw(p){const c=$("#cShop"),x=c.getContext("2d");c.width=S.shop.width;c.height=S.shop.height;x.drawImage(S.shop,0,0);if(p){const w=c.width;x.lineWidth=Math.max(3,w/160);x.strokeStyle="#fff";x.beginPath();x.arc(p.x,p.y,w/24,0,7);x.stroke();x.lineWidth=Math.max(1.5,w/320);x.strokeStyle="#111";x.beginPath();x.arc(p.x,p.y,w/24+x.lineWidth*2,0,7);x.stroke()}}
 function floorRgb(){return S.floorPick&&S.floorSrc===S.src?S.floorPick:an().rgb}
 function floorDraw(p){const c=$("#cFloor"),x=c.getContext("2d");c.width=S.src.width;c.height=S.src.height;x.drawImage(S.src,0,0);if(p){const w=c.width;x.lineWidth=Math.max(3,w/160);x.strokeStyle="#fff";x.beginPath();x.arc(p.x,p.y,w/24,0,7);x.stroke();x.lineWidth=Math.max(1.5,w/320);x.strokeStyle="#111";x.beginPath();x.arc(p.x,p.y,w/24+x.lineWidth*2,0,7);x.stroke()}}

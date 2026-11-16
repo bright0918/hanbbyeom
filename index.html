@@ -1391,10 +1391,10 @@ $("#btnLiveOn").addEventListener("click",startCam);
   const show=()=>{const on=!standalone();$$(".instBtn").forEach(b=>b.classList.toggle("hide",!on));$("#instBody").innerHTML=on?guide():"<p>지금 앱으로 설치해서 쓰고 계세요.</p>";$("#btnInstall").classList.toggle("hide",!on)};
   /* 삼성 인터넷처럼 설치 창을 직접 띄울 수 없는 곳에서는, 같은 주소를 크롬으로 열어 그곳의 '설치'를 쓰게 한다(크롬이 진짜 앱처럼 설치해 준다) */
   const toChrome=()=>{location.href="intent://"+location.href.replace(/^https?:\/\//,"")+"#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url="+encodeURIComponent("https://play.google.com/store/apps/details?id=com.android.chrome")+";end"};
-  const tryInstall=async()=>{if(!dp)dp=window.__dp||null;if(!dp&&sam&&android){toast("크롬에서 열어 설치할게요. 크롬에서 ‘설치’를 한 번 더 눌러 주세요.");setTimeout(toChrome,600);return}if(dp){dp.prompt();let ok=false;try{ok=(await dp.userChoice).outcome==="accepted"}catch(e){}dp=null;window.__dp=null;if(ok)toast("설치했어요. 홈 화면의 아이콘으로 열 수 있어요.");return}
+  const tryInstall=async()=>{if(!dp)dp=window.__dp||null;if(!dp&&sam&&android){toast("크롬에서 열어 설치할게요. 크롬에서 ‘설치’를 한 번 더 눌러 주세요.");setTimeout(toChrome,600);return}if(dp){dp.prompt();let ok=false;try{ok=(await dp.userChoice).outcome==="accepted"}catch(e){}dp=null;window.__dp=null;if(ok)toast("설치를 시작했어요. 앱스 화면(위로 쓸어 올리기)에 ‘한 뼘 시선’이 생기면 끝이에요.");return}
     $("#instGuide").innerHTML=guide();$("#instModal").classList.remove("hide")};
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e;window.__dp=e});
-  window.addEventListener("appinstalled",()=>{dp=null;$("#instSheet").classList.add("hide");show()});
+  window.addEventListener("appinstalled",()=>{dp=null;toast("설치가 끝났어요. 앱스 화면의 ‘한 뼘 시선’을 길게 눌러 홈 화면으로 옮길 수 있어요.");$("#instSheet").classList.add("hide");show()});
   /* 폰·태블릿으로 처음 열면 아래쪽에 설치 제안을 띄운다. ✕를 누르면 3일 동안 다시 띄우지 않는다 */
   {let off=0;try{off=+localStorage.getItem("hb-inst-off")||0}catch(e){}
     const touch=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
